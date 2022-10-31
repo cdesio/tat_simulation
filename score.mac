@@ -1,0 +1,39 @@
+/detector/n_div_Theta 4
+/detector/n_div_R 6
+/detector/n_div_Z 2
+/run/reinitializeGeometry
+/control/execute vis.mac
+
+/gun/particle ion
+/gun/ion 85 211
+/score/create/cylinderMesh logicTaTDetector
+/score/mesh/cylinderSize 110 20 um # R halflength
+/score/mesh/translate/xyz 0.1 0.1 0.0 um
+/score/mesh/nBin 6 2 4 #(R Z THETA)
+
+/score/quantity/energyDeposit eDep MeV
+/score/filter/particle alphafilter alpha
+/score/quantity/doseDeposit dose Gy
+/score/filter/particle alphafilter alpha
+/score/quantity/population n_parts
+
+#/score/dumpQuantityToFile logicTaTDetector eDep edep446.txt
+#/score/dumpQuantityToFile logicTaTDetector eDep edep446_alpha.txt
+#/score/dumpQuantityToFile logicTaTDetector eDep dose edep446_dose.txt
+
+/run/beamOn 1000
+/score/dumpAllQuantitiesToFile logicTaTDetector score_6_2_4_edep_dose_all.txt
+#/score/dumpAllQuantitiesToFile logicTaTDetector score_30_40_30_edep_dose_all.txt
+#/score/dumpAllQuantitiesToFile logicTaTDetector test_dump_map_2_2_2.txt
+/score/close
+#
+/score/list
+#/score/colorMap/setMinMax ! 0. 10.
+
+#/score/drawProjection logicTaTDetector dose
+
+#/score/drawProjection logicTaTDetector eDep
+
+/control/alias iAxis 1
+/control/loop ../drawCylinderSlices.mac iColumn 0 1 1
+#

@@ -1,0 +1,8 @@
+/run/initialize
+/detector/isTat true
+/detector/n_div_Theta 8
+/detector/n_div_R 8
+/gun/particle ion
+/gun/ion 85 211
+
+/run/beamOn 1000
