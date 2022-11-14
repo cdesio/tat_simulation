@@ -14,17 +14,28 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
     // access track of the particle which enters sensitive volume
     G4Track *track = aStep->GetTrack();
     // track->SetTrackStatus(fStopAndKill); // kill track when photon enters the detector and do not propagate
-    //    G4double stepl = track->GetStepLength();
+    G4double stepl = track->GetStepLength();
+
+    // G4cout << "step length: " << stepl << G4endl;
 
     const G4ParticleDefinition *particle = track->GetParticleDefinition();
 
     G4String name = particle->GetParticleName();
     G4int pid = particle->GetPDGEncoding();
-    // G4int Z = particle->GetAtomicNumber();
-    // G4int A = particle->GetAtomicMass();
-    // G4double charge = particle->GetPDGCharge();
-    G4double energy = track->GetKineticEnergy();
 
+    G4int trackID = track->GetTrackID();
+    G4int parentID = track->GetParentID();
+    // G4cout << "Pid: " << pid << ", name: " << name << ", track: " << track->GetTrackID() << ", parent: " << par_id << G4endl;
+    //   G4int Z = particle->GetAtomicNumber();
+    //   G4int A = particle->GetAtomicMass();
+    //   G4double charge = particle->GetPDGCharge();
+    G4double energy = track->GetKineticEnergy();
+    G4double tot_energy = track->GetTotalEnergy();
+    // G4cout << "K Energy: " << tot_energy << G4endl;
+    // if (tot_energy != energy)
+    // {
+    //     G4cout << "tot Energy: " << tot_energy << G4endl;
+    // };
     //  start and end of track
     G4StepPoint *preStepPoint = aStep->GetPreStepPoint();
     G4StepPoint *postStepPoint = aStep->GetPostStepPoint();
@@ -42,6 +53,8 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
 
     G4int copyNo = touchable->GetCopyNumber(); // get id of the sensitive voxel
     G4String volName = touchable->GetVolume()->GetName();
+
+    // G4cout << "vol name: " << volName << " " << copyNo << G4endl;
 
     //  access position of sensitive detector
 
@@ -73,7 +86,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
 
     G4AnalysisManager *man = G4AnalysisManager::Instance();
     // fill ntuple, first index is ntuple id
-
+    // mc
     man->FillNtupleIColumn(0, 0, evt);
     man->FillNtupleDColumn(0, 1, posParticle[0]);
     man->FillNtupleDColumn(0, 2, posParticle[1]);
@@ -81,9 +94,11 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
     man->FillNtupleIColumn(0, 4, pid);
     man->FillNtupleSColumn(0, 5, name);
     man->FillNtupleDColumn(0, 6, energy);
+    man->FillNtupleIColumn(0, 7, trackID);
+    man->FillNtupleIColumn(0, 8, parentID);
     // man->FillNtupleDColumn(0, 4, wlen);
     man->AddNtupleRow(0);
-
+    // hit
     man->FillNtupleIColumn(1, 0, evt);
     man->FillNtupleDColumn(1, 1, posDetector[0]);
     man->FillNtupleDColumn(1, 2, posDetector[1]);
