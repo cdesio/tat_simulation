@@ -14,7 +14,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
     // access track of the particle which enters sensitive volume
     G4Track *track = aStep->GetTrack();
     // track->SetTrackStatus(fStopAndKill); // kill track when photon enters the detector and do not propagate
-    G4double stepl = track->GetStepLength();
+    // G4double stepl = track->GetStepLength();
 
     // G4cout << "step length: " << stepl << G4endl;
 
@@ -59,7 +59,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
     G4ThreeVector posDetector = physVol->GetTranslation();
     G4RotationMatrix rotDetector = physVol->GetObjectRotationValue();
     // G4cout << "inverted: " << rotDetector.invert() << G4endl;
-    G4double theta = acos(rotDetector[0][0]);
+    // G4double theta = acos(rotDetector[0][0]);
 
     // G4Rotate3D rotZ(theta, G4ThreeVector(0, 0, 1));
 
