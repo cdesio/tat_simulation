@@ -287,7 +287,7 @@ void MyDetectorConstruction::ConstructTatDetector2()
 
     G4int n_voxels = n_div_R * n_div_Theta * n_div_Z;
 
-    G4cout << n_voxels << G4endl;
+    // G4cout << n_voxels << G4endl;
 
     solidTatDetector = new G4Tubs("solidTatDetector", inner_radius, outer_radius, total_length, 0 * deg, 360 * deg);
     logicTatDetector = new G4LogicalVolume(solidTatDetector, ScaledH2O, "logicTatDetector");
@@ -321,10 +321,12 @@ void MyDetectorConstruction::ConstructTatDetector2()
     tatDetVisAtt->SetForceSolid(true);
     logicTatDetector->SetVisAttributes(tatDetVisAtt);
 
-    G4VisAttributes *voxelsVisAtt = new G4VisAttributes(G4Colour(255., 0, 255., .5));
+    G4VisAttributes *voxelsVisAtt = new G4VisAttributes(G4Colour(255., 255, 255., .5));
     voxelsVisAtt->SetVisibility(true);
     voxelsVisAtt->SetLineWidth(2);
     logicDetector->SetVisAttributes(voxelsVisAtt);
+    logicDetector->SetUserLimits(new G4UserLimits(.5 * um));
+    logicTarget->SetUserLimits(new G4UserLimits(.5 * um));
 }
 
 void MyDetectorConstruction::ConstructAtmosphere()
