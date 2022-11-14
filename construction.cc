@@ -192,7 +192,7 @@ void MyDetectorConstruction::ConstructTatDetector()
                                                                         n_div_Z,
                                                                         n_div_Theta);
 
-    G4VPhysicalVolume *physCylinder = new G4PVParameterised("Cylinder", logicDetector, logicTatDetector, kZAxis, n_voxels, cylinderParam, true);
+    new G4PVParameterised("Cylinder", logicDetector, logicTatDetector, kZAxis, n_voxels, cylinderParam, true);
 
     G4VisAttributes *tatDetVisAtt = new G4VisAttributes(G4Colour(1, 1, 1, 0.2));
     tatDetVisAtt->SetVisibility(true);
