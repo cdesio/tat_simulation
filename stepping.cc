@@ -30,6 +30,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
     // G4cout << time * ns << G4endl;
     //  G4int parentID = step->GetTrack()->GetParentID();
     //  G4int stepNo = step->GetTrack()->GetCurrentStepNumber();
+
     const G4VProcess *process = step->GetPostStepPoint()->GetProcessDefinedStep();
     G4String processname = process->GetProcessName();
 
