@@ -2,6 +2,7 @@
 
 MyPhysicsList::MyPhysicsList()
 {
+    G4int verb = 1;
     RegisterPhysics(new G4EmStandardPhysics()); // EM interactions
     // G4EmParameters *param = G4EmParameters::Instance();
     // param->SetAugerCascade(true);
@@ -9,10 +10,10 @@ MyPhysicsList::MyPhysicsList()
     // param->SetStepFunctionMuHad(1., 1 * CLHEP::mm);
     RegisterPhysics(new G4OpticalPhysics()); // optical photons for Cherenkov light
     // for radioactive decay
-    RegisterPhysics(new G4DecayPhysics());            // any kind of particle decays
+    RegisterPhysics(new G4DecayPhysics(verb));        // any kind of particle decays
     RegisterPhysics(new G4RadioactiveDecayPhysics()); // radioactive ions decay
                                                       // Radioactive decay
-    G4int verb = 1;
+
     SetVerboseLevel(verb);
     // RegisterPhysics(new BiasedRDPhysics());
     //  Hadron Elastic scattering
@@ -34,6 +35,8 @@ MyPhysicsList::MyPhysicsList()
     gnuc->ElectroNuclear(false);
     gnuc->MuonNuclear(false);
     RegisterPhysics(gnuc);
+
+    RegisterPhysics(new G4StepLimiterPhysics());
 }
 
 MyPhysicsList::~MyPhysicsList()
