@@ -13,6 +13,8 @@ MyRunAction::MyRunAction()
     man->CreateNtupleIColumn("pid");
     man->CreateNtupleSColumn("particle_name");
     man->CreateNtupleDColumn("energy");
+    man->CreateNtupleIColumn("trackID");
+    man->CreateNtupleIColumn("parentID");
     man->FinishNtuple(0);
     // store info - ntuple creation moved to here
     man->CreateNtuple("Hits", "Hits");      // rows
