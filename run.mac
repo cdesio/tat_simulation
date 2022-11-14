@@ -1,8 +1,21 @@
 /run/initialize
 /detector/isTat true
-/detector/n_div_Theta 8
-/detector/n_div_R 8
+/detector/n_div_Theta 6
+/detector/n_div_R 4
+/detector/n_div_Z 1
+/run/reinitializeGeometry
+
 /gun/particle ion
 /gun/ion 85 211
 
+/score/create/cylinderMesh logicTaTDetector
+/score/mesh/cylinderSize 110 20 um # R halflength
+/score/mesh/nBin 20 1 20
+
+/score/quantity/energyDeposit eDep MeV
+#/score/filter/particle alphafilter alpha
+/score/quantity/doseDeposit dose Gy
+#/score/filter/particle alphafilter alpha
+
 /run/beamOn 1000
+/score/dumpAllQuantitiesToFile logicTaTDetector score_20_1_20_edep_dose_all.txt
