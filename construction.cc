@@ -9,10 +9,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     // change the number of photosensors in one row
     fMessenger->DeclareProperty("nRows", nRows, "Number of rows");
     // add the possibility to choose between the two types of detector: cherenkov or scintillator
-    fMessenger->DeclareProperty("isCherenkov", isCherenkov, "Construct Cherenkov ");
-    fMessenger->DeclareProperty("isScintillator", isScintillator, "Construct Scintillator");
     fMessenger->DeclareProperty("isTat", isTat, "Construct TaT");
-    fMessenger->DeclareProperty("isAtmosphere", isAtmosphere, "Construct Atmosphere");
 
     fMessenger->DeclareProperty("n_div_Theta", n_div_Theta, "Number of divisions in Theta");
     fMessenger->DeclareProperty("n_div_Z", n_div_Z, "Number of divisions in Cylinder Axis (Z)");
@@ -43,7 +40,7 @@ MyDetectorConstruction::MyDetectorConstruction()
         n_div_Z = 2;
         n_div_R = 4;
         total_length = 40 * um;
-        inner_radius = 10 * um;
+        inner_radius = 0 * um;
         outer_radius = 110 * um;
     }
     else if (isAtmosphere /* condition */)
@@ -173,116 +170,7 @@ void MyDetectorConstruction::DefineMaterials()
     }
 }
 
-void MyDetectorConstruction::ConstructCherenkov()
-{
-    // Create detector
-    solidRadiator = new G4Box("solidRadiator", 0.4 * m, 0.4 * m, 0.01 * m);
-    // logical volume
-    logicRadiator = new G4LogicalVolume(solidRadiator, Aerogel, "logicRadiator");
-
-    // use radiator as scoring volume
-    fScoringVolume = logicRadiator;
-
-    // physical volume
-    physRadiator = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.25 * m), logicRadiator, "physRadiator", logicWorld, false, 0, true);
-
-    // define 100 photosensors
-    // solid
-    solidDetector = new G4Box("solidDetector", xWorld / nRows, yWorld / nCols, 0.01 * m);
-    // logical
-    logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicalDetector");
-    // physical - in this case we have to create an array, so it's different:
-    for (G4int i = 0; i < nRows; i++)
-    {
-        for (G4int j = 0; j < nCols; j++)
-        {
-            physDetector = new G4PVPlacement(0, G4ThreeVector(-0.5 * m + (i + 0.5) * m / nRows, -0.5 * m + (j + 0.5) * m / nCols, 0.49 * m), logicDetector, "physDetector", logicWorld, false, j + i * nCols, true);
-        }
-    }
-}
-
-void MyDetectorConstruction::ConstructScintillator()
-{
-
-    solidScintillator = new G4Box("solidScintillator", 5 * cm, 5 * cm, 6 * cm);
-
-    logicScintillator = new G4LogicalVolume(solidScintillator, NaI, "logicalScintillator");
-
-    G4LogicalSkinSurface *Skin = new G4LogicalSkinSurface("skin", logicWorld, mirrorSurface); // add reflective coating to world volume
-
-    // add photon detectors on top of scintillators
-    solidDetector = new G4Box("solidDetector", 1 * cm, 5 * cm, 6 * cm);
-
-    logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
-
-    // use scintillator as scoring volume
-    fScoringVolume = logicScintillator;
-
-    for (G4int i = 0; i < 6; i++)
-    {
-        for (G4int j = 0; j < 16; j++)
-        {
-            G4Rotate3D rotZ(j * 22.5 * deg, G4ThreeVector(0, 0, 1));
-            G4Translate3D transXScint(G4ThreeVector(5. / tan(22.5 / 2 * deg) * cm + 5. * cm, 0 * cm, -40 * cm + i * 15 * cm));
-
-            G4Translate3D transXDet(G4ThreeVector(5. / tan(22.5 / 2 * deg) * cm + 6. * cm + 5. * cm, 0 * cm, -40 * cm + i * 15 * cm));
-
-            G4Transform3D transformScint = (rotZ) * (transXScint); // first translation then rotation
-            G4Transform3D transformDet = (rotZ) * (transXDet);     // first translation then rotation
-
-            physScintillator = new G4PVPlacement(transformScint, logicScintillator, "physScintillator", logicWorld, false, 0, true);
-            physDetector = new G4PVPlacement(transformDet, logicDetector, "physDetector", logicWorld, false, 0, true);
-        }
-    }
-}
-
 void MyDetectorConstruction::ConstructTatDetector()
-{
-
-    solidTarget = new G4Tubs("solidTarget", 0, 10 * um, 20 * um, 0 * deg, 360 * deg);
-    logicTarget = new G4LogicalVolume(solidTarget, H2O, "logicTarget");
-    fScoringVolume = logicTarget;
-    physTarget = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicTarget, "physTarget", logicWorld, false, 0, true);
-    G4LogicalSkinSurface *Skin = new G4LogicalSkinSurface("skin", logicWorld, mirrorSurface); // add reflective coating to world volume
-
-    G4int n_j = 4;
-    G4double angle = 360. / n_j;
-    G4int n_k = 2;
-    G4double length = 200 * um;
-    G4int n_i = 2;
-    G4double l_n = length / n_i;
-
-    // solidTatDetector = new G4Tubs("solidTatDetector", 10 * um, 110 * um, l_n / 2, 0 * deg, angle * deg);
-    // logicDetector = new G4LogicalVolume(solidTatDetector, H2O, "logicDetector");
-    //  fScoringVolume = logicDetector;
-
-    for (G4int i = 0; i < n_i; i++)
-    {
-        for (G4int j = 0; j < n_j; j++)
-        {
-            for (G4int k = 0; k < n_k; k++)
-            {
-
-                solidTatDetector = new G4Tubs("solidScintillator2", 10 * um + (k * 100 / n_k) * um, 10 * um + (100 / n_k) * (k + 1) * um, l_n / 2, 0 * deg, angle * deg);
-                logicDetector = new G4LogicalVolume(solidTatDetector, H2O, "logicDetector");
-                //  fScoringVolume = logicDetector;
-
-                G4Rotate3D rotZTat(j * angle * deg, G4ThreeVector(0, 0, 1));
-                G4Translate3D transXTatDetector(G4ThreeVector(0., 0., ((-length / 2) + (i + 1) * l_n - l_n / 2)));
-                G4Transform3D transformTat = (rotZTat) * (transXTatDetector);
-
-                physTatDetector = new G4PVPlacement(transformTat, logicDetector, "physTatDetector", logicWorld, false, i * n_j + j * n_k + k, true);
-            }
-            //}
-        }
-    }
-
-    G4VisAttributes *targetVisAtt = new G4VisAttributes(G4Colour(0.0, 0.0, 255.0));
-    targetVisAtt->SetVisibility(true);
-    logicTarget->SetVisAttributes(targetVisAtt);
-}
-
-void MyDetectorConstruction::ConstructTatDetector2()
 {
 
     G4int n_voxels = n_div_R * n_div_Theta * n_div_Z;
@@ -306,16 +194,6 @@ void MyDetectorConstruction::ConstructTatDetector2()
 
     G4VPhysicalVolume *physCylinder = new G4PVParameterised("Cylinder", logicDetector, logicTatDetector, kZAxis, n_voxels, cylinderParam, true);
 
-    solidTarget = new G4Tubs("solidTarget", 0, inner_radius, 40 * um, 0 * deg, 360 * deg);
-    logicTarget = new G4LogicalVolume(solidTarget, ScaledH2O, "logicTarget");
-    fScoringTarget = logicTarget;
-    physTarget = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicTarget, "physTarget", logicWorld, false, 0, true);
-
-    G4VisAttributes *targetVisAtt = new G4VisAttributes(G4Colour(0.0, 0.0, 255.0, .5));
-    targetVisAtt->SetVisibility(true);
-    targetVisAtt->SetForceSolid(true);
-    logicTarget->SetVisAttributes(targetVisAtt);
-
     G4VisAttributes *tatDetVisAtt = new G4VisAttributes(G4Colour(1, 1, 1, 0.2));
     tatDetVisAtt->SetVisibility(true);
     tatDetVisAtt->SetForceSolid(true);
@@ -326,7 +204,6 @@ void MyDetectorConstruction::ConstructTatDetector2()
     voxelsVisAtt->SetLineWidth(2);
     logicDetector->SetVisAttributes(voxelsVisAtt);
     logicDetector->SetUserLimits(new G4UserLimits(.5 * um));
-    logicTarget->SetUserLimits(new G4UserLimits(.5 * um));
 }
 
 void MyDetectorConstruction::ConstructAtmosphere()
@@ -353,19 +230,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     //(0: no rotation, x, y, z: (0,0,0)placed at axes origin), logic volume, name, mother volume: 0, boolean operations: false, copy number (to insert volume several times), true: check for overlaps)
     physWorld = new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), logicWorld, "physWorld", 0, false, 0, true);
 
-    if (isCherenkov)
-        ConstructCherenkov();
-
-    if (isScintillator)
-        ConstructScintillator();
-
     if (isTat)
     {
-        ConstructTatDetector2();
-    }
-    if (isAtmosphere)
-    {
-        ConstructAtmosphere();
+        ConstructTatDetector();
     }
 
     //  return mother volume
@@ -377,8 +244,4 @@ void MyDetectorConstruction::ConstructSDandField()
     MySensitiveDetector *sensDet = new MySensitiveDetector("SensitiveDetector");
     if (logicDetector != NULL)
         logicDetector->SetSensitiveDetector(sensDet);
-
-    MySensitiveDetector *sensTarget = new MySensitiveDetector("SensitiveTarget");
-    if (logicTarget != NULL)
-        logicTarget->SetSensitiveDetector(sensTarget);
 }

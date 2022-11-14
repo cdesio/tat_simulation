@@ -30,7 +30,6 @@ public:
 
     // create scoring volume to store info only for that
     G4LogicalVolume *GetScoringDetector() const { return fScoringDetector; }
-    G4LogicalVolume *GetScoringTarget() const { return fScoringTarget; }
 
     virtual G4VPhysicalVolume *Construct();
     // to access the logical volume from outside the construction function

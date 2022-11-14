@@ -16,11 +16,11 @@ public:
     virtual void EndOfEventAction(const G4Event *);
     // function to accumulate edep
 
-    void AddEdep(G4int iVol, G4double edep);
+    void AddEdep(G4double edep);
 
 private:
     // create value to store edep
-    G4double fEdep1, fEdep2;
+    G4double fEdep;
 };
 
 #endif

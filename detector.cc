@@ -46,15 +46,11 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
 
     G4ThreeVector momParticle = preStepPoint->GetMomentum();
 
-    // G4double wlen = (1.239841939 * eV / momParticle.mag()) * 1E03;
-
     // get
     const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
 
     G4int copyNo = touchable->GetCopyNumber(); // get id of the sensitive voxel
     G4String volName = touchable->GetVolume()->GetName();
-
-    // G4cout << "vol name: " << volName << " " << copyNo << G4endl;
 
     //  access position of sensitive detector
 
@@ -70,17 +66,6 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
     // G4RotationMatrix *rot = physVol->GetRotation();
 
     G4ThreeVector localPos = touchable->GetHistory()->GetTopTransform().TransformPoint(posParticle);
-    // if (volName != "physTarget")
-    // {
-    //     G4cout << "theta: " << theta / deg << " matrix00: " << rotDetector[0][0] << " " << rotDetector[0][1] << G4endl;
-    //     G4cout << "Detector translation: " << posDetector << G4endl;
-    //     G4cout << "Detector rotation: " << rotDetector << G4endl;
-    //     G4cout << "Detector localPos: " << localPos << G4endl;
-    //     posDetector.rotate(theta / deg, G4ThreeVector(0, 0, 1));
-    //     G4cout << "Detector post rotation: " << posDetector << G4endl;
-    //     G4cout << "Particle (step) pos: " << posParticle << G4endl;
-    //     G4cout << "Copy number: " << copyNo << G4endl; //" volName: " << volName << G4endl;
-    // }
 
     G4int evt = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
 

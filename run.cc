@@ -28,9 +28,7 @@ MyRunAction::MyRunAction()
     // creating ntuple to score energy deposition
 
     man->CreateNtuple("Scoring", "Scoring");  // rows
-    man->CreateNtupleDColumn("EdepTarget");   // columns
     man->CreateNtupleDColumn("EdepDetector"); // columns
-    man->CreateNtupleDColumn("Etot");         // columns
     man->FinishNtuple(2);                     // third ntuple is no. 2
 
     man->CreateNtuple("Detector", "Detector"); // rows
@@ -46,14 +44,6 @@ MyRunAction::MyRunAction()
     man->CreateNtupleIColumn("time_ns"); // columns
     man->CreateNtupleSColumn("process"); // columns
     man->FinishNtuple(3);                // third ntuple is no. 2
-
-    man->CreateNtuple("Target", "Taget"); // rows
-    man->CreateNtupleDColumn("Edep");
-    man->CreateNtupleDColumn("posX");   // columns
-    man->CreateNtupleDColumn("posY");   // columns
-    man->CreateNtupleDColumn("posZ");   // columns     // columns
-    man->CreateNtupleIColumn("copyNo"); // columns
-    man->FinishNtuple(4);               // third ntuple is no. 2
 }
 
 MyRunAction::~MyRunAction()
@@ -70,7 +60,7 @@ void MyRunAction::BeginOfRunAction(const G4Run *run)
     strRunID << runID;
 
     // open file
-    man->OpenFile("output" + strRunID.str() + ".root");
+    man->OpenFile("output" + strRunID.str() + "solid_mesh.root");
     // ntuple creation was here.
 }
 

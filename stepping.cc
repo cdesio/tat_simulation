@@ -16,7 +16,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
     const MyDetectorConstruction *detectorConstruction = static_cast<const MyDetectorConstruction *>(G4RunManager::GetRunManager()->GetUserDetectorConstruction());
 
     G4LogicalVolume *fScoringDetector = detectorConstruction->GetScoringDetector();
-    G4LogicalVolume *fScoringTarget = detectorConstruction->GetScoringTarget();
+    // G4LogicalVolume *fScoringTarget = detectorConstruction->GetScoringTarget();
 
     G4AnalysisManager *man = G4AnalysisManager::Instance();
 
@@ -35,27 +35,13 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
 
     const G4VTouchable *touchable = step->GetPreStepPoint()->GetTouchable();
     G4VPhysicalVolume *physVol = touchable->GetVolume();
-    //  G4ThreeVector posDetector = physVol->GetTranslation();
+
     G4int copyno = touchable->GetCopyNumber();
 
-    // G4cout << processname << G4endl;
-    G4int iVol = 0;
-    if (volume == fScoringTarget)
-    {
-        iVol = 1;
-
-        man->FillNtupleDColumn(4, 0, edepStep);
-        man->FillNtupleDColumn(4, 1, step_pos[0]);
-        man->FillNtupleDColumn(4, 2, step_pos[1]);
-        man->FillNtupleDColumn(4, 3, step_pos[2]);
-        man->FillNtupleIColumn(4, 4, copyno);
-        man->AddNtupleRow(4);
-    }
     if (volume == fScoringDetector)
     {
-        iVol = 2;
 
-        G4cout << "STEPPING - copyNo: " << copyno << G4endl;
+        // G4cout << "STEPPING - copyNo: " << copyno << G4endl;
 
         man->FillNtupleDColumn(3, 0, edepStep);
         man->FillNtupleIColumn(3, 1, copyno);
@@ -72,5 +58,5 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
         man->AddNtupleRow(3);
     }
 
-    fEventAction->AddEdep(iVol, edepStep);
+    fEventAction->AddEdep(edepStep);
 }
