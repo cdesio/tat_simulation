@@ -19,7 +19,7 @@
 #include "G4TransportationManager.hh"
 #include "G4PhysicalVolumeModel.hh"
 #include "G4ModelingParameters.hh"
-#include "G4PhysicalVolumesSearchScene.hh"
+#include "G4UserLimits.hh"
 #include <vector>
 
 class MyDetectorConstruction : public G4VUserDetectorConstruction
