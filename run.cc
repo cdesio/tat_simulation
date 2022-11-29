@@ -60,7 +60,7 @@ void MyRunAction::BeginOfRunAction(const G4Run *run)
     strRunID << runID;
 
     // open file
-    man->OpenFile("output" + strRunID.str() + "solid_mesh.root");
+    man->OpenFile("output" + strRunID.str() + "_GPS.root");
     // ntuple creation was here.
 }
 
