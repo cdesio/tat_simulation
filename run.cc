@@ -43,7 +43,9 @@ MyRunAction::MyRunAction()
     man->CreateNtupleIColumn("StepID");  // columns
     man->CreateNtupleIColumn("time_ns"); // columns
     man->CreateNtupleSColumn("process"); // columns
-    man->FinishNtuple(3);                // third ntuple is no. 2
+    man->CreateNtupleSColumn("particle_name");
+    man->CreateNtupleDColumn("energy");
+    man->FinishNtuple(3); // third ntuple is no. 2
 }
 
 MyRunAction::~MyRunAction()

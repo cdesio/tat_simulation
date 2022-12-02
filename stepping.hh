@@ -17,6 +17,7 @@ public:
 
 private:
     MyEventAction *fEventAction;
+    std::ofstream PSfile;
 };
 
 #endif
