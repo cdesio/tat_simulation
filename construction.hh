@@ -70,7 +70,7 @@ private:
     G4bool isCherenkov, isScintillator, isTat, isAtmosphere;
     G4OpticalSurface *mirrorSurface;
     G4int n_div_Theta, n_div_Z, n_div_R;
-    G4double total_length, inner_radius, outer_radius;
+    G4double total_length, inner_radius, outer_radius, mesh_length;
 };
 
 #endif

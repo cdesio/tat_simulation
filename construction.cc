@@ -16,6 +16,7 @@ MyDetectorConstruction::MyDetectorConstruction()
     fMessenger->DeclareProperty("n_div_R", n_div_R, "Number of divisions in radius");
 
     fMessenger->DeclareProperty("total_length", total_length, "Total length of Cylinder");
+    fMessenger->DeclareProperty("param_length", mesh_length, "Total length of Parameterised Cylinder");
     fMessenger->DeclareProperty("inner_radius", inner_radius, "Inner radius of Cylinder");
     fMessenger->DeclareProperty("outer_radius", outer_radius, "Outer radius of Cylinder");
 
@@ -42,6 +43,7 @@ MyDetectorConstruction::MyDetectorConstruction()
         total_length = 40 * um;
         inner_radius = 0 * um;
         outer_radius = 110 * um;
+        mesh_length = 4 * um;
     }
     else if (isAtmosphere /* condition */)
     {
@@ -185,7 +187,7 @@ void MyDetectorConstruction::ConstructTatDetector()
     logicDetector = new G4LogicalVolume(solidCyilinderEl, ScaledH2O, "logicDetector");
     fScoringDetector = logicDetector;
 
-    G4VPVParameterisation *cylinderParam = new CylinderParameterisation(total_length,
+    G4VPVParameterisation *cylinderParam = new CylinderParameterisation(mesh_length,
                                                                         inner_radius,
                                                                         outer_radius,
                                                                         n_div_R,
