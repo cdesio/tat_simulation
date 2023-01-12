@@ -188,8 +188,12 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   G4LogicalVolume *logicTrackingVol = new G4LogicalVolume(solidTrackingVol,
                                                           waterMaterial,
                                                           "TrackingVol");
-  G4PVPlacement *physiTrackingVol = new G4PVPlacement(0,
-                                                      G4ThreeVector(displ_X, displ_Y, displ_Z),
+
+  G4Rotate3D rotTrackingVol(90 * deg, G4ThreeVector(1, 0, 0));
+  G4Translate3D transTrackingVol(G4ThreeVector(displ_X, displ_Y, displ_Z));
+  G4Transform3D transformTrackingVol = (rotTrackingVol) * (transTrackingVol);
+
+  G4PVPlacement *physiTrackingVol = new G4PVPlacement(transformTrackingVol,
                                                       logicTrackingVol,
                                                       "TrackingVol",
                                                       logicWaterBox,
@@ -251,18 +255,32 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   {
     double x1, y1, z1, x2, y2, z2, base_x1, base_y1, base_z1, base_x2, base_y2, base_z2;
     f >> x1 >> y1 >> z1 >> x2 >> y2 >> z2 >> base_x1 >> base_y1 >> base_z1 >> base_x2 >> base_y2 >> base_z2;
-    fPositions0->Insert(G4ThreeVector(x1 + displ_X,
-                                      y1 + displ_Y,
-                                      z1 + displ_Z));
-    fPositions1->Insert(G4ThreeVector(x2 + displ_X,
-                                      y2 + displ_Y,
-                                      z2 + displ_Z));
-    fPositionsBase0->Insert(G4ThreeVector(base_x1 + displ_X,
-                                          base_y1 + displ_Y,
-                                          base_z1 + displ_Z));
-    fPositionsBase1->Insert(G4ThreeVector(base_x2 + displ_X,
-                                          base_y2 + displ_Y,
-                                          base_z2 + displ_Z));
+
+    G4ThreeVector *pos0 = new G4ThreeVector(x1 + displ_X,
+                                            y1 + displ_Y,
+                                            z1 + displ_Z);
+    // G4cout << "before: " << pos0->getX() << " " << pos0->getY() << " " << pos0->getZ() << G4endl;
+    pos0->rotate(90 * deg, G4ThreeVector(1, 0, 0));
+    fPositions0->Insert(pos0);
+
+    G4ThreeVector *pos1 = new G4ThreeVector(x2 + displ_X,
+                                            y2 + displ_Y,
+                                            z2 + displ_Z);
+    pos1->rotate(90 * deg, G4ThreeVector(1, 0, 0));
+    fPositions1->Insert(pos1);
+
+    G4ThreeVector *basepos0 = new G4ThreeVector(base_x2 + displ_X,
+                                                base_y2 + displ_Y,
+                                                base_z2 + displ_Z);
+    basepos0->rotate(90 * deg, G4ThreeVector(1, 0, 0));
+    fPositionsBase0->Insert(basepos0);
+
+    G4ThreeVector *basepos1 = new G4ThreeVector(base_x2 + displ_X,
+                                                base_y2 + displ_Y,
+                                                base_z2 + displ_Z);
+    basepos1->rotate(90 * deg, G4ThreeVector(1, 0, 0));
+    fPositionsBase1->Insert(basepos1);
+
     if (placeSugars)
     {
 
