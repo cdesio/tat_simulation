@@ -23,13 +23,15 @@ if slurm:
     )
 else:
     simulation_parent = os.path.join(
-        "/", "Users", "yw18581", "UoB", "DaRT", "TAT", "tat_simulation_DNA"
+        "/", "Users", "yw18581", "UoB", "DaRT", "TAT", "tat_simulation_dna_vertical"
     )
 
 histoneFile = os.path.join(
-    simulation_parent, "geometryFiles", "histonePositions_4x4_300nm.csv"
+    simulation_parent, "geometryFiles", "histonePositions_4x4_300nm_vertical.csv"
 )
-sugarFile = os.path.join(simulation_parent, "geometryFiles", "sugarPos_4x4_300nm.csv")
+sugarFile = os.path.join(
+    simulation_parent, "geometryFiles", "sugarPos_4x4_300nm_vertical.csv"
+)
 
 time = "01-10:00"
 mem = 10
