@@ -165,7 +165,12 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   solidWaterCylinder = new G4Tubs("waterCylinder", 0, 100 * um, 3.5 * um, 0, 360);
   G4LogicalVolume *logicWaterCylinder = new G4LogicalVolume(solidWaterCylinder, waterMaterial, "waterCylinder");
-  G4PVPlacement *physiWaterCyl = new G4PVPlacement(0, G4ThreeVector(), logicWaterCylinder, "waterCylinder", logicWorld, 0, false, 0);
+
+  G4Rotate3D rotWaterCyl(0 * deg, G4ThreeVector(1, 0, 0));
+  G4Translate3D transWaterCyl(G4ThreeVector(0, 0, 0));
+  G4Transform3D transformWaterCyl = (rotWaterCyl) * (transWaterCyl);
+
+  G4PVPlacement *physiWaterCyl = new G4PVPlacement(transformWaterCyl, logicWaterCylinder, "waterCylinder", logicWorld, 0, false, 0);
   logicWaterCylinder->SetVisAttributes(&visWhite);
 
   solidPrism = new G4Box("solidPrism", prism_base / 2, len_y, prism_base / 2);
@@ -189,7 +194,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                           waterMaterial,
                                                           "TrackingVol");
 
-  G4Rotate3D rotTrackingVol(90 * deg, G4ThreeVector(1, 0, 0));
+  G4Rotate3D rotTrackingVol(0 * deg, G4ThreeVector(1, 0, 0));
   G4Translate3D transTrackingVol(G4ThreeVector(displ_X, displ_Y, displ_Z));
   G4Transform3D transformTrackingVol = (rotTrackingVol) * (transTrackingVol);
 
@@ -260,25 +265,25 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                             y1 + displ_Y,
                                             z1 + displ_Z);
     // G4cout << "before: " << pos0->getX() << " " << pos0->getY() << " " << pos0->getZ() << G4endl;
-    pos0->rotate(90 * deg, G4ThreeVector(1, 0, 0));
+    pos0->rotate(0 * deg, G4ThreeVector(1, 0, 0));
     fPositions0->Insert(pos0);
 
     G4ThreeVector *pos1 = new G4ThreeVector(x2 + displ_X,
                                             y2 + displ_Y,
                                             z2 + displ_Z);
-    pos1->rotate(90 * deg, G4ThreeVector(1, 0, 0));
+    pos1->rotate(0 * deg, G4ThreeVector(1, 0, 0));
     fPositions1->Insert(pos1);
 
     G4ThreeVector *basepos0 = new G4ThreeVector(base_x2 + displ_X,
                                                 base_y2 + displ_Y,
                                                 base_z2 + displ_Z);
-    basepos0->rotate(90 * deg, G4ThreeVector(1, 0, 0));
+    basepos0->rotate(0 * deg, G4ThreeVector(1, 0, 0));
     fPositionsBase0->Insert(basepos0);
 
     G4ThreeVector *basepos1 = new G4ThreeVector(base_x2 + displ_X,
                                                 base_y2 + displ_Y,
                                                 base_z2 + displ_Z);
-    basepos1->rotate(90 * deg, G4ThreeVector(1, 0, 0));
+    basepos1->rotate(0 * deg, G4ThreeVector(1, 0, 0));
     fPositionsBase1->Insert(basepos1);
 
     if (placeSugars)
@@ -349,8 +354,8 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   numSugar = copynum_sugar;
 
-  logicSugar0->SetVisAttributes(&visInvBlue);
-  logicSugar1->SetVisAttributes(&visInvRed);
+  logicSugar0->SetVisAttributes(&visBlue);
+  logicSugar1->SetVisAttributes(&visRed);
   logicHistone->SetVisAttributes(&visGrey);
 
   G4Region *aRegion = new G4Region("Target");
