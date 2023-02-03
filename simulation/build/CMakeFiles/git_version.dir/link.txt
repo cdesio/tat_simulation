@@ -1,2 +1,2 @@
-/Users/yw18581/opt/anaconda3/envs/dart/bin/llvm-ar qc libgit_version.a CMakeFiles/git_version.dir/generated/git_version.cpp.o
-/Users/yw18581/opt/anaconda3/envs/dart/bin/llvm-ranlib libgit_version.a
+/opt/anaconda3/envs/rootpy/bin/x86_64-conda-linux-gnu-ar qc libgit_version.a CMakeFiles/git_version.dir/generated/git_version.cpp.o
+/opt/anaconda3/envs/rootpy/bin/x86_64-conda-linux-gnu-ranlib libgit_version.a
