@@ -2,3 +2,4 @@ simulation/build/*
 photon_simulation/build/*
 *.csv
 *.root
+*.log
