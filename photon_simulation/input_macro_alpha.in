@@ -4,22 +4,19 @@
 /run/initialize 
 
 
-
 /gps/pos/type Surface
-/gps/pos/shape Para
-/gps/pos/centre -0 0 0
+/gps/pos/shape Cylinder
+/gps/pos/centre 0 0 0 um
+/gps/pos/radius 10 um
+/gps/pos/halfz 3 um
 
-/gps/pos/halfx 0.159 um
-/gps/pos/halfy .159 um
-/gps/pos/halfz .159 um
-
-/gps/particle alpha
+/gps/particle ion
+/gps/ion 85 211
 
 /gps/ang/type cos
-/gps/ang/maxtheta 0.000075 rad
 
 /gps/ene/type Mono
-/gps/energy 5.9 MeV
+/gps/energy 0 MeV
 /run/printProgress 10000
 
-/run/beamOn 2
+/run/beamOn 100

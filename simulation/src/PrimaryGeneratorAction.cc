@@ -99,7 +99,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     copyNo = copyNoPS;
     // // DEBUG
     // G4cout << "ph. Evt: " << photonEvent << ") PID: " << particleID << ". pos: " << positionX / um << ", " << positionY / um << ", " << positionZ / um << ". mom: " << momentumX << ", " << momentumY << ", " << momentumZ << " E: " << particleEnergy / MeV << " copyNo: " << copyNo << G4endl;
-    //G4cout << "ph. Evt: " << photonEvent << ") PID: " << particleID << ". PDG: " << pdg_enc << G4endl;
+    G4cout << "ph. Evt: " << photonEvent << ") PID: " << particleID << ". PDG: " << pdg_enc << G4endl;
     // // DEBUG
     G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
     G4IonTable *ionTable = G4IonTable::GetIonTable();

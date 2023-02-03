@@ -145,7 +145,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=rbe
+CMAKE_PROJECT_NAME:STATIC=tat
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/opt/anaconda3/envs/rootpy/bin/x86_64-conda-linux-gnu-ranlib
@@ -552,13 +552,13 @@ pkgcfg_lib_PKG_FONTCONFIG_fontconfig:FILEPATH=/opt/anaconda3/envs/rootpy/lib/lib
 pkgcfg_lib_PKG_FONTCONFIG_freetype:FILEPATH=/opt/anaconda3/envs/rootpy/lib/libfreetype.so
 
 //Value Computed by CMake
-rbe_BINARY_DIR:STATIC=/home/cdesio/TAT/tat_simu_2steps/simulation/build
+tat_BINARY_DIR:STATIC=/home/cdesio/TAT/tat_simu_2steps/simulation/build
 
 //Value Computed by CMake
-rbe_IS_TOP_LEVEL:STATIC=ON
+tat_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-rbe_SOURCE_DIR:STATIC=/home/cdesio/TAT/tat_simu_2steps/simulation
+tat_SOURCE_DIR:STATIC=/home/cdesio/TAT/tat_simu_2steps/simulation
 
 
 ########################

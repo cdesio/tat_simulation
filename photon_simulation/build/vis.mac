@@ -33,7 +33,7 @@
 #/vis/viewer/set/style wireframe
 #
 # Draw coordinate axes:
-/vis/scene/add/axes 0 0 0 10 um
+/vis/scene/add/axes 0 0 0 1 nm
 #
 # Draw smooth trajectories at end of event, showing trajectory points
 # as markers 2 pixels wide:
@@ -56,22 +56,9 @@
 #
 # Many other options are available with /vis/modeling and /vis/filtering.
 # For example, to select colour by particle ID:
-/vis/modeling/trajectories/create/drawByParticleID
-/vis/modeling/trajectories/drawByParticleID-0/set alpha blue
-/vis/modeling/trajectories/drawByParticleID-0/set At211 white
-/vis/modeling/trajectories/drawByParticleID-0/set e- red
-/vis/modeling/trajectories/drawByParticleID-0/set gamma green
-/vis/modeling/trajectories/drawByParticleID-0/set Pb207 gray
-/vis/modeling/trajectories/drawByParticleID-0/set Bi207 gray
-/vis/modeling/trajectories/drawByParticleID-0/set Po211 gray
-/vis/modeling/trajectories/drawByParticleID-0/set nu_e yellow
+#/vis/modeling/trajectories/create/drawByParticleID
+#/vis/modeling/trajectories/drawByParticleID-0/set e- blue
 #
-
-
-#/vis/modeling/trajectories/create/generic
-# Configure the generic model to colour all trajectories cyan and to show step points 
-#/vis/modeling/trajectories/generic-0/default/setDrawStepPts true 
-#/vis/modeling/trajectories/generic-0/default/setStepPtsSize 2
 # To superimpose all of the events from a given run:
 /vis/scene/endOfEventAction accumulate
 #

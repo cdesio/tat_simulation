@@ -1,7 +1,7 @@
 #----------------------------------------------------------------------------
 # Setup the project
 cmake_minimum_required(VERSION 3.16...3.21)
-project(rbe)
+project(tat)
 
 include(cmake/CheckGit.cmake)
 CheckGitSetup()
@@ -36,12 +36,12 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
-add_executable(rbe rbe.cc ${sources} ${headers})
-target_link_libraries(rbe ${Geant4_LIBRARIES} git_version)
+add_executable(tat tat.cc ${sources} ${headers})
+target_link_libraries(tat ${Geant4_LIBRARIES} git_version)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
-# build rbe. This is so that we can run the executable directly because it
+# build tat. This is so that we can run the executable directly because it
 # relies on these scripts being in the current working directory.
 #
 
@@ -61,6 +61,6 @@ endforeach()
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS rbe DESTINATION bin)
+install(TARGETS tat DESTINATION bin)
 
 

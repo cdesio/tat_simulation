@@ -121,7 +121,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   solidWorld = new G4Box("world", 1 * mm, 1 * mm, 1 * mm);
 
   solidWaterBox = new G4Orb("waterBox", .5 * mm);
-  solidVessel = new G4Tubs("bloodVessel", 0, 1.5 * um, 3 * um, 0, 360 * deg);
+  solidVessel = new G4Tubs("bloodVessel", 0, 10 * um, 3 * um, 0, 360 * deg);
 
   G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld,
                                                     air,
@@ -174,14 +174,14 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     for (G4int k = 0; k < 10; k++)
     {
 
-      for (G4double theta = 0; theta < 2 * 3.14159; theta += 3.14159 / 10)
+      for (G4double theta = 0; theta < 2 * 3.14159; theta += 3.14159 / 40)
       {
 
         G4RotationMatrix *rot = new G4RotationMatrix(theta,
                                                      0,
                                                      0);
 
-        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector((2+(r*0.5)) * cos(theta) * um, (2+(r*0.5)) * sin(theta) * um, ((-3 + (k + 1) * 0.6) - .3) * um),
+        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector((10.5+(r*0.5)) * cos(theta) * um, (10.5+(r*0.5)) * sin(theta) * um, ((-3 + (k + 1) * 0.6) - .3) * um),
                                                             logicTrackingVol,
                                                             "TrackingVol",
                                                             logicWaterBox,

@@ -62,7 +62,7 @@
 #include "G4DNAIRT.hh"
 
 #include "G4DNAElectronHoleRecombination.hh"
-
+#include "G4DNASancheExcitationModel.hh"
 // particles
 
 #include "G4Electron.hh"

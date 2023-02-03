@@ -6,8 +6,8 @@
 
 /gps/pos/type Surface
 /gps/pos/shape Cylinder
-/gps/pos/centre 0 0 -3 um
-/gps/pos/radius 1.5 um
+/gps/pos/centre 0 0 0 um
+/gps/pos/radius 10 um
 /gps/pos/halfz 3 um
 
 /gps/particle ion
