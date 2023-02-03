@@ -1,0 +1,22 @@
+/run/verbose 2
+/control/verbose 2
+
+/run/initialize 
+
+
+/gps/pos/type Surface
+/gps/pos/shape Cylinder
+/gps/pos/centre 0 0 -3 um
+/gps/pos/radius 1.5 um
+/gps/pos/halfz 3 um
+
+/gps/particle ion
+/gps/ion 85 211
+
+/gps/ang/type cos
+
+/gps/ene/type Mono
+/gps/energy 0 MeV
+/run/printProgress 10000
+
+/run/beamOn 100

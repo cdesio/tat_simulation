@@ -51,10 +51,11 @@ public:
     ~PrimaryGeneratorAction() override;
     void GeneratePrimaries(G4Event *event) override;
     G4String primaryName;
+    G4int copyNo;
+    G4double time;
 
 private:
     G4GeneralParticleSource *fpParticleGun;
     G4ParticleGun *fParticleGun;
     std::vector<std::vector<float>> fPS_data;
-
 };

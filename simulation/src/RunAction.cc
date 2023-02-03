@@ -33,13 +33,15 @@
 #include <numeric>
 #include "CommandLineParser.hh"
 #include "DetectorConstruction.hh"
-// #include "G4ASTARStopping.hh"
+#include "G4ESTARStopping.hh"
 #include "G4NistManager.hh"
 #include "EventAction.hh"
 #include "G4EventManager.hh"
 #include "git_version.hh"
 #include "G4RunManager.hh"
 #include "G4Version.hh"
+#include "PrimaryGeneratorAction.hh"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 using namespace G4DNAPARSER;
 
@@ -50,6 +52,8 @@ RunAction::RunAction(DetectorConstruction *pDetector)
   numSugar = fpDetector->numSugar;
 
   G4RunManager::GetRunManager()->SetPrintProgress(100);
+
+  CreateNtuple();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -62,25 +66,73 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run *)
 {
-  CreateNtuple();
+
+  CommandLineParser *parser = CommandLineParser::GetParser();
+  Command *command(0);
+  if ((command = parser->GetCommandIfActive("-out")) == 0)
+    return;
+  G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
+
+  // Open an output file
+  G4String fileName{"output.root"};
+  if (command->GetOption().empty() == false)
+  {
+    fileName = command->GetOption();
+  }
+
+  G4bool fileOpen = analysisManager->OpenFile(fileName);
+  if (!fileOpen)
+  {
+    G4cout << "\n---> HistoManager::book(): cannot open " << fileName << G4endl;
+    return;
+  }
+  G4cout << "\n----> Histogram file is opened in " << fileName << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void RunAction::EndOfRunAction(const G4Run *)
 {
+  if (isMaster)
+  {
+    auto analysisManager = G4AnalysisManager::Instance();
+
+    analysisManager->Write();
+    analysisManager->CloseFile();
+    return;
+  }
   auto fpEventAction = (EventAction *)G4EventManager::GetEventManager()->GetUserEventAction();
   std::vector<G4double> KE = fpEventAction->fTrackMeanKE;
   G4double meanKE = accumulate(KE.begin(), KE.end(), 0.0) / KE.size();
 
-  // auto fASTAR = new G4ASTARStopping();
-  // fASTAR->Initialise();
+  // ICRUU90 used for alpha/proton stopping power, ESTAR used for electron
+  const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
+      G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+  G4String primaryName = generatorAction->primaryName;
 
-  auto fICRU90 = G4NistManager::Instance()->GetICRU90StoppingData();
-  fICRU90->Initialise();
-  auto material = G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER");
+  if (primaryName == "alpha")
+  {
+    auto fICRU90 = G4NistManager::Instance()->GetICRU90StoppingData();
+    fICRU90->Initialise();
+    auto material = G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER");
 
-  LET = fICRU90->GetElectronicDEDXforAlpha(material, meanKE) * material->GetDensity();
+    LET = fICRU90->GetElectronicDEDXforAlpha(material, meanKE) * material->GetDensity();
+  }
+  else if (primaryName == "proton")
+  {
+    auto fICRU90 = G4NistManager::Instance()->GetICRU90StoppingData();
+    fICRU90->Initialise();
+    auto material = G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER");
+
+    LET = fICRU90->GetElectronicDEDXforProton(material, meanKE) * material->GetDensity();
+  }
+  else if (primaryName == "e-")
+  {
+    auto fESTAR = new G4ESTARStopping();
+    auto material = G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER");
+
+    LET = fESTAR->GetElectronicDEDX(material, meanKE) * material->GetDensity();
+  }
   WriteNtuple();
 }
 
@@ -93,26 +145,13 @@ void RunAction::CreateNtuple()
   if ((command = parser->GetCommandIfActive("-out")) == 0)
     return;
 
-  // Open an output file
-  G4String fileName{"output.root"};
-  if (command->GetOption().empty() == false)
-  {
-    fileName = command->GetOption();
-  }
-
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
   analysisManager->SetDefaultFileType("root");
   analysisManager->SetVerboseLevel(0);
   analysisManager->SetNtupleDirectoryName("ntuple");
-
+  analysisManager->SetNtupleMerging(true);
   // open output file
   //
-  G4bool fileOpen = analysisManager->OpenFile(fileName);
-  if (!fileOpen)
-  {
-    G4cout << "\n---> HistoManager::book(): cannot open " << fileName << G4endl;
-    return;
-  }
 
   analysisManager->SetFirstNtupleId(0);
   analysisManager->CreateNtuple("EventEdep", "EventEdep");
@@ -135,8 +174,10 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleDColumn(1, "x");
   analysisManager->CreateNtupleDColumn(1, "y");
   analysisManager->CreateNtupleDColumn(1, "z");
-  analysisManager->CreateNtupleIColumn(1, "Particle");
+  analysisManager->CreateNtupleSColumn(1, "Particle");
   analysisManager->CreateNtupleDColumn(1, "KE");
+  analysisManager->CreateNtupleIColumn(1, "copyNo");
+  analysisManager->CreateNtupleDColumn(1, "time");
   analysisManager->FinishNtuple(1);
 
   // For chemistry
@@ -170,10 +211,11 @@ void RunAction::CreateNtuple()
 
     analysisManager->CreateNtupleIColumn(4, "EventNo");
     analysisManager->CreateNtupleIColumn(4, "PhotonEventID");
+    analysisManager->CreateNtupleIColumn(4, "copyNo");
+    analysisManager->CreateNtupleIColumn(4, "particleID");
 
     analysisManager->FinishNtuple(4);
   }
-  G4cout << "\n----> Histogram file is opened in " << fileName << G4endl;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -199,6 +241,5 @@ void RunAction::WriteNtuple()
 
   analysisManager->Write();
   analysisManager->CloseFile();
-  analysisManager->Clear();
   G4cout << "\n----> Histograms are saved" << G4endl;
 }

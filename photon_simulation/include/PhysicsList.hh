@@ -37,19 +37,19 @@ class G4VPhysicsConstructor;
 // class G4EmDNAChemistry_option3;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-class PhysicsList: public G4VModularPhysicsList
+class PhysicsList : public G4VModularPhysicsList
 {
 public:
     PhysicsList();
     ~PhysicsList() override;
-    
-    void ConstructParticle() override;
-    void ConstructProcess() override;
 
-    void RegisterConstructor(const G4String& name);
+    // void ConstructParticle() override;
+    //    void ConstructProcess() override;
+
+    // void RegisterConstructor(const G4String &name);
 
 private:
-    std::unique_ptr<G4VPhysicsConstructor>    fDNAPhysicsList;
-    // std::unique_ptr<G4EmDNAChemistry_option3> fChemistryList_option3;
-    G4String                                  fPhysDNAName;
+    // std::unique_ptr<G4VPhysicsConstructor> fDNAPhysicsList;
+    //  std::unique_ptr<G4EmDNAChemistry_option3> fChemistryList_option3;
+    // G4String fPhysDNAName;
 };

@@ -1,0 +1,25 @@
+/run/verbose 2
+/control/verbose 2
+
+/run/initialize 
+
+
+
+/gps/pos/type Surface
+/gps/pos/shape Para
+/gps/pos/centre -0 0 0
+
+/gps/pos/halfx 0.159 um
+/gps/pos/halfy .159 um
+/gps/pos/halfz .159 um
+
+/gps/particle alpha
+
+/gps/ang/type cos
+/gps/ang/maxtheta 0.000075 rad
+
+/gps/ene/type Mono
+/gps/energy 5.9 MeV
+/run/printProgress 10000
+
+/run/beamOn 2

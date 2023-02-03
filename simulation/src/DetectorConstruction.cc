@@ -29,7 +29,6 @@
 
 #include "DetectorConstruction.hh"
 #include "DetectorMessenger.hh"
-#include "G4GenericMessenger.hh"
 #include "globals.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "G4LogicalVolume.hh"
@@ -89,12 +88,7 @@ DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction()
 {
   fBoxSize = 300 * nm;
 
-  displ_X = 0 * um;
-  displ_Y = 0 * um;
-  displ_X = 0 * um;
-
   fDetectorMessenger = new DetectorMessenger(this);
-
   placeSugars = false; // only needed for visualisation
   placeHistones = true;
 
@@ -126,15 +120,10 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   G4Box *solidWorld{nullptr};
   G4Orb *solidWaterBox{nullptr};
-  G4Tubs *solidWaterCylinder{nullptr};
-  G4Box *solidPrism{nullptr};
 
-  G4double len_y = 39 * um;
-  G4double prism_base = 3.5 * um;
+  solidWorld = new G4Box("world", 1 * mm, 1 * mm, 1 * mm);
 
-  solidWorld = new G4Box("world", 10 * mm, 10 * mm, 10 * mm);
-
-  solidWaterBox = new G4Orb("waterBox", 1 * mm);
+  solidWaterBox = new G4Orb("waterBox", 10 * um);
 
   G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld,
                                                     air,
@@ -163,28 +152,6 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   logicWorld->SetVisAttributes(&visWhite);
   logicWaterBox->SetVisAttributes(&visWhite);
 
-  solidWaterCylinder = new G4Tubs("waterCylinder", 0, 100 * um, 3.5 * um, 0, 360);
-  G4LogicalVolume *logicWaterCylinder = new G4LogicalVolume(solidWaterCylinder, waterMaterial, "waterCylinder");
-
-  G4Rotate3D rotWaterCyl(0 * deg, G4ThreeVector(1, 0, 0));
-  G4Translate3D transWaterCyl(G4ThreeVector(0, 0, 0));
-  G4Transform3D transformWaterCyl = (rotWaterCyl) * (transWaterCyl);
-
-  G4PVPlacement *physiWaterCyl = new G4PVPlacement(transformWaterCyl, logicWaterCylinder, "waterCylinder", logicWorld, 0, false, 0);
-  logicWaterCylinder->SetVisAttributes(&visWhite);
-
-  solidPrism = new G4Box("solidPrism", prism_base / 2, len_y, prism_base / 2);
-  G4LogicalVolume *logicPrism = new G4LogicalVolume(solidPrism, waterMaterial, "logicPrism");
-
-  for (G4int j = 0; j < 16; j++)
-  {
-    G4Rotate3D rotZ(j * 360 / 16 * deg, G4ThreeVector(0, 0, 1));
-    G4Translate3D transPrism(G4ThreeVector(0., (len_y + 10 * um), 0.));
-    G4Transform3D transformPrism = (rotZ) * (transPrism); // first translation then rotation
-
-    G4PVPlacement *physPrism = new G4PVPlacement(transformPrism, logicPrism, "physPrism", logicWaterCylinder, false, j, true);
-  }
-
   G4double chromatin_X = fBoxSize;
   G4double chromatin_Y = fBoxSize;
   G4double chromatin_Z = 300 * nm;
@@ -193,19 +160,15 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   G4LogicalVolume *logicTrackingVol = new G4LogicalVolume(solidTrackingVol,
                                                           waterMaterial,
                                                           "TrackingVol");
-
-  G4Rotate3D rotTrackingVol(0 * deg, G4ThreeVector(1, 0, 0));
-  G4Translate3D transTrackingVol(G4ThreeVector(displ_X, displ_Y, displ_Z));
-  G4Transform3D transformTrackingVol = (rotTrackingVol) * (transTrackingVol);
-
-  G4PVPlacement *physiTrackingVol = new G4PVPlacement(transformTrackingVol,
+  G4PVPlacement *physiTrackingVol = new G4PVPlacement(0,
+                                                      G4ThreeVector(),
                                                       logicTrackingVol,
                                                       "TrackingVol",
                                                       logicWaterBox,
                                                       0,
                                                       false,
                                                       false);
-  logicTrackingVol->SetVisAttributes(&visWhite);
+  logicTrackingVol->SetVisAttributes(&visInvWhite);
 
   G4Box *solidChromatinSegment = new G4Box("chromatinSegment", chromatin_X / 2, chromatin_Y / 2, chromatin_Z / 2);
   G4LogicalVolume *logicChromatinSegment = new G4LogicalVolume(solidChromatinSegment,
@@ -255,37 +218,23 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     throw std::runtime_error("*******SUGAR GEOMETRY FILE NOT FOUND OR OPENED CORRECTY********");
   }
 
-  G4int copynum_sugar{0};
+  G4int copynum{0};
   while (!f.eof())
   {
     double x1, y1, z1, x2, y2, z2, base_x1, base_y1, base_z1, base_x2, base_y2, base_z2;
     f >> x1 >> y1 >> z1 >> x2 >> y2 >> z2 >> base_x1 >> base_y1 >> base_z1 >> base_x2 >> base_y2 >> base_z2;
-
-    G4ThreeVector *pos0 = new G4ThreeVector(x1 + displ_X,
-                                            y1 + displ_Y,
-                                            z1 + displ_Z);
-    // G4cout << "before: " << pos0->getX() << " " << pos0->getY() << " " << pos0->getZ() << G4endl;
-    pos0->rotate(0 * deg, G4ThreeVector(1, 0, 0));
-    fPositions0->Insert(pos0);
-
-    G4ThreeVector *pos1 = new G4ThreeVector(x2 + displ_X,
-                                            y2 + displ_Y,
-                                            z2 + displ_Z);
-    pos1->rotate(0 * deg, G4ThreeVector(1, 0, 0));
-    fPositions1->Insert(pos1);
-
-    G4ThreeVector *basepos0 = new G4ThreeVector(base_x2 + displ_X,
-                                                base_y2 + displ_Y,
-                                                base_z2 + displ_Z);
-    basepos0->rotate(0 * deg, G4ThreeVector(1, 0, 0));
-    fPositionsBase0->Insert(basepos0);
-
-    G4ThreeVector *basepos1 = new G4ThreeVector(base_x2 + displ_X,
-                                                base_y2 + displ_Y,
-                                                base_z2 + displ_Z);
-    basepos1->rotate(0 * deg, G4ThreeVector(1, 0, 0));
-    fPositionsBase1->Insert(basepos1);
-
+    fPositions0->Insert(G4ThreeVector(x1,
+                                      y1,
+                                      z1));
+    fPositions1->Insert(G4ThreeVector(x2,
+                                      y2,
+                                      z2));
+    fPositionsBase0->Insert(G4ThreeVector(base_x1,
+                                          base_y1,
+                                          base_z1));
+    fPositionsBase1->Insert(G4ThreeVector(base_x2,
+                                          base_y2,
+                                          base_z2));
     if (placeSugars)
     {
 
@@ -297,7 +246,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                         "sugar0",
                         logicChromatinSegment,
                         false,
-                        copynum_sugar,
+                        copynum,
                         false);
 
       new G4PVPlacement(0,
@@ -308,10 +257,10 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                         "sugar1",
                         logicChromatinSegment,
                         false,
-                        copynum_sugar,
+                        copynum,
                         false);
     }
-    ++copynum_sugar;
+    ++copynum;
   }
 
   // Histones
@@ -322,40 +271,39 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   {
     throw std::runtime_error("*******HISTONE GEOMETRY FILE NOT FOUND OR OPENED CORRECTY********");
   }
-  G4int copynum_histone{0};
+
   while (!f2.eof())
 
   {
     double x1, y1, z1, rotx, roty, rotz;
     f2 >> x1 >> y1 >> z1 >> rotx >> roty >> rotz;
-    fPositions.push_back(G4ThreeVector(x1 + displ_X,
-                                       y1 + displ_Y,
-                                       z1 + displ_Z));
+    fPositions.push_back(G4ThreeVector(x1,
+                                       y1,
+                                       z1));
     fRotations.push_back(new G4RotationMatrix(roty, // geant convention is y,z,x
                                               rotz,
                                               rotx));
+  }
 
-    if (placeHistones)
+  if (placeHistones)
+  {
+    for (size_t i = 0; i < fPositions.size(); ++i)
     {
-      // for (size_t i = 0; i < fPositions.size(); ++i)
-      //{
-      new G4PVPlacement(new G4RotationMatrix(rotx, roty, rotz),
-                        G4ThreeVector(x1, y1, z1),
+      new G4PVPlacement(fRotations[i],
+                        fPositions[i],
                         logicHistone,
                         "histone",
                         logicChromatinSegment,
                         false,
-                        copynum_histone,
+                        i,
                         false);
-      // }
     }
-    ++copynum_histone;
   }
 
-  numSugar = copynum_sugar;
+  numSugar = copynum;
 
-  logicSugar0->SetVisAttributes(&visBlue);
-  logicSugar1->SetVisAttributes(&visRed);
+  logicSugar0->SetVisAttributes(&visInvBlue);
+  logicSugar1->SetVisAttributes(&visInvRed);
   logicHistone->SetVisAttributes(&visGrey);
 
   G4Region *aRegion = new G4Region("Target");
@@ -377,22 +325,5 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 void DetectorConstruction::SetSize(G4double value)
 {
   fBoxSize = value;
-  G4RunManager::GetRunManager()->ReinitializeGeometry();
-}
-
-void DetectorConstruction::SetDisplX(G4double value)
-{
-  displ_X = value;
-  G4RunManager::GetRunManager()->ReinitializeGeometry();
-}
-
-void DetectorConstruction::SetDisplY(G4double value)
-{
-  displ_Y = value;
-  G4RunManager::GetRunManager()->ReinitializeGeometry();
-}
-void DetectorConstruction::SetDisplZ(G4double value)
-{
-  displ_Z = value;
   G4RunManager::GetRunManager()->ReinitializeGeometry();
 }

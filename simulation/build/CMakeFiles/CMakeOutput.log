@@ -1,0 +1,656 @@
+The system is: Darwin - 22.1.0 - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang 
+Build flags: -march=core2;-mtune=haswell;-mssse3;-ftree-vectorize;-fPIC;-fPIE;-fstack-protector-strong;-O2;-pipe;-isystem;/Users/yw18581/opt/anaconda3/envs/dart/include
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is Clang, found in "/Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/3.24.0/CompilerIdC/a.out"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang++ 
+Build flags: -march=core2;-mtune=haswell;-mssse3;-ftree-vectorize;-fPIC;-fPIE;-fstack-protector-strong;-O2;-pipe;-stdlib=libc++;-fvisibility-inlines-hidden;-fmessage-length=0;-isystem;/Users/yw18581/opt/anaconda3/envs/dart/include
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is Clang, found in "/Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/3.24.0/CompilerIdCXX/a.out"
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_57483/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_57483.dir/build.make CMakeFiles/cmTC_57483.dir/build
+Building C object CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang   -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk   -v -Wl,-v -MD -MT CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -c /usr/local/Cellar/cmake/3.24.0/share/cmake/Modules/CMakeCCompilerABI.c
+clang version 13.0.1
+Target: x86_64-apple-darwin13.4.0
+Thread model: posix
+InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin
+clang-13: warning: -Wl,-v: 'linker' input unused [-Wunused-command-line-argument]
+ (in-process)
+ "/Users/yw18581/opt/anaconda3/envs/DaRT/bin/clang-13" -cc1 -triple x86_64-apple-macosx13.0.0 -Wundef-prefix=TARGET_OS_OSX -Werror=undef-prefix -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=all -fno-rounding-math -munwind-tables -target-sdk-version=13.0 -fcompatibility-qualified-id-block-type-checking -fvisibility-inlines-hidden-static-local-var -target-cpu core2 -target-feature +ssse3 -tune-cpu haswell -debugger-tuning=lldb -target-linker-version 609 -v -fcoverage-compilation-dir=/Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp -resource-dir /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -sys-header-deps -isystem /Users/yw18581/opt/anaconda3/envs/dart/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -O2 -fdebug-compilation-dir=/Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp -ferror-limit 19 -stack-protector 2 -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fmax-type-align=16 -vectorize-loops -vectorize-slp -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -x c /usr/local/Cellar/cmake/3.24.0/share/cmake/Modules/CMakeCCompilerABI.c
+clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin22.1.0
+ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include"
+ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"
+#include "..." search starts here:
+#include <...> search starts here:
+ /Users/yw18581/opt/anaconda3/envs/dart/include
+ /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include
+ /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
+ /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)
+End of search list.
+Linking C executable cmTC_57483
+/usr/local/Cellar/cmake/3.24.0/bin/cmake -E cmake_link_script CMakeFiles/cmTC_57483.dir/link.txt --verbose=1
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names -Wl,-pie -Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/yw18581/opt/anaconda3/envs/dart/lib -L/Users/yw18581/opt/anaconda3/envs/dart/lib -v -Wl,-v CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -o cmTC_57483 
+clang version 13.0.1
+Target: x86_64-apple-darwin13.4.0
+Thread model: posix
+InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin
+ "/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld" -demangle -lto_library /Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib -dynamic -arch x86_64 -platform_version macos 13.0.0 13.0 -pie -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -o cmTC_57483 -L/Users/yw18581/opt/anaconda3/envs/dart/lib -search_paths_first -headerpad_max_install_names -pie -headerpad_max_install_names -dead_strip_dylibs -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -v CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -lSystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a
+@(#)PROGRAM:ld  PROJECT:ld64-609
+BUILD 21:56:10 May 21 2022
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em (tvOS)
+Library search paths:
+	/Users/yw18581/opt/anaconda3/envs/dart/lib
+	/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib
+Framework search paths:
+	/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/
+
+
+
+Parsed C implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/Users/yw18581/opt/anaconda3/envs/dart/include]
+    add: [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+    add: [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include]
+  end of search list found
+  collapse include dir [/Users/yw18581/opt/anaconda3/envs/dart/include] ==> [/Users/yw18581/opt/anaconda3/envs/dart/include]
+  collapse include dir [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include] ==> [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+  collapse include dir [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include] ==> [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include]
+  implicit include dirs: [/Users/yw18581/opt/anaconda3/envs/dart/include;/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include]
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(x86_64-apple-darwin13\.4\.0-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/make -f Makefile cmTC_57483/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_57483.dir/build.make CMakeFiles/cmTC_57483.dir/build]
+  ignore line: [Building C object CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang   -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk   -v -Wl -v -MD -MT CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -c /usr/local/Cellar/cmake/3.24.0/share/cmake/Modules/CMakeCCompilerABI.c]
+  ignore line: [clang version 13.0.1]
+  ignore line: [Target: x86_64-apple-darwin13.4.0]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin]
+  ignore line: [clang-13: warning: -Wl -v: 'linker' input unused [-Wunused-command-line-argument]]
+  ignore line: [ (in-process)]
+  ignore line: [ "/Users/yw18581/opt/anaconda3/envs/DaRT/bin/clang-13" -cc1 -triple x86_64-apple-macosx13.0.0 -Wundef-prefix=TARGET_OS_OSX -Werror=undef-prefix -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=all -fno-rounding-math -munwind-tables -target-sdk-version=13.0 -fcompatibility-qualified-id-block-type-checking -fvisibility-inlines-hidden-static-local-var -target-cpu core2 -target-feature +ssse3 -tune-cpu haswell -debugger-tuning=lldb -target-linker-version 609 -v -fcoverage-compilation-dir=/Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp -resource-dir /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -sys-header-deps -isystem /Users/yw18581/opt/anaconda3/envs/dart/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -O2 -fdebug-compilation-dir=/Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp -ferror-limit 19 -stack-protector 2 -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fmax-type-align=16 -vectorize-loops -vectorize-slp -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -x c /usr/local/Cellar/cmake/3.24.0/share/cmake/Modules/CMakeCCompilerABI.c]
+  ignore line: [clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin22.1.0]
+  ignore line: [ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include"]
+  ignore line: [ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /Users/yw18581/opt/anaconda3/envs/dart/include]
+  ignore line: [ /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+  ignore line: [ /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include]
+  ignore line: [ /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)]
+  ignore line: [End of search list.]
+  ignore line: [Linking C executable cmTC_57483]
+  ignore line: [/usr/local/Cellar/cmake/3.24.0/bin/cmake -E cmake_link_script CMakeFiles/cmTC_57483.dir/link.txt --verbose=1]
+  ignore line: [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -Wl -search_paths_first -Wl -headerpad_max_install_names -Wl -pie -Wl -headerpad_max_install_names -Wl -dead_strip_dylibs -Wl -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -L/Users/yw18581/opt/anaconda3/envs/dart/lib -v -Wl -v CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -o cmTC_57483 ]
+  ignore line: [clang version 13.0.1]
+  ignore line: [Target: x86_64-apple-darwin13.4.0]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin]
+  link line: [ "/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld" -demangle -lto_library /Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib -dynamic -arch x86_64 -platform_version macos 13.0.0 13.0 -pie -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -o cmTC_57483 -L/Users/yw18581/opt/anaconda3/envs/dart/lib -search_paths_first -headerpad_max_install_names -pie -headerpad_max_install_names -dead_strip_dylibs -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -v CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o -lSystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+    arg [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld] ==> ignore
+    arg [-demangle] ==> ignore
+    arg [-lto_library] ==> ignore, skip following value
+    arg [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib] ==> skip value of -lto_library
+    arg [-dynamic] ==> ignore
+    arg [-arch] ==> ignore
+    arg [x86_64] ==> ignore
+    arg [-platform_version] ==> ignore
+    arg [macos] ==> ignore
+    arg [13.0.0] ==> ignore
+    arg [13.0] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-syslibroot] ==> ignore
+    arg [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_57483] ==> ignore
+    arg [-L/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> dir [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+    arg [-search_paths_first] ==> ignore
+    arg [-headerpad_max_install_names] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-headerpad_max_install_names] ==> ignore
+    arg [-dead_strip_dylibs] ==> ignore
+    arg [-rpath] ==> ignore
+    arg [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> ignore
+    arg [-v] ==> ignore
+    arg [CMakeFiles/cmTC_57483.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lSystem] ==> lib [System]
+    arg [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a] ==> lib [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+  Library search paths: [;/Users/yw18581/opt/anaconda3/envs/dart/lib;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib]
+  Framework search paths: [;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/]
+  remove lib [System]
+  remove lib [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+  collapse library dir [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+  collapse library dir [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+  collapse library dir [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib] ==> [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib]
+  collapse framework dir [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/] ==> [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks]
+  implicit libs: []
+  implicit objs: []
+  implicit dirs: [/Users/yw18581/opt/anaconda3/envs/dart/lib;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib]
+  implicit fwks: [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks]
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_249e0/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_249e0.dir/build.make CMakeFiles/cmTC_249e0.dir/build
+Building CXX object CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang++   -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -stdlib=libc++ -fvisibility-inlines-hidden -fmessage-length=0 -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk   -v -Wl,-v -MD -MT CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -c /usr/local/Cellar/cmake/3.24.0/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+clang version 13.0.1
+Target: x86_64-apple-darwin13.4.0
+Thread model: posix
+InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin
+clang-13: warning: -Wl,-v: 'linker' input unused [-Wunused-command-line-argument]
+ (in-process)
+ "/Users/yw18581/opt/anaconda3/envs/DaRT/bin/clang-13" -cc1 -triple x86_64-apple-macosx13.0.0 -Wundef-prefix=TARGET_OS_OSX -Werror=undef-prefix -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=all -fno-rounding-math -munwind-tables -target-sdk-version=13.0 -fcompatibility-qualified-id-block-type-checking -fvisibility-inlines-hidden-static-local-var -target-cpu core2 -target-feature +ssse3 -tune-cpu haswell -debugger-tuning=lldb -target-linker-version 609 -v -fcoverage-compilation-dir=/Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp -resource-dir /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isystem /Users/yw18581/opt/anaconda3/envs/dart/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -stdlib=libc++ -internal-isystem /Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1 -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -O2 -fdeprecated-macro -fdebug-compilation-dir=/Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fvisibility-inlines-hidden -stack-protector 2 -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fcxx-exceptions -fexceptions -fmax-type-align=16 -vectorize-loops -vectorize-slp -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/local/Cellar/cmake/3.24.0/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin22.1.0
+ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include"
+ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"
+#include "..." search starts here:
+#include <...> search starts here:
+ /Users/yw18581/opt/anaconda3/envs/dart/include
+ /Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1
+ /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include
+ /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
+ /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)
+End of search list.
+Linking CXX executable cmTC_249e0
+/usr/local/Cellar/cmake/3.24.0/bin/cmake -E cmake_link_script CMakeFiles/cmTC_249e0.dir/link.txt --verbose=1
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang++ -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -stdlib=libc++ -fvisibility-inlines-hidden -fmessage-length=0 -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names -Wl,-pie -Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/yw18581/opt/anaconda3/envs/dart/lib -L/Users/yw18581/opt/anaconda3/envs/dart/lib -v -Wl,-v CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_249e0 
+clang version 13.0.1
+Target: x86_64-apple-darwin13.4.0
+Thread model: posix
+InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin
+ "/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld" -demangle -lto_library /Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib -dynamic -arch x86_64 -platform_version macos 13.0.0 13.0 -pie -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -o cmTC_249e0 -L/Users/yw18581/opt/anaconda3/envs/dart/lib -search_paths_first -headerpad_max_install_names -pie -headerpad_max_install_names -dead_strip_dylibs -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -v CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a
+@(#)PROGRAM:ld  PROJECT:ld64-609
+BUILD 21:56:10 May 21 2022
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em (tvOS)
+Library search paths:
+	/Users/yw18581/opt/anaconda3/envs/dart/lib
+	/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib
+Framework search paths:
+	/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/
+
+
+
+Parsed CXX implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/Users/yw18581/opt/anaconda3/envs/dart/include]
+    add: [/Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1]
+    add: [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+    add: [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include]
+  end of search list found
+  collapse include dir [/Users/yw18581/opt/anaconda3/envs/dart/include] ==> [/Users/yw18581/opt/anaconda3/envs/dart/include]
+  collapse include dir [/Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1] ==> [/Users/yw18581/opt/anaconda3/envs/dart/include/c++/v1]
+  collapse include dir [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include] ==> [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+  collapse include dir [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include] ==> [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include]
+  implicit include dirs: [/Users/yw18581/opt/anaconda3/envs/dart/include;/Users/yw18581/opt/anaconda3/envs/dart/include/c++/v1;/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include]
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(x86_64-apple-darwin13\.4\.0-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/make -f Makefile cmTC_249e0/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_249e0.dir/build.make CMakeFiles/cmTC_249e0.dir/build]
+  ignore line: [Building CXX object CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang++   -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -stdlib=libc++ -fvisibility-inlines-hidden -fmessage-length=0 -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk   -v -Wl -v -MD -MT CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -c /usr/local/Cellar/cmake/3.24.0/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [clang version 13.0.1]
+  ignore line: [Target: x86_64-apple-darwin13.4.0]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin]
+  ignore line: [clang-13: warning: -Wl -v: 'linker' input unused [-Wunused-command-line-argument]]
+  ignore line: [ (in-process)]
+  ignore line: [ "/Users/yw18581/opt/anaconda3/envs/DaRT/bin/clang-13" -cc1 -triple x86_64-apple-macosx13.0.0 -Wundef-prefix=TARGET_OS_OSX -Werror=undef-prefix -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=all -fno-rounding-math -munwind-tables -target-sdk-version=13.0 -fcompatibility-qualified-id-block-type-checking -fvisibility-inlines-hidden-static-local-var -target-cpu core2 -target-feature +ssse3 -tune-cpu haswell -debugger-tuning=lldb -target-linker-version 609 -v -fcoverage-compilation-dir=/Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp -resource-dir /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isystem /Users/yw18581/opt/anaconda3/envs/dart/include -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -stdlib=libc++ -internal-isystem /Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1 -internal-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include -internal-externc-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include -O2 -fdeprecated-macro -fdebug-compilation-dir=/Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fvisibility-inlines-hidden -stack-protector 2 -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fcxx-exceptions -fexceptions -fmax-type-align=16 -vectorize-loops -vectorize-slp -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -x c++ /usr/local/Cellar/cmake/3.24.0/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin22.1.0]
+  ignore line: [ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include"]
+  ignore line: [ignoring nonexistent directory "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/Library/Frameworks"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /Users/yw18581/opt/anaconda3/envs/dart/include]
+  ignore line: [ /Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1]
+  ignore line: [ /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+  ignore line: [ /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include]
+  ignore line: [ /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)]
+  ignore line: [End of search list.]
+  ignore line: [Linking CXX executable cmTC_249e0]
+  ignore line: [/usr/local/Cellar/cmake/3.24.0/bin/cmake -E cmake_link_script CMakeFiles/cmTC_249e0.dir/link.txt --verbose=1]
+  ignore line: [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang++ -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -stdlib=libc++ -fvisibility-inlines-hidden -fmessage-length=0 -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -Wl -search_paths_first -Wl -headerpad_max_install_names -Wl -pie -Wl -headerpad_max_install_names -Wl -dead_strip_dylibs -Wl -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -L/Users/yw18581/opt/anaconda3/envs/dart/lib -v -Wl -v CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_249e0 ]
+  ignore line: [clang version 13.0.1]
+  ignore line: [Target: x86_64-apple-darwin13.4.0]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin]
+  link line: [ "/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld" -demangle -lto_library /Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib -dynamic -arch x86_64 -platform_version macos 13.0.0 13.0 -pie -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -o cmTC_249e0 -L/Users/yw18581/opt/anaconda3/envs/dart/lib -search_paths_first -headerpad_max_install_names -pie -headerpad_max_install_names -dead_strip_dylibs -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -v CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+    arg [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld] ==> ignore
+    arg [-demangle] ==> ignore
+    arg [-lto_library] ==> ignore, skip following value
+    arg [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib] ==> skip value of -lto_library
+    arg [-dynamic] ==> ignore
+    arg [-arch] ==> ignore
+    arg [x86_64] ==> ignore
+    arg [-platform_version] ==> ignore
+    arg [macos] ==> ignore
+    arg [13.0.0] ==> ignore
+    arg [13.0] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-syslibroot] ==> ignore
+    arg [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_249e0] ==> ignore
+    arg [-L/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> dir [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+    arg [-search_paths_first] ==> ignore
+    arg [-headerpad_max_install_names] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-headerpad_max_install_names] ==> ignore
+    arg [-dead_strip_dylibs] ==> ignore
+    arg [-rpath] ==> ignore
+    arg [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> ignore
+    arg [-v] ==> ignore
+    arg [CMakeFiles/cmTC_249e0.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lc++] ==> lib [c++]
+    arg [-lSystem] ==> lib [System]
+    arg [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a] ==> lib [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+  Library search paths: [;/Users/yw18581/opt/anaconda3/envs/dart/lib;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib]
+  Framework search paths: [;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/]
+  remove lib [System]
+  remove lib [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+  collapse library dir [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+  collapse library dir [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+  collapse library dir [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib] ==> [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib]
+  collapse framework dir [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/] ==> [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks]
+  implicit libs: [c++]
+  implicit objs: []
+  implicit dirs: [/Users/yw18581/opt/anaconda3/envs/dart/lib;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib]
+  implicit fwks: [/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks]
+
+
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD succeeded with the following output:
+Change Dir: /Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_f0c83/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_f0c83.dir/build.make CMakeFiles/cmTC_f0c83.dir/build
+Building C object CMakeFiles/cmTC_f0c83.dir/src.c.o
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang -DCMAKE_HAVE_LIBC_PTHREAD  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -MD -MT CMakeFiles/cmTC_f0c83.dir/src.c.o -MF CMakeFiles/cmTC_f0c83.dir/src.c.o.d -o CMakeFiles/cmTC_f0c83.dir/src.c.o -c /Users/yw18581/UoB/DaRT/RBE_laura/simulation/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_f0c83
+/usr/local/Cellar/cmake/3.24.0/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f0c83.dir/link.txt --verbose=1
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names -Wl,-pie -Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/yw18581/opt/anaconda3/envs/dart/lib -L/Users/yw18581/opt/anaconda3/envs/dart/lib  CMakeFiles/cmTC_f0c83.dir/src.c.o -o cmTC_f0c83 
+
+
+Source file was:
+#include <pthread.h>
+
+static void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+The system is: Darwin - 22.2.0 - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang 
+Build flags: -march=core2;-mtune=haswell;-mssse3;-ftree-vectorize;-fPIC;-fPIE;-fstack-protector-strong;-O2;-pipe;-isystem;/Users/yw18581/opt/anaconda3/envs/dart/include
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is Clang, found in "/Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/3.22.1/CompilerIdC/a.out"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang++ 
+Build flags: -march=core2;-mtune=haswell;-mssse3;-ftree-vectorize;-fPIC;-fPIE;-fstack-protector-strong;-O2;-pipe;-stdlib=libc++;-fvisibility-inlines-hidden;-fmessage-length=0;-isystem;/Users/yw18581/opt/anaconda3/envs/dart/include
+Id flags:  
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is Clang, found in "/Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/3.22.1/CompilerIdCXX/a.out"
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_8bfd2/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_8bfd2.dir/build.make CMakeFiles/cmTC_8bfd2.dir/build
+Building C object CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang   -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk   -v -Wl,-v -MD -MT CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -c /Users/yw18581/opt/anaconda3/envs/DaRT/share/cmake-3.22/Modules/CMakeCCompilerABI.c
+clang version 13.0.1
+Target: x86_64-apple-darwin13.4.0
+Thread model: posix
+InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin
+clang-13: warning: -Wl,-v: 'linker' input unused [-Wunused-command-line-argument]
+ (in-process)
+ "/Users/yw18581/opt/anaconda3/envs/DaRT/bin/clang-13" -cc1 -triple x86_64-apple-macosx13.0.0 -Wundef-prefix=TARGET_OS_OSX -Werror=undef-prefix -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=all -fno-rounding-math -munwind-tables -target-sdk-version=13.1 -fcompatibility-qualified-id-block-type-checking -fvisibility-inlines-hidden-static-local-var -target-cpu core2 -target-feature +ssse3 -tune-cpu haswell -debugger-tuning=lldb -target-linker-version 609 -v -fcoverage-compilation-dir=/Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp -resource-dir /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -sys-header-deps -isystem /Users/yw18581/opt/anaconda3/envs/dart/include -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -O2 -fdebug-compilation-dir=/Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp -ferror-limit 19 -stack-protector 2 -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fmax-type-align=16 -vectorize-loops -vectorize-slp -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -x c /Users/yw18581/opt/anaconda3/envs/DaRT/share/cmake-3.22/Modules/CMakeCCompilerABI.c
+clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin22.2.0
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/Library/Frameworks"
+#include "..." search starts here:
+#include <...> search starts here:
+ /Users/yw18581/opt/anaconda3/envs/dart/include
+ /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include
+ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
+ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)
+End of search list.
+Linking C executable cmTC_8bfd2
+/Users/yw18581/opt/anaconda3/envs/DaRT/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8bfd2.dir/link.txt --verbose=1
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names -Wl,-pie -Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/yw18581/opt/anaconda3/envs/dart/lib -L/Users/yw18581/opt/anaconda3/envs/dart/lib -v -Wl,-v CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -o cmTC_8bfd2 
+clang version 13.0.1
+Target: x86_64-apple-darwin13.4.0
+Thread model: posix
+InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin
+ "/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld" -demangle -lto_library /Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib -dynamic -arch x86_64 -platform_version macos 13.0.0 13.1 -pie -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o cmTC_8bfd2 -L/Users/yw18581/opt/anaconda3/envs/dart/lib -search_paths_first -headerpad_max_install_names -pie -headerpad_max_install_names -dead_strip_dylibs -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -v CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -lSystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a
+@(#)PROGRAM:ld  PROJECT:ld64-609
+BUILD 21:56:10 May 21 2022
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em (tvOS)
+Library search paths:
+	/Users/yw18581/opt/anaconda3/envs/dart/lib
+	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib
+Framework search paths:
+	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/
+
+
+
+Parsed C implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/Users/yw18581/opt/anaconda3/envs/dart/include]
+    add: [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+    add: [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+  end of search list found
+  collapse include dir [/Users/yw18581/opt/anaconda3/envs/dart/include] ==> [/Users/yw18581/opt/anaconda3/envs/dart/include]
+  collapse include dir [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include] ==> [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+  collapse include dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+  implicit include dirs: [/Users/yw18581/opt/anaconda3/envs/dart/include;/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(x86_64-apple-darwin13\.4\.0-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/make -f Makefile cmTC_8bfd2/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_8bfd2.dir/build.make CMakeFiles/cmTC_8bfd2.dir/build]
+  ignore line: [Building C object CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang   -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk   -v -Wl -v -MD -MT CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -c /Users/yw18581/opt/anaconda3/envs/DaRT/share/cmake-3.22/Modules/CMakeCCompilerABI.c]
+  ignore line: [clang version 13.0.1]
+  ignore line: [Target: x86_64-apple-darwin13.4.0]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin]
+  ignore line: [clang-13: warning: -Wl -v: 'linker' input unused [-Wunused-command-line-argument]]
+  ignore line: [ (in-process)]
+  ignore line: [ "/Users/yw18581/opt/anaconda3/envs/DaRT/bin/clang-13" -cc1 -triple x86_64-apple-macosx13.0.0 -Wundef-prefix=TARGET_OS_OSX -Werror=undef-prefix -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=all -fno-rounding-math -munwind-tables -target-sdk-version=13.1 -fcompatibility-qualified-id-block-type-checking -fvisibility-inlines-hidden-static-local-var -target-cpu core2 -target-feature +ssse3 -tune-cpu haswell -debugger-tuning=lldb -target-linker-version 609 -v -fcoverage-compilation-dir=/Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp -resource-dir /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o.d -MT CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -sys-header-deps -isystem /Users/yw18581/opt/anaconda3/envs/dart/include -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -O2 -fdebug-compilation-dir=/Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp -ferror-limit 19 -stack-protector 2 -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fmax-type-align=16 -vectorize-loops -vectorize-slp -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -x c /Users/yw18581/opt/anaconda3/envs/DaRT/share/cmake-3.22/Modules/CMakeCCompilerABI.c]
+  ignore line: [clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin22.2.0]
+  ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"]
+  ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/Library/Frameworks"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /Users/yw18581/opt/anaconda3/envs/dart/include]
+  ignore line: [ /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+  ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+  ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)]
+  ignore line: [End of search list.]
+  ignore line: [Linking C executable cmTC_8bfd2]
+  ignore line: [/Users/yw18581/opt/anaconda3/envs/DaRT/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8bfd2.dir/link.txt --verbose=1]
+  ignore line: [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -Wl -search_paths_first -Wl -headerpad_max_install_names -Wl -pie -Wl -headerpad_max_install_names -Wl -dead_strip_dylibs -Wl -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -L/Users/yw18581/opt/anaconda3/envs/dart/lib -v -Wl -v CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -o cmTC_8bfd2 ]
+  ignore line: [clang version 13.0.1]
+  ignore line: [Target: x86_64-apple-darwin13.4.0]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin]
+  link line: [ "/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld" -demangle -lto_library /Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib -dynamic -arch x86_64 -platform_version macos 13.0.0 13.1 -pie -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o cmTC_8bfd2 -L/Users/yw18581/opt/anaconda3/envs/dart/lib -search_paths_first -headerpad_max_install_names -pie -headerpad_max_install_names -dead_strip_dylibs -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -v CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o -lSystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+    arg [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld] ==> ignore
+    arg [-demangle] ==> ignore
+    arg [-lto_library] ==> ignore, skip following value
+    arg [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib] ==> skip value of -lto_library
+    arg [-dynamic] ==> ignore
+    arg [-arch] ==> ignore
+    arg [x86_64] ==> ignore
+    arg [-platform_version] ==> ignore
+    arg [macos] ==> ignore
+    arg [13.0.0] ==> ignore
+    arg [13.1] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-syslibroot] ==> ignore
+    arg [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_8bfd2] ==> ignore
+    arg [-L/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> dir [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+    arg [-search_paths_first] ==> ignore
+    arg [-headerpad_max_install_names] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-headerpad_max_install_names] ==> ignore
+    arg [-dead_strip_dylibs] ==> ignore
+    arg [-rpath] ==> ignore
+    arg [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> ignore
+    arg [-v] ==> ignore
+    arg [CMakeFiles/cmTC_8bfd2.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lSystem] ==> lib [System]
+    arg [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a] ==> lib [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+  Library search paths: [;/Users/yw18581/opt/anaconda3/envs/dart/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib]
+  Framework search paths: [;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/]
+  remove lib [System]
+  remove lib [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+  collapse library dir [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+  collapse library dir [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+  collapse library dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib]
+  collapse framework dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks]
+  implicit libs: []
+  implicit objs: []
+  implicit dirs: [/Users/yw18581/opt/anaconda3/envs/dart/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib]
+  implicit fwks: [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks]
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_fd587/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_fd587.dir/build.make CMakeFiles/cmTC_fd587.dir/build
+Building CXX object CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang++   -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -stdlib=libc++ -fvisibility-inlines-hidden -fmessage-length=0 -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk   -v -Wl,-v -MD -MT CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -c /Users/yw18581/opt/anaconda3/envs/DaRT/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp
+clang version 13.0.1
+Target: x86_64-apple-darwin13.4.0
+Thread model: posix
+InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin
+clang-13: warning: -Wl,-v: 'linker' input unused [-Wunused-command-line-argument]
+ (in-process)
+ "/Users/yw18581/opt/anaconda3/envs/DaRT/bin/clang-13" -cc1 -triple x86_64-apple-macosx13.0.0 -Wundef-prefix=TARGET_OS_OSX -Werror=undef-prefix -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=all -fno-rounding-math -munwind-tables -target-sdk-version=13.1 -fcompatibility-qualified-id-block-type-checking -fvisibility-inlines-hidden-static-local-var -target-cpu core2 -target-feature +ssse3 -tune-cpu haswell -debugger-tuning=lldb -target-linker-version 609 -v -fcoverage-compilation-dir=/Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp -resource-dir /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isystem /Users/yw18581/opt/anaconda3/envs/dart/include -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -stdlib=libc++ -internal-isystem /Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1 -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -O2 -fdeprecated-macro -fdebug-compilation-dir=/Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fvisibility-inlines-hidden -stack-protector 2 -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fcxx-exceptions -fexceptions -fmax-type-align=16 -vectorize-loops -vectorize-slp -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -x c++ /Users/yw18581/opt/anaconda3/envs/DaRT/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp
+clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin22.2.0
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/Library/Frameworks"
+#include "..." search starts here:
+#include <...> search starts here:
+ /Users/yw18581/opt/anaconda3/envs/dart/include
+ /Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1
+ /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include
+ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
+ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)
+End of search list.
+Linking CXX executable cmTC_fd587
+/Users/yw18581/opt/anaconda3/envs/DaRT/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fd587.dir/link.txt --verbose=1
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang++ -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -stdlib=libc++ -fvisibility-inlines-hidden -fmessage-length=0 -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names -Wl,-pie -Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/yw18581/opt/anaconda3/envs/dart/lib -L/Users/yw18581/opt/anaconda3/envs/dart/lib -v -Wl,-v CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_fd587 
+clang version 13.0.1
+Target: x86_64-apple-darwin13.4.0
+Thread model: posix
+InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin
+ "/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld" -demangle -lto_library /Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib -dynamic -arch x86_64 -platform_version macos 13.0.0 13.1 -pie -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o cmTC_fd587 -L/Users/yw18581/opt/anaconda3/envs/dart/lib -search_paths_first -headerpad_max_install_names -pie -headerpad_max_install_names -dead_strip_dylibs -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -v CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a
+@(#)PROGRAM:ld  PROJECT:ld64-609
+BUILD 21:56:10 May 21 2022
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em (tvOS)
+Library search paths:
+	/Users/yw18581/opt/anaconda3/envs/dart/lib
+	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib
+Framework search paths:
+	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/
+
+
+
+Parsed CXX implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/Users/yw18581/opt/anaconda3/envs/dart/include]
+    add: [/Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1]
+    add: [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+    add: [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+  end of search list found
+  collapse include dir [/Users/yw18581/opt/anaconda3/envs/dart/include] ==> [/Users/yw18581/opt/anaconda3/envs/dart/include]
+  collapse include dir [/Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1] ==> [/Users/yw18581/opt/anaconda3/envs/dart/include/c++/v1]
+  collapse include dir [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include] ==> [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+  collapse include dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+  implicit include dirs: [/Users/yw18581/opt/anaconda3/envs/dart/include;/Users/yw18581/opt/anaconda3/envs/dart/include/c++/v1;/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(x86_64-apple-darwin13\.4\.0-ld|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/make -f Makefile cmTC_fd587/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_fd587.dir/build.make CMakeFiles/cmTC_fd587.dir/build]
+  ignore line: [Building CXX object CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang++   -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -stdlib=libc++ -fvisibility-inlines-hidden -fmessage-length=0 -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk   -v -Wl -v -MD -MT CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -MF CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o.d -o CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -c /Users/yw18581/opt/anaconda3/envs/DaRT/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [clang version 13.0.1]
+  ignore line: [Target: x86_64-apple-darwin13.4.0]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin]
+  ignore line: [clang-13: warning: -Wl -v: 'linker' input unused [-Wunused-command-line-argument]]
+  ignore line: [ (in-process)]
+  ignore line: [ "/Users/yw18581/opt/anaconda3/envs/DaRT/bin/clang-13" -cc1 -triple x86_64-apple-macosx13.0.0 -Wundef-prefix=TARGET_OS_OSX -Werror=undef-prefix -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -emit-obj --mrelax-relocations -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCXXCompilerABI.cpp -mrelocation-model pic -pic-level 2 -mframe-pointer=all -fno-rounding-math -munwind-tables -target-sdk-version=13.1 -fcompatibility-qualified-id-block-type-checking -fvisibility-inlines-hidden-static-local-var -target-cpu core2 -target-feature +ssse3 -tune-cpu haswell -debugger-tuning=lldb -target-linker-version 609 -v -fcoverage-compilation-dir=/Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp -resource-dir /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1 -dependency-file CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o.d -MT CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -sys-header-deps -isystem /Users/yw18581/opt/anaconda3/envs/dart/include -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -stdlib=libc++ -internal-isystem /Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1 -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -O2 -fdeprecated-macro -fdebug-compilation-dir=/Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fvisibility-inlines-hidden -stack-protector 2 -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fcxx-exceptions -fexceptions -fmax-type-align=16 -vectorize-loops -vectorize-slp -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -x c++ /Users/yw18581/opt/anaconda3/envs/DaRT/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [clang -cc1 version 13.0.1 based upon LLVM 13.0.1 default target x86_64-apple-darwin22.2.0]
+  ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"]
+  ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/Library/Frameworks"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /Users/yw18581/opt/anaconda3/envs/dart/include]
+  ignore line: [ /Users/yw18581/opt/anaconda3/envs/dart/bin/../include/c++/v1]
+  ignore line: [ /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/include]
+  ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+  ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)]
+  ignore line: [End of search list.]
+  ignore line: [Linking CXX executable cmTC_fd587]
+  ignore line: [/Users/yw18581/opt/anaconda3/envs/DaRT/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fd587.dir/link.txt --verbose=1]
+  ignore line: [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang++ -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -stdlib=libc++ -fvisibility-inlines-hidden -fmessage-length=0 -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -Wl -search_paths_first -Wl -headerpad_max_install_names -Wl -pie -Wl -headerpad_max_install_names -Wl -dead_strip_dylibs -Wl -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -L/Users/yw18581/opt/anaconda3/envs/dart/lib -v -Wl -v CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_fd587 ]
+  ignore line: [clang version 13.0.1]
+  ignore line: [Target: x86_64-apple-darwin13.4.0]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Users/yw18581/opt/anaconda3/envs/dart/bin]
+  link line: [ "/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld" -demangle -lto_library /Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib -dynamic -arch x86_64 -platform_version macos 13.0.0 13.1 -pie -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -o cmTC_fd587 -L/Users/yw18581/opt/anaconda3/envs/dart/lib -search_paths_first -headerpad_max_install_names -pie -headerpad_max_install_names -dead_strip_dylibs -rpath /Users/yw18581/opt/anaconda3/envs/dart/lib -v CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o -lc++ -lSystem /Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+    arg [/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-ld] ==> ignore
+    arg [-demangle] ==> ignore
+    arg [-lto_library] ==> ignore, skip following value
+    arg [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/libLTO.13.dylib] ==> skip value of -lto_library
+    arg [-dynamic] ==> ignore
+    arg [-arch] ==> ignore
+    arg [x86_64] ==> ignore
+    arg [-platform_version] ==> ignore
+    arg [macos] ==> ignore
+    arg [13.0.0] ==> ignore
+    arg [13.1] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-syslibroot] ==> ignore
+    arg [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_fd587] ==> ignore
+    arg [-L/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> dir [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+    arg [-search_paths_first] ==> ignore
+    arg [-headerpad_max_install_names] ==> ignore
+    arg [-pie] ==> ignore
+    arg [-headerpad_max_install_names] ==> ignore
+    arg [-dead_strip_dylibs] ==> ignore
+    arg [-rpath] ==> ignore
+    arg [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> ignore
+    arg [-v] ==> ignore
+    arg [CMakeFiles/cmTC_fd587.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-lc++] ==> lib [c++]
+    arg [-lSystem] ==> lib [System]
+    arg [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a] ==> lib [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+  Library search paths: [;/Users/yw18581/opt/anaconda3/envs/dart/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib]
+  Framework search paths: [;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/]
+  remove lib [System]
+  remove lib [/Users/yw18581/opt/anaconda3/envs/DaRT/lib/clang/13.0.1/lib/darwin/libclang_rt.osx.a]
+  collapse library dir [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+  collapse library dir [/Users/yw18581/opt/anaconda3/envs/dart/lib] ==> [/Users/yw18581/opt/anaconda3/envs/dart/lib]
+  collapse library dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib]
+  collapse framework dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks]
+  implicit libs: [c++]
+  implicit objs: []
+  implicit dirs: [/Users/yw18581/opt/anaconda3/envs/dart/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib]
+  implicit fwks: [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks]
+
+
+Determining if the include file pthread.h exists passed with the following output:
+Change Dir: /Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_cfa70/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_cfa70.dir/build.make CMakeFiles/cmTC_cfa70.dir/build
+Building C object CMakeFiles/cmTC_cfa70.dir/CheckIncludeFile.c.o
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang   -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -MD -MT CMakeFiles/cmTC_cfa70.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_cfa70.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_cfa70.dir/CheckIncludeFile.c.o -c /Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_cfa70
+/Users/yw18581/opt/anaconda3/envs/DaRT/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cfa70.dir/link.txt --verbose=1
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names -Wl,-pie -Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/yw18581/opt/anaconda3/envs/dart/lib -L/Users/yw18581/opt/anaconda3/envs/dart/lib  CMakeFiles/cmTC_cfa70.dir/CheckIncludeFile.c.o -o cmTC_cfa70 
+
+
+
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD succeeded with the following output:
+Change Dir: /Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make -f Makefile cmTC_191e4/fast && /Applications/Xcode.app/Contents/Developer/usr/bin/make  -f CMakeFiles/cmTC_191e4.dir/build.make CMakeFiles/cmTC_191e4.dir/build
+Building C object CMakeFiles/cmTC_191e4.dir/src.c.o
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang -DCMAKE_HAVE_LIBC_PTHREAD  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -MD -MT CMakeFiles/cmTC_191e4.dir/src.c.o -MF CMakeFiles/cmTC_191e4.dir/src.c.o.d -o CMakeFiles/cmTC_191e4.dir/src.c.o -c /Users/yw18581/UoB/DaRT/TAT/rbe_jan23/simulation/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_191e4
+/Users/yw18581/opt/anaconda3/envs/DaRT/bin/cmake -E cmake_link_script CMakeFiles/cmTC_191e4.dir/link.txt --verbose=1
+/Users/yw18581/opt/anaconda3/envs/dart/bin/x86_64-apple-darwin13.4.0-clang -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/yw18581/opt/anaconda3/envs/dart/include  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names -Wl,-pie -Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/yw18581/opt/anaconda3/envs/dart/lib -L/Users/yw18581/opt/anaconda3/envs/dart/lib  CMakeFiles/cmTC_191e4.dir/src.c.o -o cmTC_191e4 
+
+
+Source file was:
+#include <pthread.h>
+
+static void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+

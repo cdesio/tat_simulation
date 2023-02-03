@@ -43,28 +43,23 @@ public:
     G4VPhysicalVolume *Construct() override;
     void UpdateGeometry();
 
-    void SetSize(G4double);
-    void SetDkill(G4double val) { dkill = val; }
-    G4double Getdkill() { return dkill; }
-
-    void SetDisplX(G4double);
-    void SetDisplY(G4double);
-    void SetDisplZ(G4double);
+    void SetSize     (G4double);              
+    void SetDkill(G4double val) {dkill = val;}     
+    G4double Getdkill() {return dkill;} 
 
     std::vector<G4ThreeVector> fPositions;
     std::vector<G4RotationMatrix *> fRotations;
-    G4KDTree *fPositions0;
-    G4KDTree *fPositions1;
-    G4KDTree *fPositionsBase0;
-    G4KDTree *fPositionsBase1;
+    G4KDTree* fPositions0;
+    G4KDTree* fPositions1;    
+    G4KDTree* fPositionsBase0;
+    G4KDTree* fPositionsBase1;
     G4double chromatinVolume;
     G4double numSugar;
 
 private:
-    G4double fBoxSize;
-    DetectorMessenger *fDetectorMessenger;
-    G4double displ_X, displ_Y, displ_Z;
+     G4double              fBoxSize;
+     DetectorMessenger* fDetectorMessenger;
     G4bool placeSugars;
     G4bool placeHistones;
-    G4double dkill{9 * CLHEP::nm};
+    G4double dkill{9*CLHEP::nm};
 };

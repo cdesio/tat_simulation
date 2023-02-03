@@ -41,40 +41,43 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-ActionInitialization::ActionInitialization(DetectorConstruction* pDetector, std::vector<std::vector<float>> PS_data)
-    : G4VUserActionInitialization()
-    , fpDetector(pDetector), fPS_data(PS_data)
-{}
+ActionInitialization::ActionInitialization(DetectorConstruction *pDetector, std::vector<std::vector<float>> PS_data)
+    : G4VUserActionInitialization(), fpDetector(pDetector), fPS_data(PS_data)
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 ActionInitialization::~ActionInitialization()
-{}
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void ActionInitialization::BuildForMaster() const
-{}
+{
+    RunAction *pRunAction = new RunAction(fpDetector);
+    SetUserAction(pRunAction);
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void ActionInitialization::Build() const
 {
     SetUserAction(new PrimaryGeneratorAction(fPS_data));
-    RunAction* pRunAction = new RunAction(fpDetector);
+    RunAction *pRunAction = new RunAction(fpDetector);
     SetUserAction(pRunAction);
     SetUserAction(new EventAction(fpDetector));
-    SteppingAction* pSteppingAction = new SteppingAction();
+    SteppingAction *pSteppingAction = new SteppingAction();
     SetUserAction(pSteppingAction);
     SetUserAction(new StackingAction(fpDetector));
-    if(G4DNAChemistryManager::IsActivated())
+    if (G4DNAChemistryManager::IsActivated())
     {
-        G4Scheduler::Instance()->
-        SetUserAction(new TimeStepAction(fpDetector));
-        //stop at this time
-        G4Scheduler::Instance()->SetEndTime(5*nanosecond);
-        ITTrackingInteractivity* itInteractivity = 
-        new ITTrackingInteractivity();
+        G4Scheduler::Instance()->SetUserAction(new TimeStepAction(fpDetector));
+        // stop at this time
+        G4Scheduler::Instance()->SetEndTime(5 * nanosecond);
+        ITTrackingInteractivity *itInteractivity =
+            new ITTrackingInteractivity();
         G4Scheduler::Instance()->SetInteractivity(itInteractivity);
     }
 }

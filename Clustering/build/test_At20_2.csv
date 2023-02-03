@@ -1,0 +1,5 @@
+Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,GitHash,ClusteringGitHash
+../../simulation/build/test_At20.root,7.986990572114922e-16,N/A,16,2.700000000000001e-20,296352.0,../../geometryFiles/sugarPos_4x4_300nm.csv,M,M
+EventNo,DoseGy,PathLength_nm,MeanKEMeV,TotalSBdirect,SSBdirect,cSSBdirect,DSBdirect,TotalSBindirect,SSBindirect,cSSBindirect,DSBindirect,TotalSBtotal,SSBtotal,cSSBtotal,DSBtotal
+31,80.8230153263141,N/A,1.399043922578697e-16,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+45,209.06259808130213,N/A,1.519695188636332e-15,1, 1, 0, 0, 4, 4, 0, 0, 5, 3, 0, 1

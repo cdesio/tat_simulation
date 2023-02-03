@@ -31,7 +31,6 @@
 #include "Randomize.hh"
 #include "G4GeneralParticleSource.hh"
 #include "CommandLineParser.hh"
-#include "G4ParticleTable.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "G4AnalysisManager.hh"
 
@@ -68,15 +67,15 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 {
-    // if (G4UniformRand() < 0.5)
-    // {
-    //     fpParticleGun->GetCurrentSource()->GetEneDist()->SetMonoEnergy(1.1732 * CLHEP::MeV);
-    // }
-    // else
-    // {
-    //     fpParticleGun->GetCurrentSource()->GetEneDist()->SetMonoEnergy(1.3325 * CLHEP::MeV);
-    // }
-    // G4ParticleDefinition *particle = G4ParticleTable::GetParticleTable()->FindParticle("alpha");
+    if (G4UniformRand() < 0.5)
+    {
+        fpParticleGun->GetCurrentSource()->GetEneDist()->SetMonoEnergy(1.1732 * CLHEP::MeV);
+    }
+    else
+    {
+        fpParticleGun->GetCurrentSource()->GetEneDist()->SetMonoEnergy(1.3325 * CLHEP::MeV);
+    }
+
     fpParticleGun->GeneratePrimaryVertex(anEvent);
 
     // CommandLineParser *parser = CommandLineParser::GetParser();

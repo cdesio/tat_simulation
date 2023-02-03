@@ -82,19 +82,64 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
   G4double dE = step->GetTotalEnergyDeposit();
 
-  const G4String &volumeName = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+  const G4String &volumeNamePre = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+  const G4String &particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
+  G4int pdg_enc = step->GetTrack()->GetParticleDefinition()->GetPDGEncoding();
+  G4int particleID = -1;
 
-  if ((step->GetTrack()->GetParticleDefinition()->GetParticleName() == "gamma") && (volumeName == "chromatinSegment"))
+  if (particleName == "alpha" || particleName == "helium" || particleName == "alpha+")
+  {
+    particleID = 1;
+  }
+  else if (particleName == "gamma")
+  {
+    particleID = 2;
+  }
+  else if (particleName == "e-")
+  {
+    particleID = 3;
+  }
+  else if (particleName == "nu_e")
+  {
+    particleID = 4;
+  }
+  else if (particleName == "At211")
+  {
+    particleID = 5;
+  }
+  else if (G4StrUtil::contains(particleName, "Po211"))
+  {
+    particleID = 6;
+  }
+  else if (G4StrUtil::contains(particleName, "Bi207"))
+  {
+    particleID = 7;
+  }
+  else if (G4StrUtil::contains(particleName, "Pb207")) //|| (particleName == "Pb207[569.698]") || (particleName == "Pb207[1633.356]") || (particleName == "Pb207[2339.921]"))
+  {
+    particleID = 8;
+  }
+  else if (particleName == "proton")
+  {
+    particleID = 9;
+  }
+  else
+  {
+    G4cout << particleName << " outside  not saved" << G4endl;
+    return;
+  }
+  // G4cout << "DEBUG: " << particleName << ", ID: " << particleID << " vol: " << volumeNamePre << G4endl;
+
+  if (volumeNamePre == "TrackingVol")
   {
     G4DNAPARSER::CommandLineParser *parser = G4DNAPARSER::CommandLineParser::GetParser();
     G4DNAPARSER::Command *command(0);
     if ((command = parser->GetCommandIfActive("-out")) == 0)
       return;
-
     fpEventAction->AddPathLength(step->GetStepLength());
   }
 
-  if ((step->GetTrack()->GetParticleDefinition()->GetParticleName() != "e-") && (volumeName == "chromatinSegment") && (dE > 0))
+  if ((volumeNamePre == "TrackingVol") && (dE > 0))
   {
     G4DNAPARSER::CommandLineParser *parser = G4DNAPARSER::CommandLineParser::GetParser();
     G4DNAPARSER::Command *command(0);
@@ -107,92 +152,128 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
     // G4ThreeVector prePoint = step->GetPreStepPoint()->GetPosition();
     G4ThreeVector postPoint = step->GetPostStepPoint()->GetPosition();
+    G4int copyNo = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber();
     // G4ThreeVector point = prePoint + G4UniformRand() * (postPoint - prePoint);
-
+    // DEBUG
+    // G4cout << "DEBUG: " << particleName << "(ID: " << particleID << ") losing E in chromatinSegment : " << eventID << G4endl;
     analysisManager->FillNtupleIColumn(0, 0, eventID);
     analysisManager->FillNtupleDColumn(0, 1, dE / eV);
     analysisManager->FillNtupleDColumn(0, 2, postPoint.x() / nanometer);
     analysisManager->FillNtupleDColumn(0, 3, postPoint.y() / nanometer);
     analysisManager->FillNtupleDColumn(0, 4, postPoint.z() / nanometer);
+    analysisManager->FillNtupleIColumn(0, 5, particleID);
+    analysisManager->FillNtupleIColumn(0, 6, copyNo);
     analysisManager->AddNtupleRow(0);
 
     fpEventAction->AddEdep(dE);
   }
-  G4String particle_name = step->GetTrack()->GetParticleDefinition()->GetParticleName();
 
-  if (((particle_name == "e-") || (particle_name == "alpha") || (particle_name == "gamma")) && (volumeName == "waterBox")) // e- from outside the tracking volume
+  // if ((step->GetTrack()->GetParticleDefinition()->GetParticleName() == "e-" || step->GetTrack()->GetParticleDefinition()->GetParticleName() == "gamma" || step->GetTrack()->GetParticleDefinition()->GetParticleName() == "alpha") && (volumeName == "waterBox")) // e- from outside the tracking volume
+  if ((volumeNamePre == "waterBox") || (volumeNamePre == "bloodVessel"))
   {
-    if (step->GetPostStepPoint()->GetPhysicalVolume()->GetName() == "logicPrism") // step ends on boundary to tracking volume
+    // if (particleName == "At211")
+    // {
+    //   G4double postEnergy = step->GetPostStepPoint()->GetKineticEnergy();
+    //   G4double preEnergy = step->GetPostStepPoint()->GetKineticEnergy();
+    //   G4cout << "At: pre E: " << preEnergy << ", post E: " << postEnergy << G4endl;
+    // }
+    if (step->GetPostStepPoint()->GetPhysicalVolume()->GetName() == "TrackingVol") // step ends on boundary to tracking volume
     {
-      auto positionX = step->GetPostStepPoint()->GetPosition().x();
-      auto positionY = step->GetPostStepPoint()->GetPosition().y();
-      auto positionZ = step->GetPostStepPoint()->GetPosition().z();
-      auto momentumX = step->GetPostStepPoint()->GetMomentumDirection().x();
-      auto momentumY = step->GetPostStepPoint()->GetMomentumDirection().y();
-      auto momentumZ = step->GetPostStepPoint()->GetMomentumDirection().z();
+      G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+      G4int stepID = step->GetTrack()->GetCurrentStepNumber();
+      G4int trackID = step->GetTrack()->GetTrackID();
+      // DEBUG
+      G4cout << "DEBUG: evt:" << eventID << ", " << particleName << "(ID: " << particleID << ") entered TrackingVol. trackID:  " << trackID << " stepID: " << stepID << G4endl;
+
+      G4TouchableHandle touchable = step->GetPostStepPoint()->GetTouchableHandle();
+
+      G4cout << "vol name: " << touchable->GetVolume()->GetName() << G4endl;
+      G4int copyNo = touchable->GetCopyNumber();
+      G4cout << "copyNo: " << copyNo << G4endl;
+
+      G4ThreeVector worldPos = step->GetPostStepPoint()->GetPosition();
+
+      G4ThreeVector localPos = touchable->GetHistory()->GetTopTransform().TransformPoint(worldPos);
+
+      G4ThreeVector worldMomentum = step->GetPostStepPoint()->GetMomentumDirection();
+
+      G4ThreeVector localMomentum = (*(touchable->GetHistory()->GetTopVolume()->GetRotation())) * worldMomentum; // rotate momentum direction by volume rotation
+      G4cout << "world pos: " << worldPos.x() << ", " << worldPos.y() << ", " << worldPos.z() << G4endl;
+      G4cout << "local pos: " << localPos.x() << ", " << localPos.y() << ", " << localPos.z() << G4endl;
+
+      G4cout << "world mom: " << worldMomentum.x() << ", " << worldMomentum.y() << ", " << worldMomentum.z() << G4endl;
+      G4cout << "local mom: " << localMomentum.x() << ", " << localMomentum.y() << ", " << localMomentum.z() << G4endl;
+      G4double time = step->GetPostStepPoint()->GetGlobalTime();
+
       auto particleEnergy = step->GetPostStepPoint()->GetKineticEnergy();
 
-      G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
-      G4int particle_ID = 0;
-      if (particle_name == "e-")
-        particle_ID = 0;
-      if (particle_name == "gamma")
-        particle_ID = 1;
-      if (particle_name == "alpha")
-        particle_ID = 2;
-
-      float output[9];
-      output[0] = positionX / mm;
-      output[1] = positionY / mm;
-      output[2] = positionZ / mm;
-      output[3] = momentumX;
-      output[4] = momentumY;
-      output[5] = momentumZ;
+      float output[12];
+      output[0] = localPos.x() / mm;
+      output[1] = localPos.y() / mm;
+      output[2] = localPos.z() / mm;
+      output[3] = localMomentum.x();
+      output[4] = localMomentum.y();
+      output[5] = localMomentum.z();
       output[6] = particleEnergy / MeV;
       output[7] = eventID;
-      output[8] = particle_ID;
+      output[8] = particleID;
+      output[9] = copyNo;
+      output[10] = time;
+      output[11] = pdg_enc;
 
       PSfile.write((char *)&output, sizeof(output));
-      step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
+      // step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
 
       fpEventAction->AddSecondary();
     }
   }
 
-  if ((step->GetTrack()->GetParticleDefinition()->GetParticleName() == "e-") && ((volumeName == "TrackingVol") || (volumeName == "chromatinSegment"))) // e- from interactions inside the tracking volume
+  if ((volumeNamePre == "TrackingVol") && (step->IsFirstStepInVolume())) //(step->GetTrack()->GetCurrentStepNumber() == 1)) // e- from interactions inside the tracking volume
   {
+    if (step->GetPreStepPoint()->GetProcessDefinedStep() != nullptr)
+      return; // if prestep process is nullptr this is the first step of particle created by interaction in the cell - only save those created by processes in cell
 
-    auto positionX = step->GetPreStepPoint()->GetPosition().x();
-    auto positionY = step->GetPreStepPoint()->GetPosition().y();
-    auto positionZ = step->GetPreStepPoint()->GetPosition().z();
-    auto momentumX = step->GetPreStepPoint()->GetMomentumDirection().x();
-    auto momentumY = step->GetPreStepPoint()->GetMomentumDirection().y();
-    auto momentumZ = step->GetPreStepPoint()->GetMomentumDirection().z();
+    if (step->GetTrack()->GetCreatorProcess()->GetProcessName() != "RadioactiveDecay")
+      return; // only save products of radioactive decay other products are from parents which are saved on entering the cell and will be tracked in DNA simulation.
+
+    G4TouchableHandle touchable = step->GetPreStepPoint()->GetTouchableHandle();
+
+    G4ThreeVector worldPos = step->GetPreStepPoint()->GetPosition();
+    G4ThreeVector localPos = touchable->GetHistory()->GetTopTransform().TransformPoint(worldPos);
+    G4ThreeVector worldMomentum = step->GetPreStepPoint()->GetMomentumDirection();
+    G4ThreeVector localMomentum = (*(touchable->GetHistory()->GetTopVolume()->GetRotation())) * worldMomentum;
+
+    G4double time = step->GetPreStepPoint()->GetGlobalTime();
+
     auto particleEnergy = step->GetPreStepPoint()->GetKineticEnergy();
-    int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+    G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+    // DEBUG
+    G4cout << "DEBUG: evt:" << eventID << ", " << particleID << "( " << particleName << ") inside tracking vol: " << G4endl;
+    G4int stepID = step->GetTrack()->GetCurrentStepNumber();
+    G4int trackID = step->GetTrack()->GetTrackID();
+    G4int parentID = step->GetTrack()->GetParentID();
+    G4String process = step->GetTrack()->GetCreatorProcess()->GetProcessTypeName(step->GetTrack()->GetCreatorProcess()->GetProcessType());
+    G4int copyNo = touchable->GetCopyNumber();
 
-    int particle_ID = 0;
-    if (particle_name == "e-")
-      particle_ID = 0;
-    if (particle_name == "gamma")
-      particle_ID = 1;
-    if (particle_name == "alpha")
-      particle_ID = 2;
-
-    float output[9];
-    output[0] = positionX / mm;
-    output[1] = positionY / mm;
-    output[2] = positionZ / mm;
-    output[3] = momentumX;
-    output[4] = momentumY;
-    output[5] = momentumZ;
+    float output[12];
+    output[0] = localPos.x() / mm;
+    output[1] = localPos.y() / mm;
+    output[2] = localPos.z() / mm;
+    output[3] = localMomentum.x();
+    output[4] = localMomentum.y();
+    output[5] = localMomentum.z();
     output[6] = particleEnergy / MeV;
     output[7] = eventID;
-    output[8] = particle_ID;
-
+    output[8] = particleID;
+    output[9] = copyNo;
+    output[10] = time;
+    output[11] = pdg_enc;
+    // G4cout << "DEBUG: evt:" << eventID << ", ID: " << particleID << "( " << particleName << ")" << G4endl;
     PSfile.write((char *)&output, sizeof(output));
+    // if (stepID >= 1)
+    //{
     step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
-
+    //}
     fpEventAction->AddSecondary();
   }
 }

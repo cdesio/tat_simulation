@@ -64,11 +64,11 @@ using namespace G4DNAPARSER;
 #define countof(x) (sizeof(x) / sizeof(x[0]))
 
 using namespace std;
-using CLHEP::angstrom;
-using CLHEP::degree;
-using CLHEP::micrometer;
-using CLHEP::mm;
-using CLHEP::nanometer;
+// using CLHEP::angstrom;
+// using CLHEP::degree;
+// using CLHEP::micrometer;
+// using CLHEP::mm;
+// using CLHEP::nanometer;
 
 static G4VisAttributes visInvBlue(false, G4Colour(0.0, 0.0, 1.0));
 static G4VisAttributes visInvWhite(false, G4Colour(1.0, 1.0, 1.0));
@@ -78,12 +78,13 @@ static G4VisAttributes visInvRed(false, G4Colour(1.0, 0.0, 0.0));
 static G4VisAttributes visInvGreen(false, G4Colour(0.0, 1.0, 0.0));
 static G4VisAttributes visBlue(true, G4Colour(0.0, 0.0, 1.0));
 static G4VisAttributes visWhite(true, G4Colour(1.0, 1.0, 1.0));
-static G4VisAttributes visPink(true, G4Colour(1.0, 0.0, 1.0));
+static G4VisAttributes visPink(true, G4Colour(0.9,  0.6,  0.7, 0.5));
 static G4VisAttributes visCyan(true, G4Colour(0.0, 1.0, 1.0));
 static G4VisAttributes visRed(true, G4Colour(1.0, 0.0, 0.0));
 static G4VisAttributes visGreen(true, G4Colour(0.0, 1.0, 0.0));
 static G4VisAttributes visGrey(true, G4Colour(0.839216, 0.839216, 0.839216));
-
+static G4VisAttributes visDarkRed(true, G4Colour(0.8, 0.0, 0.3, 0.9));
+static G4VisAttributes visLime(true, G4Colour(0.7, 1.0, 0.0, 0.5));
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction()
@@ -114,20 +115,13 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   G4Box *solidWorld{nullptr};
   G4Orb *solidWaterBox{nullptr};
-  G4Tubs *solidWaterCylinder{nullptr};
-  G4Box *solidPrism{nullptr};
-
-  G4double displ_X = 10 * um;
-  G4double displ_Y = 10 * um;
-  G4double displ_Z = 0 * um;
-
-  G4double len_y = 39 * um;
-  G4double prism_base = 3.5 * um;
+  G4Tubs *solidVessel{nullptr};
 
   // larger world volume to provide build up for CPE for photon beam
-  solidWorld = new G4Box("world", 10 * mm, 10 * mm, 10 * mm);
+  solidWorld = new G4Box("world", 1 * mm, 1 * mm, 1 * mm);
 
-  solidWaterBox = new G4Orb("waterBox", 3 * mm);
+  solidWaterBox = new G4Orb("waterBox", .5 * mm);
+  solidVessel = new G4Tubs("bloodVessel", 0, 1.5 * um, 3 * um, 0, 360 * deg);
 
   G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld,
                                                     air,
@@ -144,6 +138,8 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   G4LogicalVolume *logicWaterBox = new G4LogicalVolume(solidWaterBox,
                                                        waterMaterial,
                                                        "waterBox");
+  G4LogicalVolume *logicBloodVessel = new G4LogicalVolume(solidVessel,
+                                                          waterMaterial, "bloodVessel");
 
   G4PVPlacement *physiWaterBox = new G4PVPlacement(0,
                                                    G4ThreeVector(),
@@ -153,59 +149,55 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                    0,
                                                    false,
                                                    0);
+
+  G4PVPlacement *physiBloodVessel = new G4PVPlacement(0, G4ThreeVector(0, 0, 0),
+                                                      logicBloodVessel, "bloodVessel", logicWaterBox, 0, false, 0);
+
+  G4VisAttributes *vesselVisAttr = new G4VisAttributes(G4Colour(0.8, 0.0, 0.4, 0.9));//(G4Colour(0.83, 0.83, 0.83, 0.5));
+  vesselVisAttr->SetForceSolid(true);
+  vesselVisAttr->SetVisibility(true);
+  logicBloodVessel->SetVisAttributes(vesselVisAttr);
+
   logicWorld->SetVisAttributes(&visWhite);
-  logicWaterBox->SetVisAttributes(&visWhite);
+  logicWaterBox->SetVisAttributes(&visInvWhite);
 
-  solidWaterCylinder = new G4Tubs("waterCylinder", 0, 100 * um, 3.5 * um, 0, 360);
-  G4LogicalVolume *logicWaterCylinder = new G4LogicalVolume(solidWaterCylinder, waterMaterial, "waterCylinder");
-  G4PVPlacement *physiWaterCyl = new G4PVPlacement(0, G4ThreeVector(), logicWaterCylinder, "waterCylinder", logicWorld, 0, false, 0);
-  logicWaterCylinder->SetVisAttributes(&visWhite);
+  G4double delta = 10 * nm;
 
-  solidPrism = new G4Box("solidPrism", prism_base / 2, len_y, prism_base / 2);
-  G4LogicalVolume *logicPrism = new G4LogicalVolume(solidPrism, waterMaterial, "logicPrism");
-
-  for (G4int j = 0; j < 16; j++)
-  {
-    G4Rotate3D rotZ(j * 360 / 16 * deg, G4ThreeVector(0, 0, 1));
-    G4Translate3D transPrism(G4ThreeVector(0., (len_y + 10 * um), 0.));
-    G4Transform3D transformPrism = (rotZ) * (transPrism); // first translation then rotation
-
-    G4PVPlacement *physPrism = new G4PVPlacement(transformPrism, logicPrism, "physPrism", logicWaterCylinder, false, j, true);
-  }
-  G4double chromatin_X = fBoxSize;
-  G4double chromatin_Y = fBoxSize;
-  G4double chromatin_Z = 300 * nm;
-
-  G4Box *solidTrackingVol = new G4Box("TrackingVol", 9 * nm + chromatin_X / 2, 9 * nm + chromatin_Y / 2, 9 * nm + chromatin_Z / 2); // volume to track radicals in 9nm larger than chromatin
+  G4Box *solidTrackingVol = new G4Box("TrackingVol", delta * nm + fBoxSize / 2, delta * nm + fBoxSize / 2, delta * nm + fBoxSize / 2); // volume to track radicals in 9nm larger than chromatin
   G4LogicalVolume *logicTrackingVol = new G4LogicalVolume(solidTrackingVol,
                                                           waterMaterial,
                                                           "TrackingVol");
-  G4PVPlacement *physiTrackingVol = new G4PVPlacement(0,
-                                                      G4ThreeVector(displ_X, displ_Y, displ_Z),
-                                                      logicTrackingVol,
-                                                      "TrackingVol",
-                                                      logicWaterBox,
-                                                      0,
-                                                      false,
-                                                      false);
-  logicTrackingVol->SetVisAttributes(&visWhite);
+  int ibox = 0;
+  int i_r = 0;
+  for (G4double r = 0; r <= 3; r += 1)
+  {
+    for (G4int k = 0; k < 10; k++)
+    {
 
-  G4Box *solidChromatinSegment = new G4Box("chromatinSegment", chromatin_X / 2, chromatin_Y / 2, chromatin_Z / 2);
-  G4LogicalVolume *logicChromatinSegment = new G4LogicalVolume(solidChromatinSegment,
-                                                               waterMaterial,
-                                                               "chromatinSegment");
+      for (G4double theta = 0; theta < 2 * 3.14159; theta += 3.14159 / 10)
+      {
 
-  chromatinVolume = chromatin_X / m * chromatin_Y / m * chromatin_Z / m; // in m3
+        G4RotationMatrix *rot = new G4RotationMatrix(theta,
+                                                     0,
+                                                     0);
 
-  G4PVPlacement *physiChromatinSegment = new G4PVPlacement(0,
-                                                           G4ThreeVector(),
-                                                           logicChromatinSegment,
-                                                           "chromatinSegment",
-                                                           logicTrackingVol,
-                                                           0,
-                                                           0,
-                                                           false);
-  logicChromatinSegment->SetVisAttributes(&visPink);
+        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector((2+(r*0.5)) * cos(theta) * um, (2+(r*0.5)) * sin(theta) * um, ((-3 + (k + 1) * 0.6) - .3) * um),
+                                                            logicTrackingVol,
+                                                            "TrackingVol",
+                                                            logicWaterBox,
+                                                            false,
+                                                            ibox,
+                                                            false);
+        ibox++;
+      }
+    }
+    i_r++;
+  }
+
+  logicTrackingVol->SetVisAttributes(&visGrey);
+
+  chromatinVolume = fBoxSize / m * fBoxSize / m * fBoxSize / m; // in m3
+
   G4Region *aRegion = new G4Region("Target");
 
   G4ProductionCuts *cuts = new G4ProductionCuts();

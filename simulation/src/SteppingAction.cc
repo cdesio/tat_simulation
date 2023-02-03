@@ -58,9 +58,8 @@ SteppingAction::SteppingAction(/*DetectorConstruction* fpDet*/)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 SteppingAction::~SteppingAction()
-{}
-
-
+{
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 void SteppingAction::UserSteppingAction(const G4Step *step)
@@ -69,7 +68,6 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   G4int flagVolume = 0.;
 
   const G4String &volumeName = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
-
 
   if (volumeName == "sugar0")
   {
@@ -92,13 +90,13 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   {
 
     G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
-  const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
-      G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+    const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
+        G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
 
-  G4String primaryName = generatorAction->primaryName;
+    G4String primaryName = generatorAction->primaryName;
+    // G4cout << "DEBUG: primaryName: " << primaryName << ", particleName: " << particleName << G4endl;
 
-    if ((((particleName == "alpha") || (particleName == "alpha+") || (particleName == "helium"))&&( primaryName =="alpha")) || ((primaryName =="e-")&&(step->GetTrack()->GetTrackID() ==1)) || (((particleName == "proton") || (particleName == "hydrogen"))&&( primaryName =="proton")))
-
+    if ((((particleName == "alpha") || (particleName == "alpha+") || (particleName == "helium")) && (step->GetTrack()->GetTrackID() == 1)) || ((particleName == "e-") && (step->GetTrack()->GetTrackID() == 1)))
     {
       if (false == fpEventAction->GetStartTrackFound())
       {
@@ -160,8 +158,12 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     analysisManager->FillNtupleDColumn(1, 2, point.x() / nanometer);
     analysisManager->FillNtupleDColumn(1, 3, point.y() / nanometer);
     analysisManager->FillNtupleDColumn(1, 4, point.z() / nanometer);
-    analysisManager->FillNtupleIColumn(1, 5, particleID[step->GetTrack()->GetParticleDefinition()->GetParticleName()]);
+    // analysisManager->FillNtupleIColumn(1, 5, particleID[step->GetTrack()->GetParticleDefinition()->GetParticleName()]);
+    analysisManager->FillNtupleSColumn(1, 5, step->GetTrack()->GetParticleDefinition()->GetParticleName());
+
     analysisManager->FillNtupleDColumn(1, 6, step->GetPostStepPoint()->GetKineticEnergy());
+    // analysisManager->FillNtupleIColumn(1, 7, copyNo);
+    // analysisManager->FillNtupleDColumn(1, 8, time);
     analysisManager->AddNtupleRow(1);
   }
 }

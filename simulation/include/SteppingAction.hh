@@ -23,7 +23,7 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// 
+//
 #pragma once
 #include "G4UserSteppingAction.hh"
 #include "G4String.hh"
@@ -38,23 +38,24 @@ class DetectorConstruction;
 class SteppingAction : public G4UserSteppingAction
 {
 public:
-    SteppingAction(/*DetectorConstruction* fpDet*/);
-    ~SteppingAction() override;
+  SteppingAction(/*DetectorConstruction* fpDet*/);
+  ~SteppingAction() override;
 
-    void UserSteppingAction(const G4Step* step) override;
-    // void Initialize();
+  void UserSteppingAction(const G4Step *step) override;
+  // void Initialize();
 private:
-  EventAction* fpEventAction;
+  EventAction *fpEventAction;
 
-    void RemoveTracks(const G4Step* step);
+  void RemoveTracks(const G4Step *step);
 
-    std::map<G4String, int> particleID = {
-        { "alpha", 1 },
-        { "alpha+", 2 }, 
-        { "helium", 3 },
-        { "e-", 4 },
-        { "proton", 5 }, 
-        { "hydrogen", 6 }, 
-};
-
+  std::map<G4String, int> particleID = {
+      {"alpha", 1},
+      {"gamma", 2},
+      {"e-", 3},
+      {"nu_e", 4},
+      {"At211", 5},
+      {"Po211", 6},
+      {"Bi207", 7},
+      {"Pb207", 8},
+  };
 };

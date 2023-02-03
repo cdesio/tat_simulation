@@ -31,9 +31,11 @@
 #include "Randomize.hh"
 #include "G4GeneralParticleSource.hh"
 #include "CommandLineParser.hh"
-#include "CLHEP/Units/SystemOfUnits.h"
+#include "G4SystemOfUnits.hh"
+// #include "CLHEP/Units/SystemOfUnits.h"
 #include "G4AnalysisManager.hh"
 #include "G4ParticleTable.hh"
+#include "G4IonTable.hh"
 
 using namespace G4DNAPARSER;
 using CLHEP::nanometer;
@@ -88,18 +90,69 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     G4double momentumZ = fPS_data[eventNum][5];
     G4double particleEnergy = fPS_data[eventNum][6];
     G4double photonEvent = fPS_data[eventNum][7];
-    // G4int particle_ID = fPS_data[eventNum][8];
-    // G4cout << "particleID: " << particle_ID << " particle energy: " << particleEnergy << G4endl;
+    G4double particleID = fPS_data[eventNum][8];
+    G4double copyNoPS = fPS_data[eventNum][9];
+    G4double timePS = fPS_data[eventNum][10];
+    G4int pdg_enc = fPS_data[eventNum][11];
 
+    time = timePS;
+    copyNo = copyNoPS;
+    // // DEBUG
+    // G4cout << "ph. Evt: " << photonEvent << ") PID: " << particleID << ". pos: " << positionX / um << ", " << positionY / um << ", " << positionZ / um << ". mom: " << momentumX << ", " << momentumY << ", " << momentumZ << " E: " << particleEnergy / MeV << " copyNo: " << copyNo << G4endl;
+    //G4cout << "ph. Evt: " << photonEvent << ") PID: " << particleID << ". PDG: " << pdg_enc << G4endl;
+    // // DEBUG
     G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
-    // G4ParticleDefinition *particle = particleTable->FindParticle("alpha");
-    // if (particle_ID == 0)
-    //   fParticleGun->SetParticleDefinition(particleTable->FindParticle("e-"));
-    // if (particle_ID == 1)
-    //   fParticleGun->SetParticleDefinition(particleTable->FindParticle("gamma"));
-    // if (particle_ID == 2)
-    fParticleGun->SetParticleDefinition(particleTable->FindParticle("alpha"));
+    G4IonTable *ionTable = G4IonTable::GetIonTable();
+    G4ParticleDefinition *particle = particleTable->FindParticle("geantino");
 
+    if (particleID == 1)
+    {
+      particle = particleTable->FindParticle("alpha");
+    }
+    else if (particleID == 2)
+    {
+      particle = particleTable->FindParticle("gamma");
+    }
+    else if (particleID == 3)
+    {
+      particle = particleTable->FindParticle("e-");
+    }
+    else if (particleID == 4)
+      return;
+    //      particle = particleTable->FindParticle("geantino");
+
+    else if (particleID == 5)
+    {
+      // particle = particleTable->FindParticle("alpha");
+      //  particle = particleTable->FindParticle("At211");
+      particle = ionTable->GetIon(85, 211, 0);
+      // return;
+    }
+    else if (particleID == 6)
+    {
+      particle = ionTable->GetIon(84, 211, 0);
+    }
+    else if (particleID == 7)
+    {
+      particle = ionTable->GetIon(83, 207, 0);
+    }
+    else if (particleID == 8)
+    {
+      particle = ionTable->GetIon(82, 207, 0);
+    }
+    else
+    {
+      G4cout << "DEBUG: unknown particle. Throwing geantino." << G4endl;
+      particle = particleTable->FindParticle("geantino");
+    }
+    // else
+    // {
+    // particle = particleTable->FindParticle(pdg_enc);
+    // }
+    // G4cout << "particle: " << particle->GetParticleName() << G4endl;
+    fParticleGun->SetParticleDefinition(particle);
+
+    G4cout << "shooting a(n) " << particle->GetParticleName() << G4endl;
     fParticleGun->SetParticlePosition(G4ThreeVector(positionX, positionY, positionZ));
     fParticleGun->SetParticleEnergy(particleEnergy);
     fParticleGun->SetParticleMomentumDirection(G4ThreeVector(momentumX, momentumY, momentumZ));
@@ -113,6 +166,8 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 
       analysisManager->FillNtupleIColumn(4, 0, eventNum);
       analysisManager->FillNtupleIColumn(4, 1, photonEvent);
+      analysisManager->FillNtupleIColumn(4, 2, copyNo);
+      analysisManager->FillNtupleIColumn(4, 3, particleID);
       analysisManager->AddNtupleRow(4);
     }
   }

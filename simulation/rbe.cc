@@ -80,17 +80,18 @@ int main(int argc, char **argv)
       return 1;
     }
 
-    float line[8];
+    float line[12];
 
     // int i = 0;
     while (ps_file.read((char *)&line, sizeof line))
     {
-      PS_data.push_back({line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], line[8]});
+      PS_data.push_back({line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], line[8], line[9], line[10], line[11]});
+
       // ++i;
     }
   }
   std::unique_ptr<G4RunManager> pRunManager(G4RunManagerFactory::CreateRunManager());
-  pRunManager->SetNumberOfThreads(4); // by default
+  pRunManager->SetNumberOfThreads(1); // by default
 
   DetectorConstruction *pDetector = new DetectorConstruction();
   pDetector->RegisterParallelWorld(new ParallelWorld("ChemistryWorld"));

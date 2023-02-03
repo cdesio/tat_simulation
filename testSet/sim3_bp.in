@@ -1,0 +1,25 @@
+/run/verbose 2
+/control/verbose 2
+
+/det/setSize 300 nm
+/run/numberOfThreads 8
+/run/initialize 
+
+/gps/particle alpha
+
+/gps/pos/type Surface
+/gps/pos/shape Sphere
+/gps/pos/centre 0 0 0 um
+/gps/pos/radius 1 um
+
+/gps/ene/type Mono
+/gps/ene/mono 5 MeV
+
+/gps/ang/type cos
+/gps/ang/maxtheta 0.2628229775671818 rad
+
+/scheduler/endTime 5 nanosecond
+
+/run/printProgress 1
+
+/run/beamOn 500

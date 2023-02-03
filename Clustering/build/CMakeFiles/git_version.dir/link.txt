@@ -1,0 +1,2 @@
+/Users/yw18581/opt/anaconda3/envs/clustering/bin/x86_64-apple-darwin13.4.0-ar qc libgit_version.a CMakeFiles/git_version.dir/generated/git_version.cpp.o
+/Users/yw18581/opt/anaconda3/envs/clustering/bin/llvm-ranlib libgit_version.a
