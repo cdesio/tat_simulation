@@ -56,42 +56,42 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction * Det)
   
   spacing = new G4UIcmdWithADoubleAndUnit("/det/set_spacing",this);
   spacing->SetGuidance("Set radial spacing of boxes");
-  spacing->SetParameterName("spacing",true);
+  spacing->SetParameterName("spacing",false);
   spacing->SetRange("spacing>0.");
   spacing->SetDefaultValue(2.0);
-  spacing->SetDefaultUnit("um");
+  spacing->SetDefaultUnit("micrometer");
   spacing->AvailableForStates(G4State_PreInit,G4State_Idle);
   spacing->SetToBeBroadcasted(false);
 
   start_R = new G4UIcmdWithADoubleAndUnit("/det/set_startR",this);
   start_R->SetGuidance("Set radial spacing of boxes");
-  start_R->SetParameterName("start_R",true);
-  start_R->SetRange("Size>0.");
+  start_R->SetParameterName("start_R",false);
+  //start_R->SetRange("start_R>=10. um");
   start_R->SetDefaultValue(10.5);
-  start_R->SetDefaultUnit("um");
+  start_R->SetDefaultUnit("micrometer");
   start_R->AvailableForStates(G4State_PreInit,G4State_Idle);
   start_R->SetToBeBroadcasted(false);
 
   ndiv_R = new G4UIcmdWithAnInteger("/det/set_ndiv_R",this);
   ndiv_R->SetGuidance("Set no. divisions in R");
-  ndiv_R->SetParameterName("ndiv_R",true);
+  ndiv_R->SetParameterName("ndiv_R",false);
   ndiv_R->SetDefaultValue(10);
-  //ndiv_R->AvailableForStates(G4State_PreInit,G4State_Idle);
-  //ndiv_R->SetToBeBroadcasted(false);
+  ndiv_R->AvailableForStates(G4State_PreInit,G4State_Idle);
+  ndiv_R->SetToBeBroadcasted(false);
   
   ndiv_Z = new G4UIcmdWithAnInteger("/det/set_ndiv_Z",this);
   ndiv_Z->SetGuidance("Set no. divisions in z");
-  ndiv_Z->SetParameterName("ndiv_Z",true);
+  ndiv_Z->SetParameterName("ndiv_Z",false);
   ndiv_Z->SetDefaultValue(10);
-  //ndiv_Z->AvailableForStates(G4State_PreInit,G4State_Idle);
-  //ndiv_Z->SetToBeBroadcasted(false);
+  ndiv_Z->AvailableForStates(G4State_PreInit,G4State_Idle);
+  ndiv_Z->SetToBeBroadcasted(false);
   
   ndiv_theta = new G4UIcmdWithAnInteger("/det/set_ndiv_theta",this);
   ndiv_theta->SetGuidance("Set no. divisions in theta");
-  ndiv_theta->SetParameterName("ndiv_theta",true);
+  ndiv_theta->SetParameterName("ndiv_theta",false);
   ndiv_theta->SetDefaultValue(20);
-  //ndiv_theta->AvailableForStates(G4State_PreInit,G4State_Idle);
-  //ndiv_theta->SetToBeBroadcasted(false);
+  ndiv_theta->AvailableForStates(G4State_PreInit,G4State_Idle);
+  ndiv_theta->SetToBeBroadcasted(false);
   
 }
 

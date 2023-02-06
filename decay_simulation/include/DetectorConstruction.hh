@@ -56,6 +56,11 @@ public:
 
 private:
          DetectorMessenger* fDetectorMessenger;
-         G4double              boxSize, spacing, start_R;
-         G4int                  ndiv_R, ndiv_theta, ndiv_Z;
+         G4double              boxSize;
+         G4double spacing;
+         G4double start_R;
+
+         G4int ndiv_R;
+         G4int ndiv_theta;
+         G4int ndiv_Z;
 };

@@ -3,6 +3,13 @@
 
 /run/initialize 
 
+#/det/set_ndiv_R 10
+#/det/set_ndiv_theta 80
+#/det/set_ndiv_Z 10
+
+#/det/set_spacing 4.0 um
+#/det/set_startR 20.5 um
+
 
 /gps/pos/type Surface
 /gps/pos/shape Cylinder

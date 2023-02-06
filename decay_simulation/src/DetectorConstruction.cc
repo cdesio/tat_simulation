@@ -90,6 +90,11 @@ static G4VisAttributes visLime(true, G4Colour(0.7, 1.0, 0.0, 0.5));
 DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction()
 {
   boxSize = 300 * nm;
+  start_R = 10.5 * um;
+  spacing = 2.0 * um;
+  ndiv_R = 20;
+  ndiv_theta = 80;
+  ndiv_Z = 10;
   fDetectorMessenger = new DetectorMessenger(this);
 }
 
@@ -169,19 +174,19 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                           "TrackingVol");
   int ibox = 0;
   int i_r = 0;
-  for (G4double r = 0; r <= ndiv_R-1; r += 1)
+  for (G4double r = 0; r <= 20-1; r += 1)
   {
-    for (G4int k = 0; k < ndiv_Z; k++)
+    for (G4int k = 0; k < 10; k++)
     {
 
-      for (G4double theta = 0; theta < 2 * 3.14159; theta += 3.14159 / (ndiv_theta/2))
+      for (G4double theta = 0; theta < 2 * 3.14159; theta += 3.14159 / (80/2))
       {
 
         G4RotationMatrix *rot = new G4RotationMatrix(theta,
                                                      0,
                                                      0);
-
-        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector((start_R+(r*spacing)) * cos(theta) * um, (start_R+(r*spacing)) * sin(theta) * um, ((-3 + (k + 1) * 0.6) - .3) * um),
+        //G4cout << "n_div_R: " << ndiv_R << ", ndiv_Z: " << ndiv_Z << ", ndiv_Theta: " << ndiv_theta << ", start_R: " << start_R << ", spacing: " << spacing << G4endl;
+        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector((10.5+(r*2.0)) * cos(theta) * um, (10.5+(r*2.0)) * sin(theta) * um, ((-3 + (k + 1) * 0.6) - .3) * um),
                                                             logicTrackingVol,
                                                             "TrackingVol",
                                                             logicWaterBox,
