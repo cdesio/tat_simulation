@@ -4,3 +4,4 @@ photon_simulation/build/*
 *.root
 *.log
 Clustering/build/*
+Clustering/build/CMakeFiles/*
