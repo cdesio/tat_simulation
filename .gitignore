@@ -1,5 +1,5 @@
 simulation/build/*
-photon_simulation/build/*
+decay_simulation/build/*
 *.csv
 *.root
 *.log
