@@ -1,0 +1,20 @@
+/run/verbose 2
+/control/verbose 2
+
+/run/initialize 
+
+/gps/particle gamma
+
+/gps/pos/type Surface
+/gps/pos/shape Sphere
+/gps/pos/centre 0 0 0
+/gps/pos/radius 3 mm
+
+/gps/ang/type cos
+/gps/ang/maxtheta 0.000075 rad
+
+/gps/ene/type Mono
+
+/run/printProgress 10000
+
+/run/beamOn 100000
