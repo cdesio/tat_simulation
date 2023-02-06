@@ -169,7 +169,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                           "TrackingVol");
   int ibox = 0;
   int i_r = 0;
-  for (G4double r = 0; r <= 3; r += 1)
+  for (G4double r = 0; r <= 19; r += 1)
   {
     for (G4int k = 0; k < 10; k++)
     {
@@ -181,7 +181,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                      0,
                                                      0);
 
-        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector((10.5+(r*0.5)) * cos(theta) * um, (10.5+(r*0.5)) * sin(theta) * um, ((-3 + (k + 1) * 0.6) - .3) * um),
+        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector((10.5+(r*2.)) * cos(theta) * um, (10.5+(r*2.)) * sin(theta) * um, ((-3 + (k + 1) * 0.6) - .3) * um),
                                                             logicTrackingVol,
                                                             "TrackingVol",
                                                             logicWaterBox,
