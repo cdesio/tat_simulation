@@ -1,4 +1,0 @@
-/run/verbose 2
-/control/verbose 2
-/det/setSize 300 nm
-/run/numberOfThreads 1
