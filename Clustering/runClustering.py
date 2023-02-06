@@ -68,7 +68,7 @@ def readClusteringGitHash(builddir):
     return data[0]
 
 
-def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxDamage: float, probIndirect: float, sugarPosFilename: str, filenamePhoton: Union[str, bool] = False, separate_r=False):
+def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxDamage: float, probIndirect: float, sugarPosFilename: str, filenamePhoton: Union[str, bool] = False, separate_r=False, n_boxes = 3200, boxes_per_R = 800, n_files = 4):
 
     with open(sugarPosFilename, "r") as f:
         data = f.readlines()
@@ -280,9 +280,10 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
         mapping_copyNo[eventInfo.EventNo] = eventInfo.copyNo
     
     ranges_radii = {}
-    cnumbers = np.arange(0, 1000, 200)
+    cnumbers = np.arange(0, n_boxes+boxes_per_R, boxes_per_R)
     for r, (cmin, cmax) in enumerate(zip(cnumbers, cnumbers[1:])):
-        ranges_radii[r] = range(cmin, cmax-1)
+        ranges_radii[r] = range(cmin, cmax)
+    assert(len(ranges_radii)==n_files)
     #print(f"mapping_copyno: {mapping_copyNo}, ranges_radii: {ranges_radii}")
     # end
     if separate_r:
@@ -309,7 +310,7 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
                             event, dosePerEvent[event], pathLength[event], meanKEperEvent[event], text))
                         f.write('\n')
 
-            with open("DSBclusterSize_"+os.path.splitext(outputFilename)[0]+f"_{r}.csv", "w") as f:
+            with open("DSBclusterSize_"+os.path.splitext(os.path.split(outputFilename)[1])[0]+f"_{r}.csv", "w") as f:
                 f.write(
                     "Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,SimGitHash,ClusteringGitHash\n")
                 if filenamePhoton:
@@ -351,7 +352,7 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
                         event, dosePerEvent[event], pathLength[event], meanKEperEvent[event], text))
                     f.write('\n')
 
-            with open("DSBclusterSize_{}".format(outputFilename), "w") as f:
+            with open("DSBclusterSize_"+os.path.splitext(os.path.split(outputFilename)[1])[0]+".csv", "w") as f:
                 f.write(
                     "Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,SimGitHash,ClusteringGitHash\n")
                 if filenamePhoton:
