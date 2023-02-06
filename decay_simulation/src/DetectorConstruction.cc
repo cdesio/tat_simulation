@@ -89,7 +89,7 @@ static G4VisAttributes visLime(true, G4Colour(0.7, 1.0, 0.0, 0.5));
 
 DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction()
 {
-  fBoxSize = 300 * nm;
+  boxSize = 300 * nm;
   fDetectorMessenger = new DetectorMessenger(this);
 }
 
@@ -163,25 +163,25 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   G4double delta = 10 * nm;
 
-  G4Box *solidTrackingVol = new G4Box("TrackingVol", delta * nm + fBoxSize / 2, delta * nm + fBoxSize / 2, delta * nm + fBoxSize / 2); // volume to track radicals in 9nm larger than chromatin
+  G4Box *solidTrackingVol = new G4Box("TrackingVol", delta * nm + boxSize / 2, delta * nm + boxSize / 2, delta * nm + boxSize / 2); // volume to track radicals in 9nm larger than chromatin
   G4LogicalVolume *logicTrackingVol = new G4LogicalVolume(solidTrackingVol,
                                                           waterMaterial,
                                                           "TrackingVol");
   int ibox = 0;
   int i_r = 0;
-  for (G4double r = 0; r <= 19; r += 1)
+  for (G4double r = 0; r <= ndiv_R-1; r += 1)
   {
-    for (G4int k = 0; k < 10; k++)
+    for (G4int k = 0; k < ndiv_Z; k++)
     {
 
-      for (G4double theta = 0; theta < 2 * 3.14159; theta += 3.14159 / 40)
+      for (G4double theta = 0; theta < 2 * 3.14159; theta += 3.14159 / (ndiv_theta/2))
       {
 
         G4RotationMatrix *rot = new G4RotationMatrix(theta,
                                                      0,
                                                      0);
 
-        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector((10.5+(r*2.)) * cos(theta) * um, (10.5+(r*2.)) * sin(theta) * um, ((-3 + (k + 1) * 0.6) - .3) * um),
+        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector((start_R+(r*spacing)) * cos(theta) * um, (start_R+(r*spacing)) * sin(theta) * um, ((-3 + (k + 1) * 0.6) - .3) * um),
                                                             logicTrackingVol,
                                                             "TrackingVol",
                                                             logicWaterBox,
@@ -196,7 +196,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   logicTrackingVol->SetVisAttributes(&visGrey);
 
-  chromatinVolume = fBoxSize / m * fBoxSize / m * fBoxSize / m; // in m3
+  chromatinVolume = boxSize / m * boxSize / m * boxSize / m; // in m3
 
   G4Region *aRegion = new G4Region("Target");
 
@@ -214,8 +214,36 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   return physiWorld;
 }
-void DetectorConstruction::SetSize(G4double value)
+void DetectorConstruction::set_size(G4double value)
 {
-  fBoxSize = value;
+  boxSize = value;
   G4RunManager::GetRunManager()->ReinitializeGeometry();
 }
+void DetectorConstruction::set_ndiv_R(G4int value)
+{
+  ndiv_R = value;
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
+}
+void DetectorConstruction::set_ndiv_theta(G4int value)
+{
+  ndiv_theta = value;
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
+}
+void DetectorConstruction::set_ndiv_Z(G4int value)
+{
+  ndiv_Z = value;
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
+}
+
+void DetectorConstruction::set_spacing(G4double value)
+{
+  spacing = value;
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
+}
+
+void DetectorConstruction::set_startR(G4double value)
+{
+  start_R = value;
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
+}
+

@@ -42,6 +42,7 @@ class G4UIcommand;
 class G4UIcmdWithAString;
 class G4UIcmdWithADoubleAndUnit;
 class G4UIcmdWithoutParameter;
+class G4UIcmdWithAnInteger;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -57,7 +58,12 @@ class DetectorMessenger: public G4UImessenger
   private:
   
     DetectorConstruction*      fDetector;
-    G4UIcmdWithADoubleAndUnit* fSizeCmd;
+    G4UIcmdWithADoubleAndUnit* boxSize;
+    G4UIcmdWithADoubleAndUnit* spacing;
+    G4UIcmdWithADoubleAndUnit* start_R;
+    G4UIcmdWithAnInteger* ndiv_R;
+    G4UIcmdWithAnInteger* ndiv_theta;
+    G4UIcmdWithAnInteger* ndiv_Z;
 
 };
 

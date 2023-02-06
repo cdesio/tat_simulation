@@ -41,7 +41,13 @@ public:
     ~DetectorConstruction() override;
     G4VPhysicalVolume *Construct() override;
     void UpdateGeometry();
-    void SetSize     (G4double);              
+    void set_size     (G4double);  
+    void set_spacing (G4double);
+    void set_startR(G4double);
+    void set_ndiv_R (G4int);
+    void set_ndiv_theta(G4int);
+    void set_ndiv_Z(G4int);
+
 
 
     G4double chromatinVolume;
@@ -50,5 +56,6 @@ public:
 
 private:
          DetectorMessenger* fDetectorMessenger;
-     G4double              fBoxSize;
+         G4double              boxSize, spacing, start_R;
+         G4int                  ndiv_R, ndiv_theta, ndiv_Z;
 };
