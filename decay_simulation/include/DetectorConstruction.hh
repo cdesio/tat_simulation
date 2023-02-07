@@ -44,6 +44,7 @@ public:
     void set_size     (G4double);  
     void set_spacing (G4double);
     void set_startR(G4double);
+    void set_vessellength(G4double);
     void set_ndiv_R (G4int);
     void set_ndiv_theta(G4int);
     void set_ndiv_Z(G4int);
@@ -59,6 +60,7 @@ private:
          G4double              boxSize;
          G4double spacing;
          G4double start_R;
+         G4double vessel_length;
 
          G4int ndiv_R;
          G4int ndiv_theta;
