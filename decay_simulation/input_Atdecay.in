@@ -1,7 +1,7 @@
 /run/verbose 2
 /control/verbose 2
 
-/det/set_ndiv_R 10
+/det/set_ndiv_R 20
 /det/set_ndiv_theta 80
 /det/set_ndiv_Z 10
 
@@ -26,4 +26,4 @@
 /gps/energy 0 MeV
 /run/printProgress 10000
 
-/run/beamOn 0
+/run/beamOn 100
