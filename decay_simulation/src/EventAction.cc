@@ -80,14 +80,17 @@ void EventAction::EndOfEventAction(const G4Event *)
   Command *command(0);
   if ((command = parser->GetCommandIfActive("-out")) == 0)
   return;
-
+  auto fpEventAction = (EventAction *)G4EventManager::GetEventManager()->GetUserEventAction();
   if ((fEdep>0) && (fpathLengthTotal>0)) //only save edep>0 to reduce output file size
   {
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
-  analysisManager->FillNtupleDColumn(2,0, (fEdep/joule));
-  analysisManager->FillNtupleIColumn(2,1, G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID());
-  analysisManager->FillNtupleDColumn(2, 2, fpathLengthTotal / nanometer);
-  analysisManager->AddNtupleRow(2);
+  analysisManager->FillNtupleDColumn(3,0, (fEdep/joule));
+  analysisManager->FillNtupleDColumn(3, 1, (fEdep / MeV));
+  analysisManager->FillNtupleIColumn(3,2, G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID());
+  analysisManager->FillNtupleDColumn(3, 3, fpathLengthTotal / nanometer);
+  analysisManager->FillNtupleIColumn(3, 4, fpEventAction->GetNumSecondaries());
+
+  analysisManager->AddNtupleRow(3);
   }
 
   if (fpathLengthTotal>0)
