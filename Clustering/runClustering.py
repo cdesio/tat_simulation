@@ -99,7 +99,7 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
     if filenamePhoton:
         LET = "N/A"
     else:
-        LET = tInfo.MeanLET
+        LET = "N/A"#tInfo.MeanLET
     gitHash = tInfo.GitHash
 
     assert (len(data) == numBP)
@@ -126,8 +126,8 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
             meanKEperEvent[tEdep.EventNo] = (
                 tEdep.PrimaryKEEntrance+tEdep.PrimaryKEExit)/2
         else:
-            pass
-            #meanKEperEvent[tEdep.EventNo] = "N/A"
+            
+            meanKEperEvent[tEdep.EventNo] = "N/A"
 
         if tEdep.Edep_J > 0:
             dosePerEvent[tEdep.EventNo] = tEdep.Edep_J / \
@@ -140,6 +140,7 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
         energy = "N/A"
 
     numEvt += 1  # zero indexed
+    
     #print(meanKEperEvent)
     if filenamePhoton:
         dosePerEventPhoton = {}
