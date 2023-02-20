@@ -206,7 +206,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       //G4int stepID = step->GetTrack()->GetCurrentStepNumber();
       G4int trackID = step->GetTrack()->GetTrackID();
       // DEBUG
-      G4cout << "DEBUG: evt:" << eventID << ", " << particleName << "(ID: " << particleID << ") entered TrackingVol. trackID:  " << trackID << " stepID: " << stepID << G4endl;
+      //G4cout << "DEBUG: evt:" << eventID << ", " << particleName << "(ID: " << particleID << ") entered TrackingVol. trackID:  " << trackID << " stepID: " << stepID << G4endl;
 
       G4TouchableHandle touchable = step->GetPostStepPoint()->GetTouchableHandle();
 
@@ -264,7 +264,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
     auto particleEnergy = step->GetPreStepPoint()->GetKineticEnergy();
     // DEBUG
-    G4cout << "DEBUG: evt:" << eventID << ", " << particleID << "( " << particleName << ") inside tracking vol: " << G4endl;
+    //G4cout << "DEBUG: evt:" << eventID << ", " << particleID << "( " << particleName << ") inside tracking vol: " << G4endl;
     G4String process = step->GetTrack()->GetCreatorProcess()->GetProcessTypeName(step->GetTrack()->GetCreatorProcess()->GetProcessType());
     
     float output[12];
