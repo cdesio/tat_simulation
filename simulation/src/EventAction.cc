@@ -112,7 +112,8 @@ void EventAction::EndOfEventAction(const G4Event *)
   else if (command = parser->GetCommandIfActive("-PS")) // all secondary electrons in phase space file are in the volume
   {
     analysisManager->FillNtupleDColumn(0, 0, (fEdep / joule));
-    analysisManager->FillNtupleIColumn(0, 1, G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID());
+    analysisManager->FillNtupleDColumn(0, 1, (fEdep / MeV));
+    analysisManager->FillNtupleIColumn(0, 2, G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID());
     analysisManager->AddNtupleRow();
   }
 }
