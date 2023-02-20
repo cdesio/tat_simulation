@@ -10,3 +10,4 @@ output/*
 output/test*
 *.sh
 simualation/build/CMakeFiles/*
+*pyc
