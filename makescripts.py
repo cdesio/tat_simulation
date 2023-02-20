@@ -1,8 +1,6 @@
 """
 Create all files required to run alpha simulation(s) with set seeds and energies. simulation & clustering run separately so that multithreading can be used on simulation
 """
-
-import numpy as np
 import os
 import random
 import argparse
@@ -23,13 +21,17 @@ parser.add_argument("--startR", type=float, default = 10.5)
 parser.add_argument("--gpsHalfZ", type = float, default = 3.0)
 parser.add_argument("--n", type=int, default = 100)
 parser.add_argument("--slurm", type=bool, required=False, default = False)
+parser.add_argument("--nthreads", type=int, default=4)
 
 args = parser.parse_args()
 
 
 
 # parameters to set
-numThread = 4
+if args.nthreads:
+    numThread = args.nthreads
+else:
+    numThread = 4
 
 if args.slurm:
     slurm = args.slurm
@@ -143,6 +145,24 @@ for s in spacing:
         f.write("\n")
         f.write(f"/run/printProgress {printProgress}\n")
         f.write(f"/run/beamOn {numIons}\n")
+    
+    filename_tat_mac = os.path.join(test_dir, f"tat_{numThread}thread.in")
+    with open(filename_tat_mac, "w") as f:
+        f.write("/run/verbose 2\n")
+        f.write("/control/verbose 2\n")
+        f.write("\n")       
+        f.write(f"/run/numberOfThreads {numThread}\n")
+        f.write("/run/initialize \n")
+        f.write("\n")
+        f.write("/gun/particle gamma\n")
+        f.write("/gun/energy 0\n")
+        f.write("/gun/momentumAmp 0 \n")
+        f.write("\n")
+        f.write("/scheduler/endTime 5 nanosecond\n")
+        f.write("\n")
+        f.write("/run/printProgress 1\n")
+        f.write("\n")
+        f.write("/run/beamOn 0\n")
 
     filename_decay = os.path.join(
     test_dir, f"run_Atdecay_{n_string}_spacing_{s_string}um_{seed}.sh")  # to be run from folder created
@@ -205,7 +225,7 @@ for s in spacing:
             f.write("source /opt/geant4-v11.1.0-install/bin/geant4.sh\n")
         # run DNA simulation
         f.write(
-            f"time {makerundir(dna_sim_folder)}/tat -PS {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um.bin -out {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um.root -sugar {sugarFile} -histone {histoneFile} -seed {seed} \n"
+            f"time {makerundir(dna_sim_folder)}/tat -mac {filename_tat_mac} -PS {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um.bin -out {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um.root -sugar {sugarFile} -histone {histoneFile} -seed {seed} \n"
         )
 
         
