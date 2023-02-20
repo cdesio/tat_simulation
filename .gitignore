@@ -6,3 +6,7 @@ decay_simulation/build/*
 Clustering/build/*
 Clustering/build/CMakeFiles/*
 Clustering/CMake*
+output/*
+output/test*
+*.sh
+
