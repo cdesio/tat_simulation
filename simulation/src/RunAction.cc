@@ -156,6 +156,7 @@ void RunAction::CreateNtuple()
   analysisManager->SetFirstNtupleId(0);
   analysisManager->CreateNtuple("EventEdep", "EventEdep");
   analysisManager->CreateNtupleDColumn("Edep_J");
+  analysisManager->CreateNtupleDColumn("Edep_MeV");
   analysisManager->CreateNtupleIColumn("EventNo");
   if ((command = parser->GetCommandIfActive("-PS")) == 0)
   {
