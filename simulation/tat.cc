@@ -119,6 +119,8 @@ int main(int argc, char **argv)
   if ((commandLine = parser->GetCommandIfActive("-PS")))
   {
     pRunManager->Initialize();
+    G4cout << "number of beams = " << PS_data.size() << G4endl;
+
     pRunManager->BeamOn(PS_data.size());
   }
   if ((commandLine = parser->GetCommandIfActive("-gui")))
