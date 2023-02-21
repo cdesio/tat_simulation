@@ -74,6 +74,7 @@ if args.n_div_Z:
 
 nboxes = n_div_R*n_div_theta*n_div_Z
 nboxes_string = f"{int(nboxes/1000)}k" if nboxes/1000 >=1 else f"{nboxes}"
+boxes_per_R = n_div_Z*n_div_theta
 
 if args.spacing:
     spacing = args.spacing
@@ -279,7 +280,7 @@ for s in spacing:
             f.write("source /user/home/yw18581/.bash_profile\n")
             f.write("source activate clustering\n")
             f.write(
-                f"/user/home/yw18581/.conda/envs/clustering/bin/python3.6 {clustering_dir}/run.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {n_div_theta*n_div_Z}\n"
+                f"/user/home/yw18581/.conda/envs/clustering/bin/python3.6 {clustering_dir}/run.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {boxes_per_R}\n"
             )
         else:
             f.write("conda activate clustering\n")
