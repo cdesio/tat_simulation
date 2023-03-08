@@ -69,6 +69,7 @@ if args.n_div_R:
 
 if args.n_div_theta:
     n_div_theta = args.n_div_theta
+    
 if args.n_div_Z:
     n_div_Z = args.n_div_Z
 
@@ -194,7 +195,7 @@ for s in spacing:
             f.write("source /opt/geant4-v11.1.0-install/bin/geant4.sh\n")
         # run decay simulation
         f.write(
-            f"time {makerundir(decay_sim_folder)}/decaySim -mac {filename_mac} -out {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um -seed {seed}\n"
+            f"time {makerundir(decay_sim_folder)}/decaySim -mac {filename_mac} -out {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_{seed} -seed {seed}\n"
         )
         
 
@@ -226,7 +227,7 @@ for s in spacing:
             f.write("source /opt/geant4-v11.1.0-install/bin/geant4.sh\n")
         # run DNA simulation
         f.write(
-            f"time {makerundir(dna_sim_folder)}/tat -mac {filename_tat_mac} -PS {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um.bin -out {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um.root -sugar {sugarFile} -histone {histoneFile} -seed {seed} \n"
+            f"time {makerundir(dna_sim_folder)}/tat -mac {filename_tat_mac} -PS {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_{seed}.bin -out {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root -sugar {sugarFile} -histone {histoneFile} -seed {seed} \n"
         )
 
         
@@ -280,12 +281,12 @@ for s in spacing:
             f.write("source /user/home/yw18581/.bash_profile\n")
             f.write("source activate clustering\n")
             f.write(
-                f"/user/home/yw18581/.conda/envs/clustering/bin/python3.6 {clustering_dir}/run.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {boxes_per_R}\n"
+                f"/user/home/yw18581/.conda/envs/clustering/bin/python3.6 {clustering_dir}/run.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {boxes_per_R}\n"
             )
         else:
             f.write("conda activate clustering\n")
             f.write(
-                f"python {clustering_dir}/run.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {n_div_theta*n_div_Z}\n"
+                f"python {clustering_dir}/run.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {n_div_theta*n_div_Z}\n"
             )
     filename_runscript = os.path.join(test_dir, f"run_script_At_{n_string}_spacing_{s_string}um_{seed}.sh")
     with open(filename_runscript, "w") as f:
@@ -316,5 +317,5 @@ for s in spacing:
             f.write(f"sbatch {filename_DNA}\n")
             f.write(f"sbatch {filename_clustering}\n")
         
-
+print(f"tmux new-session -d -s tat_{n_string}_{seed}\n 'source {filename_runscript}' ")
 print("Done.")
