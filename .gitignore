@@ -1,5 +1,7 @@
 simulation/build/*
+simulation/build/CMakeFiles/*
 decay_simulation/build/*
+decay_simulation/GNUmakefile
 *.csv
 *.root
 *.log
@@ -9,7 +11,7 @@ Clustering/CMake*
 output/*
 output/test*
 *.sh
-simualation/build/CMakeFiles/*
+simulation/build/CMakeFiles/*
 *pyc
 *png
 output/*png
