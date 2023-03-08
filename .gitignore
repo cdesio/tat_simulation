@@ -11,3 +11,5 @@ output/test*
 *.sh
 simualation/build/CMakeFiles/*
 *pyc
+*png
+output/*png
