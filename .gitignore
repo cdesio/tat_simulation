@@ -14,4 +14,5 @@ output/test*
 simulation/build/CMakeFiles/*
 *pyc
 *png
+*cmake
 output/*png
