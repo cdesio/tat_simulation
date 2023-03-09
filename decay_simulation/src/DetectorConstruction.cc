@@ -85,6 +85,8 @@ static G4VisAttributes visGreen(true, G4Colour(0.0, 1.0, 0.0));
 static G4VisAttributes visGrey(true, G4Colour(0.839216, 0.839216, 0.839216));
 static G4VisAttributes visDarkRed(true, G4Colour(0.8, 0.0, 0.3, 0.9));
 static G4VisAttributes visLime(true, G4Colour(0.7, 1.0, 0.0, 0.5));
+static G4VisAttributes visBlack(true, G4Colour(0,0,0));
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction()
@@ -123,9 +125,9 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   G4Tubs *solidVessel{nullptr};
 
   // larger world volume to provide build up for CPE for photon beam
-  solidWorld = new G4Box("world", 1 * mm, 1 * mm, 1 * mm);
+  solidWorld = new G4Box("world", 0.21 * mm, 0.21 * mm, 0.21 * mm);
 
-  solidWaterBox = new G4Orb("waterBox", .5 * mm);
+  solidWaterBox = new G4Orb("waterBox", .2 * mm);
   solidVessel = new G4Tubs("bloodVessel", 0, 10 * um, vessel_length, 0, 360 * deg);
 
   G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld,
@@ -165,6 +167,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   logicWorld->SetVisAttributes(&visWhite);
   logicWaterBox->SetVisAttributes(&visInvWhite);
+  
 
   G4double delta = 10 * nm;
 
@@ -186,20 +189,20 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                      0,
                                                      0);
         //G4cout << "n_div_R: " << ndiv_R << ", ndiv_Z: " << ndiv_Z << ", ndiv_Theta: " << ndiv_theta << ", start_R: " << start_R << ", spacing: " << spacing << G4endl;
-        
-        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector(((start_R + (r * spacing)) * cos(theta)), (start_R + (r * spacing)) * sin(theta), ((-3 + (k + 1) * 0.6) - 0.3) * um),
-                                                                                                               logicTrackingVol,
-                                                                                                               "TrackingVol",
-                                                                                                               logicWaterBox,
-                                                                                                               false,
-                                                                                                               ibox,
-                                                                                                               false);
+
+        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector(((start_R + (r * spacing)) * cos(theta)), (start_R + (r * spacing)) * sin(theta), ((-vessel_length/um + (k + 1) * (vessel_length/um * 2) / ndiv_Z) - 0.3) * um),
+                                                            logicTrackingVol,
+                                                            "TrackingVol",
+                                                            logicWaterBox,
+                                                            false,
+                                                            ibox,
+                                                            false);
         ibox++;
       }
     }
     i_r++;
   }
-
+  G4cout << "DEBUG: " << vessel_length/ndiv_Z << G4endl;
   logicTrackingVol->SetVisAttributes(&visGrey);
 
   chromatinVolume = boxSize / m * boxSize / m * boxSize / m; // in m3
