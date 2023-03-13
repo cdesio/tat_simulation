@@ -21,6 +21,7 @@ parser.add_argument("--vessellength", type = float, default = 10.0)
 parser.add_argument("--gpsHalfZ", type = float, default = 3.0)
 parser.add_argument("--n", type=int, default = 100)
 parser.add_argument("--slurm", type=bool, required=False, default = False)
+parser.add_argument("--seed", type=int, required=False)
 parser.add_argument("--nthreads", type=int, default=4)
 
 args = parser.parse_args()
@@ -37,8 +38,10 @@ if args.slurm:
     slurm = args.slurm
 else:
     slurm = False
-
-seed = random.randint(1, 10000)
+if args.seed:
+    seed = args.seed
+else:
+    seed = random.randint(1, 10000)
 
 if slurm:
     simulation_parent = os.path.join(
@@ -313,6 +316,7 @@ for s in spacing:
             f.write(f"source {filename_decay}\n")
             f.write(f"source {filename_DNA}\n")
             f.write(f"source {filename_clustering}\n")
+            f.write(f"python {os.path.join(simulation_parent, 'plot_results_DNA.py')} --folder {clustering_outdir} --fname_prefix out_AtDNA_{n_string}_spacing --spacing {s_string} --seed {seed} --n_div_R {n_div_R} --out_folder {test_dir}")
         if  slurm:
             f.write(f"sbatch {filename_decay}\n")
             f.write(f"sbatch {filename_DNA}\n")
