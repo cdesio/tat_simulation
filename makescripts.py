@@ -64,6 +64,7 @@ time_DNA = "0-24:00:00"
 time_clustering = "0-6:00:00"
 
 mem = 10
+
 targetSize = 300  # nanometers
 gpsRadius = 10 # micrometers
 
@@ -110,6 +111,7 @@ clustering_folder = os.path.join(simulation_parent, "Clustering")
 
 makerundir = lambda d: os.path.join(d, "build")
 projectcode="IFAC023282"
+
 #### create folder for current test
 test_dir = os.path.join(simulation_parent, f"output/{folder}")
 if not os.path.exists(test_dir):
@@ -183,7 +185,7 @@ for s in spacing:
         f.write("#!/bin/bash --login\n")
         if slurm:
             f.write(f"SBATCH --account={projectcode}\n")
-			f.write(f"#SBATCH --job-name=Atdecay_spacing_{s_string}um_{seed}\n")
+            f.write(f"#SBATCH --job-name=Atdecay_spacing_{s_string}um_{seed}\n")
             f.write(f"#SBATCH --output=Atdecay_spacing_{s_string}um_{seed}.out.%J\n")
             f.write(f"#SBATCH --error=Atdecay_spacing_{s_string}um_{seed}.err.%J\n")
             # maximum job time in D-HH:MM
@@ -216,7 +218,7 @@ for s in spacing:
     with open(filename_DNA, "w") as f:
         f.write("#!/bin/bash --login\n")
         if slurm:
-			f.write(f"SBATCH --account={projectcode}\n")
+            f.write(f"SBATCH --account={projectcode}\n")
             f.write(f"#SBATCH --job-name=AtDNA_spacing_{s_string}um_{seed}\n")
             f.write(f"#SBATCH --output=AtDNA_spacing_{s_string}um_{seed}.out.%J\n")
             f.write(f"#SBATCH --error=AtDNA_spacing_{s_string}um_{seed}.err.%J\n")
@@ -267,9 +269,7 @@ for s in spacing:
         if slurm:
             f.write(f"#SBATCH --job-name=clustering_At_{n_string}_spacing_{s_string}um\n")
             f.write(f"SBATCH --account={projectcode}\n")
-			f.write(
-                f"#SBATCH --output=clustering_At_{n_string}_spacing_{s_string}um.out.%J\n"
-            )
+            f.write(f"#SBATCH --output=clustering_At_{n_string}_spacing_{s_string}um.out.%J\n")
             f.write(f"#SBATCH --error=clustering_At_{n_string}_spacing_{s_string}um.err.%J\n")
             # maximum job time in D-HH:MM
             f.write(f"#SBATCH --time={time_clustering}\n")
