@@ -17,7 +17,7 @@ parser.add_argument("--n_div_theta", type=int,
                     help="n of divisions in R", default = 80)
 
 parser.add_argument("--startR", type=float, default = 10.5)
-
+parser.add_argument("--vessellength", type = float, default = 10.0)
 parser.add_argument("--gpsHalfZ", type = float, default = 3.0)
 parser.add_argument("--n", type=int, default = 100)
 parser.add_argument("--slurm", type=bool, required=False, default = False)
@@ -83,7 +83,8 @@ if args.spacing:
 if args.startR:
     startR = args.startR
 
-vessellength = 10
+if args.vessellength:
+    vessellength = args.vessellength
 
 if args.n:
     numIons = args.n
