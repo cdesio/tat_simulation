@@ -106,6 +106,7 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleSColumn(0, "particle_name");
   analysisManager->CreateNtupleIColumn(0, "copyNo");
   analysisManager->CreateNtupleIColumn(0, "stepID");
+  analysisManager->CreateNtupleDColumn(0, "step_length");
   analysisManager->CreateNtupleDColumn(0, "energy");
   analysisManager->CreateNtupleSColumn(0,"volume_name");
   analysisManager->FinishNtuple(0);

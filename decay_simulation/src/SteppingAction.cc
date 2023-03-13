@@ -141,19 +141,23 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   G4ThreeVector point = prePoint + G4UniformRand() * (postPoint - prePoint);
   G4int stepID = step->GetTrack()->GetCurrentStepNumber();
   auto particleEnergy = step->GetPostStepPoint()->GetKineticEnergy();
-  if(eventID<1000){
-  analysisManager->FillNtupleIColumn(0, 0, eventID);
-  analysisManager->FillNtupleDColumn(0, 1, dE / MeV);
-  analysisManager->FillNtupleDColumn(0, 2, point.x() / um);
-  analysisManager->FillNtupleDColumn(0, 3, point.y() / um);
-  analysisManager->FillNtupleDColumn(0, 4, point.z() / um);
-  analysisManager->FillNtupleIColumn(0, 5, particleID);
-  analysisManager->FillNtupleSColumn(0, 6, particleName);
-  analysisManager->FillNtupleIColumn(0, 7, copyNo);
-  analysisManager->FillNtupleIColumn(0, 8, stepID);
-  analysisManager->FillNtupleDColumn(0, 9, particleEnergy/MeV);
-  analysisManager->FillNtupleSColumn(0,10, volumeNamePre);
-  analysisManager->AddNtupleRow(0);
+  G4double steplength = step->GetStepLength();
+  
+  if (eventID <= 1000)
+  {
+    analysisManager->FillNtupleIColumn(0, 0, eventID);
+    analysisManager->FillNtupleDColumn(0, 1, dE / MeV);
+    analysisManager->FillNtupleDColumn(0, 2, point.x() / um);
+    analysisManager->FillNtupleDColumn(0, 3, point.y() / um);
+    analysisManager->FillNtupleDColumn(0, 4, point.z() / um);
+    analysisManager->FillNtupleIColumn(0, 5, particleID);
+    analysisManager->FillNtupleSColumn(0, 6, particleName);
+    analysisManager->FillNtupleIColumn(0, 7, copyNo);
+    analysisManager->FillNtupleIColumn(0, 8, stepID);
+    analysisManager->FillNtupleDColumn(0, 9, steplength);
+    analysisManager->FillNtupleDColumn(0, 10, particleEnergy / MeV);
+    analysisManager->FillNtupleSColumn(0, 11, volumeNamePre);
+    analysisManager->AddNtupleRow(0);
   }
   if (volumeNamePre == "TrackingVol")
   {
