@@ -121,7 +121,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     #plt.ylabel('Number of strand breaks $Gbp^{-1} per decay$)', fontsize=11)
     plt.ylabel('Number of strand breaks ($Gbp^{-1}$)', fontsize=11)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"SSB_{fname_prefix}_{spacing}um.png"))
+        plt.savefig(os.path.join(out_folder, f"SSB_{fname_prefix}_{spacing}um_{seed}.png"))
     else:
         plt.show()
 
@@ -140,7 +140,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     #plt.ylabel('Number of strand breaks $Gbp^{-1} per decay$)', fontsize=11)
     plt.ylabel('Number of strand breaks ($Gy^{-1} Gbp^{-1}$)', fontsize=11)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"SSB_byDose_{fname_prefix}_{spacing}um.png"))
+        plt.savefig(os.path.join(out_folder, f"SSB_byDose_{fname_prefix}_{spacing}um_{seed}.png"))
     else:
         plt.show()
 
@@ -160,7 +160,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     #plt.ylabel('Number of strand breaks $Gbp^{-1} per decay$)', fontsize=11)
     plt.ylabel('Number of Double Strand Breaks ($Gy^{-1} Gbp^{-1}$)', fontsize=11)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"DSB_byDose_{fname_prefix}_{spacing}um.png"))
+        plt.savefig(os.path.join(out_folder, f"DSB_byDose_{fname_prefix}_{spacing}um_{seed}.png"))
     else:
         plt.show()
 
