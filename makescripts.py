@@ -59,8 +59,12 @@ sugarFile = os.path.join(
     simulation_parent, "geometryFiles", "sugarPos_4x4_300nm.csv"
 )
 
-time = "0-10:00"
+time_decay = "0-10:00:00"
+time_DNA = "0-24:00:00"
+time_clustering = "0-6:00:00"
+
 mem = 10
+
 targetSize = 300  # nanometers
 gpsRadius = 10 # micrometers
 
@@ -106,6 +110,7 @@ dna_sim_folder = os.path.join(simulation_parent, "simulation")
 clustering_folder = os.path.join(simulation_parent, "Clustering")
 
 makerundir = lambda d: os.path.join(d, "build")
+projectcode="IFAC023282"
 
 #### create folder for current test
 test_dir = os.path.join(simulation_parent, f"output/{folder}")
@@ -179,11 +184,12 @@ for s in spacing:
     with open(filename_decay, "w") as f:
         f.write("#!/bin/bash --login\n")
         if slurm:
+            f.write(f"SBATCH --account={projectcode}\n")
             f.write(f"#SBATCH --job-name=Atdecay_spacing_{s_string}um_{seed}\n")
             f.write(f"#SBATCH --output=Atdecay_spacing_{s_string}um_{seed}.out.%J\n")
             f.write(f"#SBATCH --error=Atdecay_spacing_{s_string}um_{seed}.err.%J\n")
             # maximum job time in D-HH:MM
-            f.write(f"#SBATCH --time={time}\n")
+            f.write(f"#SBATCH --time={time_decay}\n")
             f.write("#SBATCH --nodes=1\n")
             f.write("#SBATCH -p short\n")
             f.write(f"#SBATCH --ntasks-per-node={numThread}\n")
@@ -191,6 +197,7 @@ for s in spacing:
             f.write("\n")
             f.write("module load apps/geant/4.11.1.0\n")
             f.write("module load apps/root/6.26.00\n")
+		
             f.write("source /user/home/yw18581/.bash_profile\n")
             f.write("source activate dart\n")
 
@@ -211,11 +218,12 @@ for s in spacing:
     with open(filename_DNA, "w") as f:
         f.write("#!/bin/bash --login\n")
         if slurm:
+            f.write(f"SBATCH --account={projectcode}\n")
             f.write(f"#SBATCH --job-name=AtDNA_spacing_{s_string}um_{seed}\n")
             f.write(f"#SBATCH --output=AtDNA_spacing_{s_string}um_{seed}.out.%J\n")
             f.write(f"#SBATCH --error=AtDNA_spacing_{s_string}um_{seed}.err.%J\n")
             # maximum job time in D-HH:MM
-            f.write(f"#SBATCH --time={time}\n")
+            f.write(f"#SBATCH --time={time_DNA}\n")
             f.write("#SBATCH --nodes=1\n")
             f.write("#SBATCH -p short\n")
             f.write(f"#SBATCH --ntasks-per-node={numThread}\n")
@@ -260,12 +268,11 @@ for s in spacing:
 
         if slurm:
             f.write(f"#SBATCH --job-name=clustering_At_{n_string}_spacing_{s_string}um\n")
-            f.write(
-                f"#SBATCH --output=clustering_At_{n_string}_spacing_{s_string}um.out.%J\n"
-            )
+            f.write(f"SBATCH --account={projectcode}\n")
+            f.write(f"#SBATCH --output=clustering_At_{n_string}_spacing_{s_string}um.out.%J\n")
             f.write(f"#SBATCH --error=clustering_At_{n_string}_spacing_{s_string}um.err.%J\n")
             # maximum job time in D-HH:MM
-            f.write(f"#SBATCH --time=0-02:00\n")
+            f.write(f"#SBATCH --time={time_clustering}\n")
             f.write("#SBATCH --nodes=1\n")
             f.write("#SBATCH -p short\n")
             f.write("#SBATCH --ntasks-per-node=1\n")
