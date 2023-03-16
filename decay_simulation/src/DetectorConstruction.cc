@@ -177,28 +177,29 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                           "TrackingVol");
   int ibox = 0;
   int i_r = 0;
-  for (G4double r = 0; r < ndiv_R; r += 1)
+  for (G4int r = 0; r < ndiv_R; r += 1)
   {
     for (G4int k = 0; k < ndiv_Z; k++)
     {
+      ndiv_theta = (int)((2 * 3.14159 * (start_R/um + r*spacing/um) / 0.5));
+      G4cout << "DEBUG: " << ndiv_theta << ", " << start_R <<  ", " << spacing << ", " << r << G4endl; 
+      for (G4double theta = 0; theta < 2 * 3.14159; theta += 3.14159 / (ndiv_theta / 2))
+        {
 
-      for (G4double theta = 0; theta < 2 * 3.14159; theta += 3.14159 / (ndiv_theta/2))
-      {
+          G4RotationMatrix *rot = new G4RotationMatrix(theta,
+                                                       0,
+                                                       0);
+          // G4cout << "n_div_R: " << ndiv_R << ", ndiv_Z: " << ndiv_Z << ", ndiv_Theta: " << ndiv_theta << ", start_R: " << start_R << ", spacing: " << spacing << G4endl;
 
-        G4RotationMatrix *rot = new G4RotationMatrix(theta,
-                                                     0,
-                                                     0);
-        //G4cout << "n_div_R: " << ndiv_R << ", ndiv_Z: " << ndiv_Z << ", ndiv_Theta: " << ndiv_theta << ", start_R: " << start_R << ", spacing: " << spacing << G4endl;
-
-        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector(((start_R + (r * spacing)) * cos(theta)), (start_R + (r * spacing)) * sin(theta), ((-vessel_length/um + (k + 1) * (vessel_length/um * 2) / ndiv_Z) - 0.3) * um),
-                                                            logicTrackingVol,
-                                                            "TrackingVol",
-                                                            logicWaterBox,
-                                                            false,
-                                                            ibox,
-                                                            false);
-        ibox++;
-      }
+          G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector(((start_R + (r * spacing)) * cos(theta)), (start_R + (r * spacing)) * sin(theta), ((-vessel_length / um + (k + 1) * (vessel_length / um * 2) / ndiv_Z) - 0.3) * um),
+                                                              logicTrackingVol,
+                                                              "TrackingVol",
+                                                              logicWaterBox,
+                                                              false,
+                                                              ibox,
+                                                              false);
+          ibox++;
+        }
     }
     i_r++;
   }
