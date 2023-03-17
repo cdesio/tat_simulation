@@ -60,7 +60,7 @@ int main(int argc,char** argv)
     G4Random::showEngineStatus();
 
     std::unique_ptr<G4RunManager> pRunManager(G4RunManagerFactory::CreateRunManager(G4RunManagerType::SerialOnly));
-
+    pRunManager->SetNumberOfThreads(1);
     DetectorConstruction* pDetector = new DetectorConstruction();
     // pDetector->RegisterParallelWorld(new ParallelWorld("ChemistryWorld"));
     pRunManager->SetUserInitialization(pDetector);
