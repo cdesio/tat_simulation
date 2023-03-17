@@ -4,13 +4,19 @@ import argparse
 import os
 import numpy as np
 
-def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=20, seed=None, out_folder = "./", damage_type='SSB'):
+def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=20, seed=None, out_folder = "./", damage_type='SSB', particle=None):
     radii = range(n_div_r)
-    if damage_type=="SSB":
-        fnames = [os.path.join(folder, f"{fname_prefix}_{spacing}um_"+f"{seed}"+f"_{r}.csv") for r in radii]
-    elif damage_type=="DSB":
-        fnames = [os.path.join(folder, f"{fname_prefix}_{spacing}um_"+f"{seed}"+f"_DSB_{r}.csv") for r in radii]
+    
+    fname_base = f"{fname_prefix}_{spacing}um_"+f"{seed}"
+    if particle: 
+        fname_base+=f"_{particle}"
 
+    if damage_type == "SSB":
+        fname = fname_base
+    elif damage_type == "DSB":
+        fname = fname_base+f"_DSB"
+    fnames = [os.path.join(folder, fname+f"_{r}.csv") for r in radii]
+    
     dataset = {}
 
     for i, fname in zip(radii, fnames):
@@ -68,17 +74,17 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     #plt.ylabel('Number of strand breaks $Gbp^{-1} per decay$)', fontsize=11)
     plt.ylabel(f'Number of {damage_type} ($Gbp^{-1}$)', fontsize=11)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"{damage_type}_abs_{fname_prefix}_{spacing}um_{seed}.png"))
+        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else None)+f"_abs_{fname_prefix}_{spacing}um_{seed}.png"))
     else:
         plt.show()
 
     # Dividing by dose
     plt.figure(figsize=(8, 5))
-    plt.plot(radii_out, total/dose_out, color='k',
+    plt.plot(radii_out, np.divide(total, dose_out, out=np.zeros_like(total),where=dose_out!=0), color='k',
                 label=f'Total SB', marker='x', linewidth=.6, markersize=3)
-    plt.plot(radii_out, indirect/dose_out,
+    plt.plot(radii_out, np.divide(indirect, dose_out, out=np.zeros_like(indirect),where=dose_out!=0),
                 color='mediumvioletred', label=f'Indirect SB',linewidth=.6, marker='o', markersize=3)
-    plt.plot(radii_out, direct/dose_out, color='cornflowerblue',
+    plt.plot(radii_out, np.divide(direct, dose_out, out=np.zeros_like(direct),where=dose_out!=0), color='cornflowerblue',
             label=f'Direct SB', linewidth=.6,  marker='s', markersize=3)
     plt.legend()
     spacing_str = spacing if spacing else 10
@@ -87,7 +93,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     #plt.ylabel('Number of strand breaks $Gbp^{-1} per decay$)', fontsize=11)
     plt.ylabel('Number of {damage_type} ($Gy^{-1} Gbp^{-1}$)', fontsize=11)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"{damage_type}_byDose_{fname_prefix}_{spacing}um_{seed}.png"))
+        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else None)+f"_byDose_{fname_prefix}_{spacing}um_{seed}.png"))
     else:
         plt.show()
 
@@ -103,7 +109,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     plt.xlabel("Radial distance (um)")
     plt.ylabel('Dose ($Gy$)', fontsize=11)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"dose_{damage_type}_{fname_prefix}_{spacing}um_{seed}.png"))
+        plt.savefig(os.path.join(out_folder, f"dose_{damage_type}"+(f"_{particle}" if particle else None)+f"_{fname_prefix}_{spacing}um_{seed}.png"))
     else:
         plt.show()
 
@@ -129,6 +135,7 @@ if __name__ == "__main__":
     parser.add_argument("--savefig",  type=bool, default = True)  
     parser.add_argument("--seed", type=int, default = None, help='seed of simulation')
     parser.add_argument('--type', type=str, help="SSB or DSB")
+    parser.add_argument("--particle", type=str,default=None)
     
     args = parser.parse_args()
     
@@ -150,15 +157,17 @@ if __name__ == "__main__":
         out_folder = args.out_folder
     if args.type:
         damage_type= args.type
+    if args.particle:
+        particle = args.particle
 
     
     if len(spacing)>1:
         for s in spacing:
             plot_results(folder=folder, fname_prefix=fname_prefix, 
-                         nevents=nevents, spacing=int(s), seed=seed, out_folder=out_folder, n_div_r=n_div_r, damage_type=damage_type)
+                         nevents=nevents, spacing=int(s), seed=seed, out_folder=out_folder, n_div_r=n_div_r, damage_type=damage_type, particle=particle)
     else:
         plot_results(folder=folder, fname_prefix=fname_prefix, 
-                         nevents=nevents, spacing=int(spacing[0]), seed=seed, out_folder=out_folder, n_div_r=n_div_r,damage_type=damage_type)
+                         nevents=nevents, spacing=int(spacing[0]), seed=seed, out_folder=out_folder, n_div_r=n_div_r,damage_type=damage_type, particle=particle)
 
 
 
