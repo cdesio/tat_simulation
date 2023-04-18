@@ -184,7 +184,7 @@ def plot_damage_multipart(damage, damage_type, particle_list, spacing = None, by
                         color=c, label=f'Indirect {damage_type}_{part}',linewidth=.5, marker='o', markersize=3)
             plt.plot(damage_part['distance'], np.divide(damage_part['direct'], damage_part['dose'], out=np.zeros_like(damage_part['direct']),where=damage_part['dose']!=0), color=c,
                     label=f'Direct_{damage_type}_{part}', linewidth=.6,  marker='s', markersize=3)
-            plt.ylabel('Number of {damage_type} ($Gy^{-1} Gbp^{-1}$)', fontsize=11)
+            plt.ylabel(f'Number of {damage_type} ($Gy^{-1} Gbp^{-1}$)', fontsize=11)
 
         else:
             plt.plot(damage_part['distance'], damage_part['total'], color=c,
@@ -207,14 +207,14 @@ def plot_results(damage, fname_prefix, out_folder = "./",damage_type= 'SSB', see
     # not dividing by dose
     fig_abs = plot_damage(damage, damage_type, spacing, bydose=False)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else "all")+f"_abs_{fname_prefix}_{spacing}um_{seed}.png"))#, fig=fig_abs)
+        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else "_all")+f"_abs_{fname_prefix}_{spacing}um_{seed}.png"))#, fig=fig_abs)
     else:
         plt.show()
 
     # Dividing by dose
     fig_bydose = plot_damage(damage, damage_type, spacing, bydose=True)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else "all")+f"_byDose_{fname_prefix}_{spacing}um_{seed}.png"))#, fig=fig_bydose)
+        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else "_all")+f"_byDose_{fname_prefix}_{spacing}um_{seed}.png"))#, fig=fig_bydose)
     else:
         plt.show()
 
@@ -222,7 +222,7 @@ def plot_results(damage, fname_prefix, out_folder = "./",damage_type= 'SSB', see
 
     fig_dose =plot_dose(damage, spacing)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"dose_{damage_type}"+(f"_{particle}" if particle else "all")+f"_{fname_prefix}_{spacing}um_{seed}.png"))#, fig=fig_dose)
+        plt.savefig(os.path.join(out_folder, f"dose_{damage_type}"+(f"_{particle}" if particle else "_all")+f"_{fname_prefix}_{spacing}um_{seed}.png"))#, fig=fig_dose)
     else:
         plt.show()
 
@@ -283,9 +283,23 @@ if __name__ == "__main__":
                         damage_type=damage_type, particle=particle, keyword = keyword)
             plot_results(damage, fname_prefix=fname_prefix, damage_type=damage_type, seed=seed, savefig=savefig)
     else:
-        damage = get_results(fname_prefix = fname_prefix, nevents=nevents, 
-                        folder = folder, spacing=int(spacing[0]), n_div_r=n_div_r, seed=seed,
-                        damage_type=damage_type, particle=particle, keyword = keyword)
-        plot_results(damage, fname_prefix=fname_prefix, damage_type=damage_type, seed=seed, savefig=savefig, particle=particle)
+        # damage = get_results(fname_prefix = fname_prefix, nevents=nevents, 
+        #                 folder = folder, spacing=int(spacing[0]), n_div_r=n_div_r, seed=seed,
+        #                 damage_type=damage_type, particle=particle, keyword = keyword)
+        # plot_results(damage, fname_prefix=fname_prefix, damage_type=damage_type, seed=seed, savefig=savefig, particle=particle)
+
+        damage = {}
+        for part in ['alpha', 'e-', ' gamma']:
+            damage[part] = get_results(fname_prefix = fname_prefix, nevents=nevents 
+                                    folder = folder, spacing=int(spacing[0]), n_div_r=n_div_r, seed=seed, keyword = keyword,
+                                    damage_type=damage_type, particle=part)
+        for part in ['alpha', 'e-', 'gamma']:
+            plot_dose(damage[part], spacing=2, fig_ex=fig, part=part)
+        plt.savefig(f"dose_{damage_type}_{seed}.png")
+
+        plot_damage_multipart(damage, damage_type=damage_type, 
+        spacing=int(spacing[0]), particle_list=['alpha', 'e-', 'gamma'], 
+        bydose=True)
+        plt.savefig(f"{damage_type}_multipart_{seed}.png")
 
 
