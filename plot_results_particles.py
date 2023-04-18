@@ -18,7 +18,7 @@ def get_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=20
     #     fname = fname_base
     # elif damage_type == "DSB":
     #     fname = fname_base+f"_DSB"
-    fnames = [os.path.join(folder, fname+f"_{r}.csv") for r in radii]
+    fnames = [os.path.join(folder, fname_base+f"_{r}.csv") for r in radii]
     
     dataset = {}
 
