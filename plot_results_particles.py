@@ -14,10 +14,10 @@ def get_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=20
         fname_base+= f"_{keyword}"
     if particle: 
         fname_base+=f"_{particle}"
-    if damage_type == "SSB":
-        fname = fname_base
-    elif damage_type == "DSB":
-        fname = fname_base+f"_DSB"
+    # if damage_type == "SSB":
+    #     fname = fname_base
+    # elif damage_type == "DSB":
+    #     fname = fname_base+f"_DSB"
     fnames = [os.path.join(folder, fname+f"_{r}.csv") for r in radii]
     
     dataset = {}
@@ -51,11 +51,11 @@ def get_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=20
             indirect[i]= nSSB/nGBP
         
         elif damage_type=='DSB':
-            nDSB, dose, nGBP = calcBreaksperDose("TotalDSBtotal", (dataset[i]))
+            nDSB, dose, nGBP = calcBreaksperDose("DSBtotal", (dataset[i]))
             total[i] = nDSB/nGBP
-            nDSB, dose, nGBP = calcBreaksperDose("TotalDSBdirect", (dataset[i]))
+            nDSB, dose, nGBP = calcBreaksperDose("DSBdirect", (dataset[i]))
             direct[i] = nDSB/nGBP
-            nDSB, dose, nGBP = calcBreaksperDose("TotalDSBindirect", (dataset[i]))
+            nDSB, dose, nGBP = calcBreaksperDose("DSBindirect", (dataset[i]))
             indirect[i] = nDSB/nGBP
         if spacing:
             radii_out[i] = 10.5+i*spacing  
