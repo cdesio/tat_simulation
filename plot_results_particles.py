@@ -281,11 +281,11 @@ if __name__ == "__main__":
             damage = get_results(fname_prefix = fname_prefix, nevents=nevents, 
                         folder = folder, spacing=int(s), n_div_r=n_div_r, seed=seed,
                         damage_type=damage_type, particle=particle, keyword = keyword)
-            plot_results(damage, fname_prefix=fname_prefix, damage_type=damage_type, seed=seed)
+            plot_results(damage, fname_prefix=fname_prefix, damage_type=damage_type, seed=seed, savefig=savefig)
     else:
         damage = get_results(fname_prefix = fname_prefix, nevents=nevents, 
                         folder = folder, spacing=int(spacing[0]), n_div_r=n_div_r, seed=seed,
                         damage_type=damage_type, particle=particle, keyword = keyword)
-        plot_results(damage, fname_prefix=fname_prefix, damage_type=damage_type, seed=seed)
+        plot_results(damage, fname_prefix=fname_prefix, damage_type=damage_type, seed=seed, savefig=savefig)
 
 
