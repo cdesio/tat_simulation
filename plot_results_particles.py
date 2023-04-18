@@ -111,7 +111,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
 
     #DOSE
 
-    def plot_dose(damage, spacing=None, fig_ex=None, part=None):
+def plot_dose(damage, spacing=None, fig_ex=None, part=None):
     if fig_ex==None:
         fig = plt.figure(figsize=(8, 5))
         plt.plot(damage['distance'], damage['dose'], color='darkblue', marker='s', markersize=3, linestyle='-', linewidth=.9,
