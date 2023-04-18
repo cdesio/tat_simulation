@@ -290,7 +290,7 @@ if __name__ == "__main__":
 
         damage = {}
         for part in ['alpha', 'e-', ' gamma']:
-            damage[part] = get_results(fname_prefix = fname_prefix, nevents=nevents 
+            damage[part] = get_results(fname_prefix = fname_prefix, nevents=nevents, 
                                     folder = folder, spacing=int(spacing[0]), n_div_r=n_div_r, seed=seed, keyword = keyword,
                                     damage_type=damage_type, particle=part)
         for part in ['alpha', 'e-', 'gamma']:
