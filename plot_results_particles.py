@@ -247,7 +247,7 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default = None, help='seed of simulation')
     parser.add_argument('--type', type=str, help="SSB or DSB")
     parser.add_argument("--particle", type=str,default=None)
-    parser.add_argument(" --keyword", type=str, default=None)
+    parser.add_argument("--keyword", type=str, default=None)
     args = parser.parse_args()
     
     if args.folder:
