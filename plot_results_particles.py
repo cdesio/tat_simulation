@@ -4,14 +4,16 @@ import argparse
 import os
 import numpy as np
 
-def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=20, seed=None, out_folder = "./", damage_type='SSB', particle=None):
+def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=20, seed=None, out_folder = "./", damage_type='SSB', particle=None, keyword=None):
     radii = range(n_div_r)
     
-    fname_base = f"{fname_prefix}_{spacing}um_"+f"{seed}"
-    
+    fname_base = f"{fname_prefix}" 
+    if spacing and seed:
+        fname_base+= f"_{spacing}um_"+f"{seed}"
+    if keyword:
+        fname_base+= f"_{keyword}"
     if particle: 
         fname_base+=f"_{particle}"
-
     if damage_type == "SSB":
         fname = fname_base
     elif damage_type == "DSB":
@@ -29,7 +31,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
             dataset[i] = combine(to_combine)
 
     # plot strand breaks vs LET & energy per dose
-    
+    damage_out = {}
     total = np.zeros(n_div_r)
     direct = np.zeros(n_div_r)
     indirect = np.zeros(n_div_r)
@@ -49,16 +51,23 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
             indirect[i]= nSSB/nGBP
         
         elif damage_type=='DSB':
-            nDSB, dose, nGBP = calcSimpleDSBperDose("Total", (dataset[i]))
+            nDSB, dose, nGBP = calcBreaksperDose("TotalDSBtotal", (dataset[i]))
             total[i] = nDSB/nGBP
-            nDSB, dose, nGBP = calcSimpleDSBperDose("Direct", (dataset[i]))
+            nDSB, dose, nGBP = calcBreaksperDose("TotalDSBdirect", (dataset[i]))
             direct[i] = nDSB/nGBP
-            nDSB, dose, nGBP = calcSimpleDSBperDose("Indirect", (dataset[i]))
+            nDSB, dose, nGBP = calcBreaksperDose("TotalDSBindirect", (dataset[i]))
             indirect[i] = nDSB/nGBP
-        
-        radii_out[i] = 10.5+i*spacing  
+        if spacing:
+            radii_out[i] = 10.5+i*spacing  
+        else:
+            radii_out[i] = 10.5+i*2
         dose_out[i] = dose if dose else 0
 
+    damage_out['total'] = total
+    damage_out['direct'] = direct
+    damage_out['indirect'] = indirect
+    damage_out['dose'] = dose_out
+    damage_out['distance'] = radii_out 
 
     # not dividing by dose
     plt.figure(figsize=(8, 5))
@@ -98,25 +107,126 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     else:
         plt.show()
 
-
+    return damage_out
 
     #DOSE
 
-    fig2 = plt.figure(figsize=(8, 5))
-    plt.plot(radii_out, dose_out, color='darkblue', marker='s', markersize=3, linestyle='-', linewidth=.9,
+    def plot_dose(damage, spacing=None, fig_ex=None, part=None):
+    if fig_ex==None:
+        fig = plt.figure(figsize=(8, 5))
+        plt.plot(damage['distance'], damage['dose'], color='darkblue', marker='s', markersize=3, linestyle='-', linewidth=.9,
                 label=f'Dose')
+        
+    else:
+        fig = fig_ex
+        plt.plot(damage['distance'], damage['dose'], marker='s', markersize=3, linestyle='-', linewidth=.9,
+                label=f'Dose'+f"_{part}" if part else None)
+    
     plt.legend()
+    plt.ticklabel_format(axis='y', style='sci',scilimits=(4,4))
+    spacing_str = spacing if spacing else 2
     plt.title(f"Dose vs distance, spacing: {spacing_str} um")
     plt.xlabel("Radial distance (um)")
     plt.ylabel('Dose ($Gy$)', fontsize=11)
+
+    return fig
+
+
+def plot_damage(damage, damage_type, spacing=None, bydose=False, fig_ex=None):
+    
+    if fig_ex==None:
+        fig = plt.figure(figsize=(8, 5))
+    else:
+        fig=fig_ex
+
+    if bydose:
+        
+        plt.plot(damage['distance'], np.divide(damage['total'], damage['dose'], out=np.zeros_like(damage['total']),where=damage['dose']!=0), color='k',
+                    label=f'Total SB', marker='x', linewidth=.6, markersize=3)
+        plt.plot(damage['distance'], np.divide(damage['indirect'], damage['dose'], out=np.zeros_like(damage['indirect']),where=damage['dose']!=0),
+                    color='mediumvioletred', label=f'Indirect SB',linewidth=.6, marker='o', markersize=3)
+        plt.plot(damage['distance'], np.divide(damage['direct'], damage['dose'], out=np.zeros_like(damage['direct']),where=damage['dose']!=0), color='cornflowerblue',
+                label=f'Direct SB', linewidth=.6,  marker='s', markersize=3)
+        plt.ylabel(f'Number of {damage_type} ($Gy^{-1} Gbp^{-1}$)', fontsize=11)
+
+    else:
+        plt.plot(damage['distance'], damage['total'], color='k',
+                    label=f'Total SB', marker='x', linewidth=.6, markersize=3)
+        plt.plot(damage['distance'], damage['indirect'],
+                    color='mediumvioletred', label=f'Indirect SB',linewidth=.6, marker='o', markersize=3)
+        plt.plot(damage['distance'], damage['direct'], color='cornflowerblue',
+                label=f'Direct SB', linewidth=.6,  marker='s', markersize=3)
+        plt.ylabel(f'Number of {damage_type} ($Gbp^{-1}$)', fontsize=11)
+   
+    plt.legend()
+    spacing_str = spacing if spacing else 2
+    plt.title(f"DNA damage vs distance, spacing: {spacing_str} um")
+    plt.xlabel("Radial distance (um)")
+
+    return fig
+
+
+def plot_damage_multipart(damage, damage_type, particle_list, spacing = None, bydose=False, fig_ex=None):
+    
+    if fig_ex==None:
+        fig = plt.figure(figsize=(8, 5))
+    else:
+        fig=fig_ex
+    colors = ['k', 'mediumvioletred', 'cornflowerblue']
+   # markers = ['x', 'o', 's']
+    for part, c in zip(particle_list, colors):
+        damage_part = damage[part]
+        if bydose:
+            
+            plt.plot(damage_part['distance'], np.divide(damage_part['total'], damage_part['dose'], out=np.zeros_like(damage_part['total']),where=damage_part['dose']!=0), color=c,
+                        label=f'Total {damage_type}_{part}', marker='x', linewidth=.5, markersize=3)
+            plt.plot(damage_part['distance'], np.divide(damage_part['indirect'], damage_part['dose'], out=np.zeros_like(damage_part['indirect']),where=damage_part['dose']!=0),
+                        color=c, label=f'Indirect {damage_type}_{part}',linewidth=.5, marker='o', markersize=3)
+            plt.plot(damage_part['distance'], np.divide(damage_part['direct'], damage_part['dose'], out=np.zeros_like(damage_part['direct']),where=damage_part['dose']!=0), color=c,
+                    label=f'Direct_{damage_type}_{part}', linewidth=.6,  marker='s', markersize=3)
+            plt.ylabel('Number of {damage_type} ($Gy^{-1} Gbp^{-1}$)', fontsize=11)
+
+        else:
+            plt.plot(damage_part['distance'], damage_part['total'], color=c,
+                        label=f'Total SB {part}', marker='x', linewidth=.5, markersize=3)
+            plt.plot(damage_part['distance'], damage_part['indirect'],
+                        color=c, label=f'Indirect SB  {part}',linewidth=.5, marker='o', markersize=3)
+            plt.plot(damage_part['distance'], damage_part['direct'], color=c,
+                    label=f'Direct SB  {part}', linewidth=.6,  marker='s', markersize=3)
+            plt.ylabel(f'Number of {damage_type} ($Gbp^{-1}$)', fontsize=11)
+   
+    plt.legend()
+    spacing_str = spacing if spacing else 2
+    plt.title(f"DNA damage_part vs distance, spacing: {spacing_str} um")
+    plt.xlabel("Radial distance (um)")
+
+    return fig
+
+def plot_results(damage, fname_prefix, out_folder = "./",damage_type= 'SSB', seed=1, savefig=False, spacing=2, particle=None ):
+    
+    # not dividing by dose
+    fig_abs = plot_damage(damage, damage_type, spacing, bydose=False)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"dose_{damage_type}"+(f"_{particle}" if particle else None)+f"_{fname_prefix}_{spacing}um_{seed}.png"))
+        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else None)+f"_abs_{fname_prefix}_{spacing}um_{seed}.png"), fig=fig_abs)
     else:
         plt.show()
 
-    return
+    # Dividing by dose
+    fig_bydose = plot_damage(damage, damage_type, spacing, bydose=True)
+    if savefig:
+        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else None)+f"_byDose_{fname_prefix}_{spacing}um_{seed}.png"), fig=fig_bydose)
+    else:
+        plt.show()
 
+    #DOSE
 
+    fig_dose =plot_dose(damage, spacing)
+    if savefig:
+        plt.savefig(os.path.join(out_folder, f"dose_{damage_type}"+(f"_{particle}" if particle else None)+f"_{fname_prefix}_{spacing}um_{seed}.png"), fig=fig_dose)
+    else:
+        plt.show()
+
+    return fig_abs, fig_bydose, fig_dose
 
 if __name__ == "__main__":
 
@@ -137,7 +247,7 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default = None, help='seed of simulation')
     parser.add_argument('--type', type=str, help="SSB or DSB")
     parser.add_argument("--particle", type=str,default=None)
-    
+    parser.add_argument(" --keyword", type=str, default=None)
     args = parser.parse_args()
     
     if args.folder:
@@ -160,6 +270,8 @@ if __name__ == "__main__":
         damage_type= args.type
     if args.particle:
         particle = args.particle
+    if args.keyword:
+        keyword = args.keyword
 
     
     if len(spacing)>1:
@@ -168,7 +280,7 @@ if __name__ == "__main__":
                          nevents=nevents, spacing=int(s), seed=seed, out_folder=out_folder, n_div_r=n_div_r, damage_type=damage_type, particle=particle)
     else:
         plot_results(folder=folder, fname_prefix=fname_prefix, 
-                         nevents=nevents, spacing=int(spacing[0]), seed=seed, out_folder=out_folder, n_div_r=n_div_r,damage_type=damage_type, particle=particle)
+                         nevents=nevents, spacing=int(spacing[0]), seed=seed, out_folder=out_folder, n_div_r=n_div_r,damage_type=damage_type, particle=particle, keyword=keyword)
 
 
 
