@@ -207,14 +207,14 @@ def plot_results(damage, fname_prefix, out_folder = "./",damage_type= 'SSB', see
     # not dividing by dose
     fig_abs = plot_damage(damage, damage_type, spacing, bydose=False)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else None)+f"_abs_{fname_prefix}_{spacing}um_{seed}.png"), fig=fig_abs)
+        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else "all")+f"_abs_{fname_prefix}_{spacing}um_{seed}.png"), fig=fig_abs)
     else:
         plt.show()
 
     # Dividing by dose
     fig_bydose = plot_damage(damage, damage_type, spacing, bydose=True)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else None)+f"_byDose_{fname_prefix}_{spacing}um_{seed}.png"), fig=fig_bydose)
+        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else "all")+f"_byDose_{fname_prefix}_{spacing}um_{seed}.png"), fig=fig_bydose)
     else:
         plt.show()
 
@@ -222,7 +222,7 @@ def plot_results(damage, fname_prefix, out_folder = "./",damage_type= 'SSB', see
 
     fig_dose =plot_dose(damage, spacing)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"dose_{damage_type}"+(f"_{particle}" if particle else None)+f"_{fname_prefix}_{spacing}um_{seed}.png"), fig=fig_dose)
+        plt.savefig(os.path.join(out_folder, f"dose_{damage_type}"+(f"_{particle}" if particle else "all")+f"_{fname_prefix}_{spacing}um_{seed}.png"), fig=fig_dose)
     else:
         plt.show()
 
