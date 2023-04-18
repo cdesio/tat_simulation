@@ -293,8 +293,9 @@ if __name__ == "__main__":
             damage[part] = get_results(fname_prefix = fname_prefix, nevents=nevents, 
                                     folder = folder, spacing=int(spacing[0]), n_div_r=n_div_r, seed=seed, keyword = keyword,
                                     damage_type=damage_type, particle=part)
+        fig_dose = plt.figure(figsize=(8,5))
         for part in ['alpha', 'e-', 'gamma']:
-            plot_dose(damage[part], spacing=2, fig_ex=fig, part=part)
+            plot_dose(damage[part], spacing=2, fig_ex=fig_dose, part=part)
         plt.savefig(f"dose_{damage_type}_{seed}.png")
 
         plot_damage_multipart(damage, damage_type=damage_type, 
