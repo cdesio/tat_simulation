@@ -6,6 +6,7 @@ import numpy as np
 from scipy.spatial import cKDTree
 from ROOT import TFile, TTree
 from typing import Union, Tuple
+from collections import defaultdict
 
 # To import clustering from build folder
 currentdir = os.path.dirname(os.path.abspath(
@@ -119,13 +120,13 @@ def map_decay_to_copyno(eventInfo: TTree):
     # end mapping 
     return mapping_copyNo
 
-def map_decay_to_PID(eventInfo: TTree):
+def map_PID_to_DNA(eventInfo: TTree):
     # build map to decay event number
     nentriesMapping = eventInfo.GetEntries() #get number of events for mapping
-    mapping_PID = {}  # photon event ID to simulation event ID dict
+    mapping_PID = defaultdict(list)  # photon event ID to simulation event ID dict
     for irow in range(0, nentriesMapping): #loop on nentries
         eventInfo.GetEntry(irow)            
-        mapping_PID[eventInfo.PhotonEventID] = eventInfo.particleID #save photon event number into key simulation event number
+        mapping_PID[eventInfo.particleID].append(eventInfo.EventNo) #save photon event number into key simulation event number
     # end mapping 
     return mapping_PID
 
@@ -140,34 +141,36 @@ def map_radius_copyno(n_boxes, boxes_per_R):
     return ranges_radii
 
 def calculateDose(tEdep: TTree, pathLength: dict, dosePerEvent: dict, meanKEperEvent: dict, chromatinVolume: float, mapping_evts: dict, mapping_PID: dict, primaryParticle: int):
-    
+    print("start dose calculation")
+    sim_evts = mapping_PID[primaryParticle]
     entryEdepNumber = tEdep.GetEntries()
+    print(entryEdepNumber)
+
     #numEvt = 0
     for i in range(entryEdepNumber):
+        
         tEdep.GetEntry(i)
         simEvt = tEdep.EventNo
-        if simEvt in mapping_evts.keys():
-            decayEvt = mapping_evts[simEvt]
-            if primaryParticle and primaryParticle!=mapping_PID[decayEvt]:
-                continue
+        if simEvt not in sim_evts:
+            continue
+        decayEvt = mapping_evts[simEvt]
+        #print(simEvt, decayEvt)
+        #print(decayEvt, simEvt, primaryParticle)
+        if tEdep.Edep_J > 0:
+            dosePerEvent.setdefault(decayEvt, 0)
+            dosePerEvent[decayEvt] += tEdep.Edep_J / (1000 * chromatinVolume)
+            #print(f"{decayEvt}: {dosePerEvent[decayEvt]}")
+            if hasattr(tEdep, "PathLengthChromatin"):  # older results do not have path length
+                pathLength[decayEvt] = tEdep.PathLengthChromatin
+            else:
+                pathLength[decayEvt] = "N/A"
 
-            if tEdep.Edep_J > 0:
-                if decayEvt in dosePerEvent.keys():
-                    dosePerEvent[decayEvt] += tEdep.Edep_J / (1000 * chromatinVolume)
-                else:
-                    dosePerEvent[decayEvt] = tEdep.Edep_J / (1000 * chromatinVolume)
-            
-                if hasattr(tEdep, "PathLengthChromatin"):  # older results do not have path length
-                    pathLength[decayEvt] = tEdep.PathLengthChromatin
-                else:
-                    pathLength[decayEvt] = "N/A"
-
-                if hasattr(tEdep, "PrimaryKEEntrance"):  # older results do not have path length
-                    meanKEperEvent[decayEvt] = (
-                        tEdep.PrimaryKEEntrance+tEdep.PrimaryKEExit)/2
-                else:
-                    meanKEperEvent[decayEvt] = "N/A"
-        
+            if hasattr(tEdep, "PrimaryKEEntrance"):  # older results do not have path length
+                meanKEperEvent[decayEvt] = (
+                    tEdep.PrimaryKEEntrance+tEdep.PrimaryKEExit)/2
+            else:
+                meanKEperEvent[decayEvt] = "N/A"
+    
         else:
             if tEdep.Edep_J>0:
                 print(f"evt {simEvt} not in mapping but Edep>0")
@@ -180,30 +183,30 @@ def calculateDose(tEdep: TTree, pathLength: dict, dosePerEvent: dict, meanKEperE
     return energy, dosePerEvent, meanKEperEvent, pathLength
 
 def AccumulateEdep(input_tree: TTree, cumulatedEnergyDep: dict, T0: cKDTree, T1: cKDTree, mapping_evts: dict, mapping_PID: dict, primaryParticle: int):
-
+    sim_evts = mapping_PID[primaryParticle]
+    print("start AccumulateEdep")
     nentries = input_tree.GetEntries()
-
+    
     for irow in range(nentries):
         input_tree.GetEntry(irow)
-        if input_tree.EventNo in mapping_evts.keys():
-            decayEvt = mapping_evts[input_tree.EventNo]
-            if primaryParticle and primaryParticle!=mapping_PID[decayEvt]:
-                    continue
-            else:
-                result = checkPoint([input_tree.x, input_tree.y, input_tree.z], T0, T1)
-                if (result[0] != -1):
-                    key = (decayEvt, result[0], result[1])
-                    if key in cumulatedEnergyDep:
-                        cumulatedEnergyDep[key] += input_tree.eDep_eV
-                    else:
-                        cumulatedEnergyDep[key] = input_tree.eDep_eV
+        simEvt = input_tree.EventNo
+        if simEvt not in sim_evts:
+            continue
+            #print([input_tree.x, input_tree.y, input_tree.z])
+        decayEvt = mapping_evts[simEvt]
+        result = checkPoint([input_tree.x, input_tree.y, input_tree.z], T0, T1)
+        if (result[0] != -1):
+            key = (decayEvt, result[0], result[1])
+            cumulatedEnergyDep.setdefault(key, 0)
+            cumulatedEnergyDep[key] += input_tree.eDep_eV
+
     return cumulatedEnergyDep
 
 def calcDirectDamage(cumulatedEnergyDep: dict, fEMinDamage: float, fEMaxDamage: float):
     eventsListDirect = []
     copyListDirect = []
     strandListDirect = []
-    
+    print("start DirectDamage")
     for key in cumulatedEnergyDep:
         if IsEdepSufficient(cumulatedEnergyDep[key], fEMinDamage, fEMaxDamage):
             eventsListDirect.append(key[0])
@@ -214,24 +217,34 @@ def calcDirectDamage(cumulatedEnergyDep: dict, fEMinDamage: float, fEMaxDamage: 
 
 def calcIndirectDamage(input_tree_indirect: TTree, probIndirect: float, T0: cKDTree, T1: cKDTree, mapping_evts: dict, mapping_PID: dict, primaryParticle: int):
 
-
+    print("start IndirectDamage")
     eventsListIndirect = []
     copyListIndirect = []
     strandListIndirect = []
 
     nentries_indirect = input_tree_indirect.GetEntries()
-
+    sim_evts = mapping_PID[primaryParticle]
     for irow in range(nentries_indirect):
         input_tree_indirect.GetEntry(irow)
-        if input_tree_indirect.EventNo in mapping_evts.keys():
-            decayEvt = mapping_evts[input_tree_indirect.EventNo]
-            if primaryParticle and primaryParticle!=mapping_PID[decayEvt]:
-                    continue
-            if hasattr(input_tree_indirect, "copyNum"):
-                if np.random.rand() <= probIndirect:
-                    eventsListIndirect.append(decayEvt)
-                    copyListIndirect.append(input_tree_indirect.copyNum)
-            elif not hasattr(input_tree_indirect, "DNAmolecule"):
+        simEvt = input_tree_indirect.EventNo
+        if simEvt not in sim_evts:
+            continue
+        decayEvt = mapping_evts[simEvt]
+
+        if hasattr(input_tree_indirect, "copyNum"):
+            if np.random.rand() <= probIndirect:
+                eventsListIndirect.append(decayEvt)
+                copyListIndirect.append(input_tree_indirect.copyNum)
+        elif not hasattr(input_tree_indirect, "DNAmolecule"):
+            if np.random.rand() <= probIndirect:
+                eventsListIndirect.append(decayEvt)
+                point = [input_tree_indirect.x,
+                        input_tree_indirect.y, input_tree_indirect.z]
+                c, s = getIndex(point, T0, T1)
+                copyListIndirect.append(c)
+                strandListIndirect.append(s)
+        else:
+            if ((input_tree_indirect.DNAmolecule[0] == "D") and (input_tree_indirect.radical == "OH^0")):
                 if np.random.rand() <= probIndirect:
                     eventsListIndirect.append(decayEvt)
                     point = [input_tree_indirect.x,
@@ -239,21 +252,11 @@ def calcIndirectDamage(input_tree_indirect: TTree, probIndirect: float, T0: cKDT
                     c, s = getIndex(point, T0, T1)
                     copyListIndirect.append(c)
                     strandListIndirect.append(s)
-            else:
-                if ((input_tree_indirect.DNAmolecule[0] == "D") and (input_tree_indirect.radical == "OH^0")):
-                    if np.random.rand() <= probIndirect:
-                        eventsListIndirect.append(decayEvt)
-                        point = [input_tree_indirect.x,
-                                input_tree_indirect.y, input_tree_indirect.z]
-                        c, s = getIndex(point, T0, T1)
-                        copyListIndirect.append(c)
-                        strandListIndirect.append(s)
-        else:
-            print("INDIRECT check evt")
+    
     return eventsListIndirect, copyListIndirect, strandListIndirect
 
 
-def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fEMaxDamage: float, probIndirect: float, sugarFname: str, primaryParticle, filenamePhoton: Union[str, bool] = False, separate_r=False, n_boxes = 3200, boxes_per_R = 800):
+def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fEMaxDamage: float, probIndirect: float, sugarFname: str, primaryParticle: str = None, filenamePhoton: Union[str, bool] = False, separate_r=False, n_boxes = 3200, boxes_per_R = 800):
     """ Run clustering on the DNA root file and output DNA damage
     
     Args:
@@ -281,11 +284,12 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
                       "Po211": 6, 
                       "Bi207": 7, 
                       "Pb207": 8
-
     }
+    print("runClustering REFACTOR")
     if primaryParticle:
         if primaryParticle in particleMap.keys():
             primaryParticleID = particleMap[primaryParticle]
+            print("primary: ", primaryParticle, primaryParticleID)
         else:
             raise ValueError(f"particle not in particleMap: {primaryParticle}")
 
@@ -297,8 +301,9 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
     tInfo = fDirectory.Get("Info")
     tInfo.GetEntry(0)
     tEdep = fDirectory.Get("EventEdep")
-    input_tree = fDirectory.Get("Direct")
-    input_tree_indirect = fDirectory.Get("Indirect")
+    
+    tDirect = fDirectory.Get("Direct")
+    tIndirect = fDirectory.Get("Indirect")
     eventInfo = fDirectory.Get("Events")
 
     chromatinVolume = tInfo.ChromatinVolume_m3  # in m3
@@ -320,11 +325,17 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
     cumulatedEnergyDep = {}
 
     mapping_evts = map_DNA_to_decay(eventInfo)
-    mapping_PID = map_decay_to_PID(eventInfo)
-    
+    mapping_PID = map_PID_to_DNA(eventInfo)
+
+    # if primaryParticleID:
     energy, dosePerEvent, _, _ = calculateDose(tEdep, pathLength, dosePerEvent, meanKEperEvent, chromatinVolume, mapping_evts, mapping_PID, primaryParticleID)   
-    cumulatedEnergyDep = AccumulateEdep(input_tree, cumulatedEnergyDep, T0, T1, mapping_evts, mapping_PID, primaryParticleID)
-  
+    print("done")
+    cumulatedEnergyDep = AccumulateEdep(tDirect, cumulatedEnergyDep, T0, T1, mapping_evts, mapping_PID, primaryParticleID)
+    print("done")
+    #print(cumulatedEnergyDep)
+    # else:
+    #     energy, dosePerEvent, _, _ = calculateDose(tEdep, pathLength, dosePerEvent, meanKEperEvent, chromatinVolume, mapping_evts)   
+    #     cumulatedEnergyDep = AccumulateEdep(input_tree, cumulatedEnergyDep, T0, T1, mapping_evts)
     if filenamePhoton:
         dosePerEventPhoton = {}
         NumIntersecting = 0
@@ -344,39 +355,39 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
             NumIntersecting += fInfoPhoton.NumIntersecting
 
     #  Add energy deposition from photon simulation
-    if filenamePhoton:
-        input_tree_photon = fDirectoryPhoton.Get("Direct")
-        nentriesPhoton = input_tree_photon.GetEntries()
+    # if filenamePhoton:
+    #     input_tree_photon = fDirectoryPhoton.Get("Direct")
+    #     nentriesPhoton = input_tree_photon.GetEntries()
 
-        cumulatedEnergyDepPhoton = {}
+    #     cumulatedEnergyDepPhoton = {}
 
-        for irow in range(nentriesPhoton):
-            input_tree_photon.GetEntry(irow)
+    #     for irow in range(nentriesPhoton):
+    #         input_tree_photon.GetEntry(irow)
 
-            result = checkPoint(
-                [input_tree_photon.x, input_tree_photon.y, input_tree_photon.z], T0, T1)
-            if (result[0] != -1):
-                key = (input_tree_photon.EventNo, result[0], result[1])
-                if key in cumulatedEnergyDepPhoton:
-                    cumulatedEnergyDepPhoton[key] += input_tree_photon.eDep_eV
-                else:
-                    cumulatedEnergyDepPhoton[key] = input_tree_photon.eDep_eV
+    #         result = checkPoint(
+    #             [input_tree_photon.x, input_tree_photon.y, input_tree_photon.z], T0, T1)
+    #         if (result[0] != -1):
+    #             key = (input_tree_photon.EventNo, result[0], result[1])
+    #             if key in cumulatedEnergyDepPhoton:
+    #                 cumulatedEnergyDepPhoton[key] += input_tree_photon.eDep_eV
+    #             else:
+    #                 cumulatedEnergyDepPhoton[key] = input_tree_photon.eDep_eV
 
-        for key in cumulatedEnergyDep:
-            if ((mapping[key[0]], key[1], key[2]) in cumulatedEnergyDepPhoton):
-                cumulatedEnergyDep[key] += cumulatedEnergyDepPhoton[mapping[key[0]], key[1], key[2]]
-        #print(f"cumulatedEnergyDep: {cumulatedEnergyDep}")
-        # Add photon dose
-        for key in dosePerEvent:
-            if mapping[key] in dosePerEventPhoton:
-                dosePerEvent[key] += dosePerEventPhoton[mapping[key]]
+    #     for key in cumulatedEnergyDep:
+    #         if ((mapping[key[0]], key[1], key[2]) in cumulatedEnergyDepPhoton):
+    #             cumulatedEnergyDep[key] += cumulatedEnergyDepPhoton[mapping[key[0]], key[1], key[2]]
+    #     #print(f"cumulatedEnergyDep: {cumulatedEnergyDep}")
+    #     # Add photon dose
+    #     for key in dosePerEvent:
+    #         if mapping[key] in dosePerEventPhoton:
+    #             dosePerEvent[key] += dosePerEventPhoton[mapping[key]]
 
     
     # // Read out indirect damage
     eventsListDirect, copyListDirect, strandListDirect = calcDirectDamage(cumulatedEnergyDep, fEMinDamage, fEMaxDamage)
-
-    eventsListIndirect, copyListIndirect, strandListIndirect = calcIndirectDamage(input_tree_indirect, probIndirect, T0, T1, mapping_evts, mapping_PID, primaryParticleID)
-    
+    print("done")
+    eventsListIndirect, copyListIndirect, strandListIndirect = calcIndirectDamage(tIndirect, probIndirect, T0, T1, mapping_evts, mapping_PID, primaryParticleID)
+    print("done")
     numEvt = list(set(eventsListDirect+eventsListIndirect))
     
     # clustering
