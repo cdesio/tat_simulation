@@ -77,7 +77,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     #plt.ylabel('Number of strand breaks $Gbp^{-1} per decay$)', fontsize=11)
     plt.ylabel(f'Number of {damage_type} ($Gbp^{-1}$)', fontsize=11)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else None)+f"_abs_{fname_prefix}_{spacing}um_{seed}.png"))
+        plt.savefig(os.path.join(out_folder, f"{damage_type}"+f"_abs_{fname_prefix}_{spacing}um_{seed}.png"))
     else:
         plt.show()
 
@@ -96,7 +96,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     #plt.ylabel('Number of strand breaks $Gbp^{-1} per decay$)', fontsize=11)
     plt.ylabel(f'Number of {damage_type} ($Gy^{-1} Gbp^{-1}$)', fontsize=11)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else None)+f"_byDose_{fname_prefix}_{spacing}um_{seed}.png"))
+        plt.savefig(os.path.join(out_folder, f"{damage_type}"+f"_byDose_{fname_prefix}_{spacing}um_{seed}.png"))
     else:
         plt.show()
 
@@ -112,7 +112,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     plt.xlabel("Radial distance (um)")
     plt.ylabel('Dose ($Gy$)', fontsize=11)
     if savefig:
-        plt.savefig(os.path.join(out_folder, f"dose_{damage_type}"+(f"_{particle}" if particle else None)+f"_{fname_prefix}_{spacing}um_{seed}.png"))
+        plt.savefig(os.path.join(out_folder, f"dose_{damage_type}"+f"_{fname_prefix}_{spacing}um_{seed}.png"))
     else:
         plt.show()
 
