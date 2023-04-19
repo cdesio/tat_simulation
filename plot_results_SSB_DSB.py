@@ -173,7 +173,7 @@ if __name__ == "__main__":
                          nevents=nevents, spacing=int(s), seed=seed, out_folder=out_folder, n_div_r=n_div_r, damage_type=damage_type, particle=particle, keyword=keyword)
     else:
         plot_results(folder=folder, fname_prefix=fname_prefix, 
-                         nevents=nevents, spacing=int(spacing[0]), seed=seed, out_folder=out_folder, n_div_r=n_div_r,damage_type=damage_type, particle=particle, keyword=keyword)
+                         nevents=nevents, spacing=int(spacing[0]), seed=seed, out_folder=out_folder, n_div_r=n_div_r,damage_type=damage_type, keyword=keyword)
 
 
 
