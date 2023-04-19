@@ -104,7 +104,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
 
     #DOSE
 
-    fig2 = plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(8, 5))
     plt.plot(radii_out, dose_out, color='darkblue', marker='s', markersize=3, linestyle='-', linewidth=.9,
                 label=f'Dose')
     plt.legend()
