@@ -48,11 +48,11 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
             indirect[i]= nSSB/nGBP
         
         elif damage_type=='DSB':
-            nDSB, dose, nGBP = calcSimpleDSBperDose("Total", (dataset[i]))
+            nDSB, dose, nGBP = calcBreaksperDose("DSBtotal", (dataset[i]))
             total[i] = nDSB/nGBP
-            nDSB, dose, nGBP = calcSimpleDSBperDose("Direct", (dataset[i]))
+            nDSB, dose, nGBP = calcBreaksperDose("DSBdirect", (dataset[i]))
             direct[i] = nDSB/nGBP
-            nDSB, dose, nGBP = calcSimpleDSBperDose("Indirect", (dataset[i]))
+            nDSB, dose, nGBP = calcBreaksperDose("DSBindirect", (dataset[i]))
             indirect[i] = nDSB/nGBP
         
         radii_out[i] = 10.5+i*spacing  
@@ -91,7 +91,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     plt.title(f"DNA damage vs distance, spacing: {spacing_str} um")
     plt.xlabel("Radial distance (um)")
     #plt.ylabel('Number of strand breaks $Gbp^{-1} per decay$)', fontsize=11)
-    plt.ylabel('Number of {damage_type} ($Gy^{-1} Gbp^{-1}$)', fontsize=11)
+    plt.ylabel(f'Number of {damage_type} ($Gy^{-1} Gbp^{-1}$)', fontsize=11)
     if savefig:
         plt.savefig(os.path.join(out_folder, f"{damage_type}"+(f"_{particle}" if particle else None)+f"_byDose_{fname_prefix}_{spacing}um_{seed}.png"))
     else:
