@@ -14,11 +14,11 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
         fname_base+=f"_{particle}"
     if keyword: 
         fname_base+= f"_{keyword}"
-    if damage_type == "SSB":
-        fname = fname_base
-    elif damage_type == "DSB":
-        fname = fname_base+f"_DSB"
-    fnames = [os.path.join(folder, fname+f"_{r}.csv") for r in radii]
+    # if damage_type == "SSB":
+    #     fname = fname_base
+    # elif damage_type == "DSB":
+    #     fname = fname_base+f"_DSB"
+    fnames = [os.path.join(folder, fname_base+f"_{r}.csv") for r in radii]
     
     dataset = {}
 
