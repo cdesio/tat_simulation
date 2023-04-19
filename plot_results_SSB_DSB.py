@@ -9,7 +9,7 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     
     fname_base = f"{fname_prefix}"
     if spacing and seed:
-        fname+= f"_{spacing}um_"+f"{seed}"
+        fname_base+= f"_{spacing}um_"+f"{seed}"
     if particle: 
         fname_base+=f"_{particle}"
     if keyword: 
