@@ -84,11 +84,11 @@ def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=2
     # Dividing by dose
     plt.figure(figsize=(8, 5))
     plt.plot(radii_out, np.divide(total, dose_out, out=np.zeros_like(total),where=dose_out!=0), color='k',
-                label=f'Total SB', marker='x', linewidth=.6, markersize=3)
+                label=f'Total SB', marker='x', linewidth=.3, markersize=3)
     plt.plot(radii_out, np.divide(indirect, dose_out, out=np.zeros_like(indirect),where=dose_out!=0),
-                color='mediumvioletred', label=f'Indirect SB',linewidth=.6, marker='o', markersize=3)
+                color='mediumvioletred', label=f'Indirect SB',linewidth=.3, marker='o', markersize=3)
     plt.plot(radii_out, np.divide(direct, dose_out, out=np.zeros_like(direct),where=dose_out!=0), color='cornflowerblue',
-            label=f'Direct SB', linewidth=.6,  marker='s', markersize=3)
+            label=f'Direct SB', linewidth=.3,  marker='s', markersize=3)
     plt.legend()
     spacing_str = spacing if spacing else 10
     plt.title(f"DNA damage vs distance, spacing: {spacing_str} um")
