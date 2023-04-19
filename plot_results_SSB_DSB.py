@@ -4,13 +4,16 @@ import argparse
 import os
 import numpy as np
 
-def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=20, seed=None, out_folder = "./", damage_type='SSB', particle=None):
+def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=20, seed=None, out_folder = "./", damage_type='SSB', particle=None, keyword=None):
     radii = range(n_div_r)
     
-    fname_base = f"{fname_prefix}_{spacing}um_"+f"{seed}"
+    fname_base = f"{fname_prefix}
+    if spacing and seed:
+        fname+= f"_{spacing}um_"+f"{seed}"
     if particle: 
         fname_base+=f"_{particle}"
-
+    if keyword: 
+        fname_base+= f"_{keyword}"
     if damage_type == "SSB":
         fname = fname_base
     elif damage_type == "DSB":
@@ -136,6 +139,7 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default = None, help='seed of simulation')
     parser.add_argument('--type', type=str, help="SSB or DSB")
     parser.add_argument("--particle", type=str,default=None)
+    parser.add_argument("--keyword", type=str, default=None)
     
     args = parser.parse_args()
     
@@ -159,15 +163,17 @@ if __name__ == "__main__":
         damage_type= args.type
     if args.particle:
         particle = args.particle
+    if args.keyword:
+        keyword = args.keyword
 
     
     if len(spacing)>1:
         for s in spacing:
             plot_results(folder=folder, fname_prefix=fname_prefix, 
-                         nevents=nevents, spacing=int(s), seed=seed, out_folder=out_folder, n_div_r=n_div_r, damage_type=damage_type, particle=particle)
+                         nevents=nevents, spacing=int(s), seed=seed, out_folder=out_folder, n_div_r=n_div_r, damage_type=damage_type, particle=particle, keyword=keyword)
     else:
         plot_results(folder=folder, fname_prefix=fname_prefix, 
-                         nevents=nevents, spacing=int(spacing[0]), seed=seed, out_folder=out_folder, n_div_r=n_div_r,damage_type=damage_type, particle=particle)
+                         nevents=nevents, spacing=int(spacing[0]), seed=seed, out_folder=out_folder, n_div_r=n_div_r,damage_type=damage_type, particle=particle, keyword=keyword)
 
 
 
