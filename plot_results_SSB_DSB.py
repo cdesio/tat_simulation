@@ -7,7 +7,7 @@ import numpy as np
 def plot_results(folder, fname_prefix, spacing, nevents, savefig=True, n_div_r=20, seed=None, out_folder = "./", damage_type='SSB', particle=None, keyword=None):
     radii = range(n_div_r)
     
-    fname_base = f"{fname_prefix}
+    fname_base = f"{fname_prefix}"
     if spacing and seed:
         fname+= f"_{spacing}um_"+f"{seed}"
     if particle: 
