@@ -162,7 +162,10 @@ def map_decay_to_copyno(eventInfo):
 #     return lambda pid: eventInfo['EventNo'][eventInfo['particleID']==pid]
 
 def map_pid_idx(eventInfo_pid, pid: int):
-    return np.where(eventInfo_pid==pid)[0]
+    if pid==-1:
+        return np.where(eventInfo_pid!=-1)[0]
+    else:
+        return np.where(eventInfo_pid==pid)[0]
 
 def map_radius_copyno(n_boxes, boxes_per_R):
     ranges_radii = {}
@@ -178,7 +181,7 @@ def calculateDose(eventEdep, chromatinVolume: float, evts_step1, evts_step2):
     print("start calculate dose")
     evts_step1_uniq, idx, _ = np.unique(evts_step1, return_counts=True,return_inverse=True)
     edep_J = eventEdep['Edep_J'].array(library='numpy')
-    dosePerEvent = np.bincount(idx, edep_J[evts_step2])/(1000*chromatinVolume)
+    dosePerEvent = np.bincount(idx, edep_J[evts_step2]/(1000*chromatinVolume))
     meanKEperEvent = np.bincount(idx, edep_J[evts_step2])
     energy = np.sum(meanKEperEvent)/len(meanKEperEvent)
     del edep_J
@@ -255,7 +258,11 @@ def AccumulateEdep(direct, T0: cKDTree, T1: cKDTree, evts_step1, evts_step2, out
     #             cumulatedEnergyDep[key] += direct['eDep_eV'][direct['EventNo']==simEvt][idx]
     # return cumulatedEnergyDep  
     # 
-               
+    os.remove(out_path+'_temp_mevt.dat')
+    os.remove(out_path+'_temp_x.dat')
+    os.remove(out_path+'_temp_y.dat')
+    os.remove(out_path+'_temp_z.dat')
+    os.remove(out_path+'_temp_edep.dat')
     return keys_inv, cumEdep
 
 def calcDirectDamage(keys_edep, cumulatedEnergyDep, fEMinDamage: float, fEMaxDamage: float):
@@ -359,6 +366,9 @@ def calcIndirectDamage(indirect: dict, probIndirect: float, T0: cKDTree, T1: cKD
         #             c, s = getIndex(point, T0, T1)
         #             copyListIndirect.append(c)
         #             strandListIndirect.append(s)
+    os.remove(out_path+'_temp_eventno_ind.dat')
+    os.remove(out_path+'_temp_mdnamol.dat')
+    os.remove(out_path+'_temp_radicals.dat')
     return eventsListIndirect, copyListIndirect, strandListIndirect
 
 
@@ -396,6 +406,9 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
         if primaryParticle in particleMap.keys():
             primaryParticleID = particleMap[primaryParticle]
             print("primary: ", primaryParticle, primaryParticleID)
+        elif primaryParticle == "all":
+            primaryParticleID = -1
+            print("primary: ", primaryParticle, primaryParticleID)
         else:
             raise ValueError(f"particle not in particleMap: {primaryParticle}")
     out_path = os.path.splitext(outputFilename)[0] if not primaryParticle else os.path.splitext(outputFilename)[0]+f"_{primaryParticle}"
@@ -417,7 +430,7 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
     
     evts_step1 = eventInfo['PhotonEventID'].array(library='np')[evt_id_pid]
     evts_step2 = eventInfo['EventNo'].array(library='np')[evt_id_pid]
-    #copyNo_pid = eventInfo['copyNo'].array(library='np')[evt_id_pid]
+    copyNo_pid = eventInfo['copyNo'].array(library='np')[evt_id_pid]
 
     pathLength={}
     chromatinVolume =  info['ChromatinVolume_m3'].array(library='np')[0]  # in m3
@@ -448,6 +461,8 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
     direct = ufile["ntuple/Direct"]
     
     keys_edep, cumulatedEnergyDep = AccumulateEdep(direct, T0, T1, evts_step1, evts_step2, out_path)
+    
+
     print("AccumulateEdep done")
  
     
@@ -457,6 +472,10 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
     
     indirect = ufile["ntuple/Indirect"]
     eventsListIndirect, copyListIndirect, strandListIndirect = calcIndirectDamage(indirect, probIndirect, T0, T1, evts_step1, evts_step2, out_path)
+  
+
+    
+    
     numEvt = list(set(np.concatenate([eventsListDirect, eventsListIndirect])))
     #(len(eventsListDirect), len(eventsListIndirect), len(copyListDirect), len(strandListDirect), len(numEvt))
     # clustering
@@ -468,8 +487,11 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
     events = evt_step1_unique_dose
 
     #events = list(dosePerEvent.keys())
-    eventsWithClusteringResults = clusteringResults[:,0]
-    
+    if len(clusteringResults):
+        eventsWithClusteringResults = clusteringResults[:,0]
+    else:
+        raise ValueError("no clustering results. Done")
+        
     _, idx1, idx2 = np.intersect1d(events, eventsWithClusteringResults, return_indices=True)
     #complement = events[np.isin(events, eventsWithClusteringResults, invert=True)]
 
