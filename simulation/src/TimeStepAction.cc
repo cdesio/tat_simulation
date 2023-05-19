@@ -43,6 +43,8 @@
 #include "CommandLineParser.hh"
 // #include "G4LogicalVolumeStore.hh"
 #include "EventAction.hh"
+#include "PrimaryGeneratorAction.hh"
+#include "G4RunManager.hh"
 #include "G4KDTreeResult.hh"
 
 using namespace G4DNAPARSER;
@@ -228,13 +230,26 @@ void TimeStepAction::UserReactionAction(const G4Track &trackA,
       G4cout << "position not found " << G4endl;
     }
 
+    const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
+        G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+
+    G4int step1_eventID = generatorAction->step1_eventID;
+    G4int step1_copyNo = generatorAction->step1_copyNo;
+    G4int step1_PID = generatorAction->step1_PID;
+    G4double step1_time = generatorAction->step1_time;
+    G4int step1_processID = generatorAction->step1_processID;
+
     analysisManager->FillNtupleIColumn(2, 0, eventID);
     analysisManager->FillNtupleDColumn(2, 1, localPos.x() / nanometer);
     analysisManager->FillNtupleDColumn(2, 2, localPos.y() / nanometer);
     analysisManager->FillNtupleDColumn(2, 3, localPos.z() / nanometer);
     analysisManager->FillNtupleSColumn(2, 4, GetMolecule(DNAElement)->GetName());
     analysisManager->FillNtupleSColumn(2, 5, GetMolecule(radical)->GetName());
-
+    analysisManager->FillNtupleIColumn(2, 6, step1_eventID);
+    analysisManager->FillNtupleIColumn(2, 7, step1_copyNo);
+    analysisManager->FillNtupleIColumn(2, 8, step1_PID);
+    analysisManager->FillNtupleIColumn(2, 9, step1_processID);
+    analysisManager->FillNtupleDColumn(2, 10, step1_time + DNAElement->GetGlobalTime());
     analysisManager->AddNtupleRow(2);
   }
 }
