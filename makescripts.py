@@ -1,5 +1,6 @@
 """
-Create all files required to run alpha simulation(s) with set seeds and energies. simulation & clustering run separately so that multithreading can be used on simulation
+Create all files required to run TAT simulation(s) with set seeds and other geometric arguments. 
+simulation & clustering run separately so that multithreading can be used on simulation
 """
 import os
 import random
@@ -292,12 +293,12 @@ for s in spacing:
             f.write("source /user/home/yw18581/.bash_profile\n")
             f.write("source activate clustering\n")
             f.write(
-                f"/user/home/yw18581/.conda/envs/clustering/bin/python3.6 {clustering_dir}/run.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {boxes_per_R}\n"
+                f"/user/home/yw18581/.conda/envs/clustering/bin/python3.6 {clustering_dir}/run_up_new.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_upnew.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {boxes_per_R} --primary all\n"
             )
         else:
             f.write("conda activate clustering\n")
             f.write(
-                f"python {clustering_dir}/run.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {n_div_theta*n_div_Z}\n"
+                f"python {clustering_dir}/run_up_new.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_upnew.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {n_div_theta*n_div_Z} --primary all\n"
             )
     filename_runscript = os.path.join(test_dir, f"run_script_At_{n_string}_spacing_{s_string}um_{seed}.sh")
     with open(filename_runscript, "w") as f:
@@ -307,7 +308,7 @@ for s in spacing:
             f.write(f"#SBATCH --job-name=run_At{n_string}_sp_{s_string}um\n")
             f.write(f"#SBATCH --output=run_At_{n_string}_spacing_{s_string}um.out.%J\n")
             f.write(f"#SBATCH --error=run_At_{n_string}_spacing_{s_string}um.err.%J\n")
-            f.write(f"#SBATCH --time=0-10:00\n")
+            f.write(f"#SBATCH --time=1-10:00\n")
             f.write("#SBATCH --nodes=1\n")
             f.write("#SBATCH -p short\n")
             f.write("#SBATCH --ntasks-per-node=1\n")
