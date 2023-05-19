@@ -308,7 +308,7 @@ for s in spacing:
         f.write("#!/bin/bash --login\n")
 
         if slurm:
-            f.write(f"#SBATCH --job-name=run_At{n_string}_sp_{s_string}um\n")
+            f.write(f"#SBATCH --job-name=run_At{n_string}_sp_{s_string}um_{seed}\n")
             f.write(f"#SBATCH --account={projectcode}\n")
             f.write(f"#SBATCH --output={test_dir}/run_At_{n_string}_spacing_{s_string}um.out.%J\n")
             f.write(f"#SBATCH --error={test_dir}/run_At_{n_string}_spacing_{s_string}um.err.%J\n")
