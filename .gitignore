@@ -16,5 +16,4 @@ simulation/build/CMakeFiles/*
 *png
 *cmake
 output/*png
-scripts/*
-scripts
+scripts/ipynb*
