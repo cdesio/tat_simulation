@@ -1,6 +1,6 @@
-simulation/build/*
-simulation/build/CMakeFiles/*
-decay_simulation/build/*
+simulation/build/
+simulation/build/CMakeFiles/
+decay_simulation/build/
 decay_simulation/GNUmakefile
 *.csv
 *.root
