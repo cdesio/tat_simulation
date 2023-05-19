@@ -26,7 +26,7 @@
 
 #include "PhysicsList.hh"
 #include "G4SystemOfUnits.hh"
-#include "G4EmAndDNA.hh"
+#include "G4EmDNAPhysics_option2.hh"
 #include "G4EmDNAChemistry_option3.hh"
 #include "G4PhysicsConstructorRegistry.hh"
 #include "CommandLineParser.hh"
@@ -43,17 +43,17 @@ PhysicsList::PhysicsList()
 {
     SetDefaultCutValue(1.0 * nanometer);
     SetVerboseLevel(1);
-    RegisterConstructor("G4EmAndDNA");
+    RegisterConstructor("G4EmDNAPhysics_option2");
     if (CommandLineParser::GetParser()->GetCommandIfActive("-chemOFF") == 0)
     {
         RegisterConstructor("G4EmDNAChemistry_option3");
     }
 
-    // Decay
-    RegisterPhysics(new G4DecayPhysics());
+    // // Decay
+    // RegisterPhysics(new G4DecayPhysics());
 
-    // Radioactive decay
-    RegisterPhysics(new G4RadioactiveDecayPhysics());
+    // // Radioactive decay
+    // RegisterPhysics(new G4RadioactiveDecayPhysics());
     G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(5 * eV, 1 * GeV);
 }
 
@@ -107,9 +107,9 @@ void PhysicsList::RegisterConstructor(const G4String &name)
         G4cout << "===== Register constructor ==== " << name << G4endl;
     }
 
-    if (name == "G4EmAndDNA")
+    if (name == "G4EmDNAPhysics_option2")
     {
-        fDNAPhysicsList.reset(new G4EmAndDNA(verboseLevel));
+        fDNAPhysicsList.reset(new G4EmDNAPhysics_option2(verboseLevel));
         fPhysDNAName = name;
     }
     else if (name == "G4EmDNAChemistry_option3")

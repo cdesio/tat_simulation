@@ -148,18 +148,27 @@ void RunAction::CreateNtuple()
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
   analysisManager->SetDefaultFileType("root");
   analysisManager->SetVerboseLevel(0);
-  analysisManager->SetNtupleDirectoryName("ntuple");
+  analysisManager->SetNtupleDirectoryName("output");
   analysisManager->SetNtupleMerging(true);
   // open output file
   //
 
   analysisManager->SetFirstNtupleId(0);
   analysisManager->CreateNtuple("EventEdep", "EventEdep");
-  analysisManager->CreateNtupleDColumn("Edep_J");
-  analysisManager->CreateNtupleDColumn("Edep_MeV");
-  analysisManager->CreateNtupleIColumn("EventNo");
-  if ((command = parser->GetCommandIfActive("-PS")) == 0)
+  analysisManager->CreateNtupleDColumn("edep_J");
+  analysisManager->CreateNtupleIColumn("step2_eventID");
+
+  if (command = parser->GetCommandIfActive("-PS")){
+
+    analysisManager->CreateNtupleDColumn("edep_MeV");
+    analysisManager->CreateNtupleIColumn("step1_eventID");
+    analysisManager->CreateNtupleIColumn("step1_PID");
+    analysisManager->CreateNtupleIColumn("step1_copyNo");
+    analysisManager->CreateNtupleIColumn("step1_processID");
+}
+  else
   {
+    
     analysisManager->CreateNtupleDColumn("PrimaryKEEntrance");
     analysisManager->CreateNtupleDColumn("PrimaryKEExit");
     analysisManager->CreateNtupleDColumn("ProjectedRangeChromatin");
@@ -170,27 +179,35 @@ void RunAction::CreateNtuple()
   analysisManager->FinishNtuple(0);
 
   analysisManager->CreateNtuple("Direct", "Direct");
-  analysisManager->CreateNtupleIColumn(1, "EventNo");
+  analysisManager->CreateNtupleIColumn(1, "step2_eventID");
+  analysisManager->CreateNtupleIColumn(1, "step1_eventID");
   analysisManager->CreateNtupleDColumn(1, "eDep_eV");
   analysisManager->CreateNtupleDColumn(1, "x");
   analysisManager->CreateNtupleDColumn(1, "y");
   analysisManager->CreateNtupleDColumn(1, "z");
-  analysisManager->CreateNtupleSColumn(1, "Particle");
+  analysisManager->CreateNtupleSColumn(1, "ParticleName");
   analysisManager->CreateNtupleDColumn(1, "KE");
-  analysisManager->CreateNtupleIColumn(1, "copyNo");
+  analysisManager->CreateNtupleIColumn(1, "step1_copyNo");
+  analysisManager->CreateNtupleIColumn(1, "step1_PID");
   analysisManager->CreateNtupleDColumn(1, "time");
+  analysisManager->CreateNtupleIColumn(1, "step1_processID");
   analysisManager->FinishNtuple(1);
 
   // For chemistry
 
   analysisManager->CreateNtuple("Indirect", "Indirect");
 
-  analysisManager->CreateNtupleIColumn(2, "EventNo");
+  analysisManager->CreateNtupleIColumn(2, "step2_eventID");
   analysisManager->CreateNtupleDColumn(2, "x");
   analysisManager->CreateNtupleDColumn(2, "y");
   analysisManager->CreateNtupleDColumn(2, "z");
   analysisManager->CreateNtupleSColumn(2, "DNAmolecule");
   analysisManager->CreateNtupleSColumn(2, "radical");
+  analysisManager->CreateNtupleIColumn(2, "step1_eventID");
+  analysisManager->CreateNtupleIColumn(2, "step1_copyNo");
+  analysisManager->CreateNtupleIColumn(2, "step1_PID");
+  analysisManager->CreateNtupleIColumn(2, "step1_processID");
+  analysisManager->CreateNtupleDColumn(2, "time");
 
   analysisManager->FinishNtuple(2);
 
@@ -208,14 +225,28 @@ void RunAction::CreateNtuple()
 
   if ((command = parser->GetCommandIfActive("-PS")))
   {
-    analysisManager->CreateNtuple("Events", "Events");
+    analysisManager->CreateNtuple("PS_data", "PS_data");
 
-    analysisManager->CreateNtupleIColumn(4, "EventNo");
-    analysisManager->CreateNtupleIColumn(4, "PhotonEventID");
-    analysisManager->CreateNtupleIColumn(4, "copyNo");
-    analysisManager->CreateNtupleIColumn(4, "particleID");
+    analysisManager->CreateNtupleIColumn(4, "step2_eventID");
+    analysisManager->CreateNtupleIColumn(4, "step1_eventID");
+    analysisManager->CreateNtupleIColumn(4, "step1_copyNo");
+    analysisManager->CreateNtupleIColumn(4, "step1_particleID");
+    analysisManager->CreateNtupleIColumn(4, "step1_processID");
 
     analysisManager->FinishNtuple(4);
+
+  analysisManager->CreateNtuple("Dose", "Dose");
+  analysisManager->CreateNtupleIColumn(5, "step2_eventID");
+  analysisManager->CreateNtupleIColumn(5, "step1_eventID");
+  analysisManager->CreateNtupleIColumn(5, "step1_copyNo");
+  analysisManager->CreateNtupleIColumn(5, "step1_PID");
+  analysisManager->CreateNtupleDColumn(5, "step2_time");
+  analysisManager->CreateNtupleDColumn(5, "edep_J");
+  analysisManager->CreateNtupleIColumn(5, "step1_processID");
+  analysisManager->CreateNtupleSColumn(5, "particleName");
+
+  analysisManager->FinishNtuple(5);
+
   }
 }
 
