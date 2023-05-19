@@ -84,13 +84,13 @@ void EventAction::EndOfEventAction(const G4Event *)
   if ((fEdep>0) && (fpathLengthTotal>0)) //only save edep>0 to reduce output file size
   {
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
-  analysisManager->FillNtupleDColumn(3,0, (fEdep/joule));
-  analysisManager->FillNtupleDColumn(3, 1, (fEdep / MeV));
-  analysisManager->FillNtupleIColumn(3,2, G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID());
-  analysisManager->FillNtupleDColumn(3, 3, fpathLengthTotal / nanometer);
-  analysisManager->FillNtupleIColumn(3, 4, fpEventAction->GetNumSecondaries());
+  analysisManager->FillNtupleDColumn(2,0, (fEdep/joule));
+  analysisManager->FillNtupleDColumn(2, 1, (fEdep / MeV));
+  analysisManager->FillNtupleIColumn(2,2, G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID());
+  analysisManager->FillNtupleDColumn(2, 3, fpathLengthTotal / nanometer);
+  analysisManager->FillNtupleIColumn(2, 4, fpEventAction->GetNumSecondaries());
 
-  analysisManager->AddNtupleRow(3);
+  analysisManager->AddNtupleRow(2);
   }
 
   if (fpathLengthTotal>0)

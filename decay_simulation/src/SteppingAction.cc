@@ -36,6 +36,8 @@
 #include "DetectorConstruction.hh"
 #include "CommandLineParser.hh"
 #include "EventAction.hh"
+#include "G4Ions.hh"
+
 using namespace G4DNAPARSER;
 
 // using MapOfDelayedLists =
@@ -142,23 +144,56 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   G4int stepID = step->GetTrack()->GetCurrentStepNumber();
   auto particleEnergy = step->GetPostStepPoint()->GetKineticEnergy();
   G4double steplength = step->GetStepLength();
+
+  const G4VProcess *defprocess = step->GetPostStepPoint()->GetProcessDefinedStep();
+  const G4VProcess *creatprocess = step->GetTrack()->GetCreatorProcess();
   
-  if (eventID <= 1000)
+  // if (defprocess)
+  // {
+  //   G4String defprocessname = defprocess->GetProcessName();
+
+  //   if (((G4StrUtil::contains(defprocessname, "Decay")) || (defprocessname == "RadioactiveDecay")) || (defprocessname == "ionIoni"))
+  //   {
+  //     G4cout << "Event ID: " << eventID << ", particle: " << particleName << ", step: " << stepID << ", DefProcName: " << defprocessname << G4endl;
+  //   }
+  // }
+  G4int processID = -1;
+  if (creatprocess)
   {
-    analysisManager->FillNtupleIColumn(0, 0, eventID);
-    analysisManager->FillNtupleDColumn(0, 1, dE / MeV);
-    analysisManager->FillNtupleDColumn(0, 2, point.x() / um);
-    analysisManager->FillNtupleDColumn(0, 3, point.y() / um);
-    analysisManager->FillNtupleDColumn(0, 4, point.z() / um);
-    analysisManager->FillNtupleIColumn(0, 5, particleID);
-    analysisManager->FillNtupleSColumn(0, 6, particleName);
-    analysisManager->FillNtupleIColumn(0, 7, copyNo);
-    analysisManager->FillNtupleIColumn(0, 8, stepID);
-    analysisManager->FillNtupleDColumn(0, 9, steplength);
-    analysisManager->FillNtupleDColumn(0, 10, particleEnergy / MeV);
-    analysisManager->FillNtupleSColumn(0, 11, volumeNamePre);
-    analysisManager->AddNtupleRow(0);
-  }
+    G4String creatprocessname = creatprocess->GetProcessName();
+    
+    if (creatprocessname == "RadioactiveDecay" || creatprocessname == "Decay" )
+    {
+      processID = 1;
+    }
+    else if (creatprocessname == "ionIoni")
+    {
+      processID = 2;
+    }
+    else if (creatprocessname == "msc")
+    {
+      processID = 3;
+    }
+    else if (creatprocessname == "eIoni")
+    {
+      processID = 4;
+    }
+    else if (creatprocessname == "phot")
+    {
+      processID = 5;
+    }
+    else if (creatprocessname == "eBrem")
+    {
+      processID = 6;
+    }
+    else if (creatprocessname == "compt")
+    {
+      processID = 7;
+    }
+    else{G4cout  << creatprocessname << " not saved. " << G4endl;}
+    
+    }
+
   if (volumeNamePre == "TrackingVol")
   {
     G4DNAPARSER::CommandLineParser *parser = G4DNAPARSER::CommandLineParser::GetParser();
@@ -185,16 +220,17 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     // G4ThreeVector point = prePoint + G4UniformRand() * (postPoint - prePoint);
     // DEBUG
     // G4cout << "DEBUG: " << particleName << "(ID: " << particleID << ") losing E in chromatinSegment : " << eventID << G4endl;
-    analysisManager->FillNtupleIColumn(1, 0, eventID);
-    analysisManager->FillNtupleDColumn(1, 1, dE / eV);
-    analysisManager->FillNtupleDColumn(1, 2, postPoint.x() / nanometer);
-    analysisManager->FillNtupleDColumn(1, 3, postPoint.y() / nanometer);
-    analysisManager->FillNtupleDColumn(1, 4, postPoint.z() / nanometer);
-    analysisManager->FillNtupleIColumn(1, 5, particleID);
-    analysisManager->FillNtupleSColumn(1, 6, particleName);
-    analysisManager->FillNtupleIColumn(1, 7, copyNo);
-    analysisManager->FillNtupleIColumn(1, 8, stepID);
-    analysisManager->AddNtupleRow(1);
+    
+    analysisManager->FillNtupleIColumn(0, 0, eventID);
+    analysisManager->FillNtupleDColumn(0, 1, dE / eV);
+    analysisManager->FillNtupleDColumn(0, 2, postPoint.x() / nanometer);
+    analysisManager->FillNtupleDColumn(0, 3, postPoint.y() / nanometer);
+    analysisManager->FillNtupleDColumn(0, 4, postPoint.z() / nanometer);
+    analysisManager->FillNtupleIColumn(0, 5, particleID);
+    analysisManager->FillNtupleSColumn(0, 6, particleName);
+    analysisManager->FillNtupleIColumn(0, 7, copyNo);
+    analysisManager->FillNtupleIColumn(0, 8, stepID);
+    analysisManager->AddNtupleRow(0);
 
     fpEventAction->AddEdep(dE);
   }
@@ -244,7 +280,8 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       output[8] = particleID;
       output[9] = copyNo;
       output[10] = time;
-      output[11] = pdg_enc;
+      output[11] = processID;
+      //output[12] = ((const G4Ions*)( step->GetTrack()->GetParticleDefinition()))->GetExcitationEnergy();
 
       PSfile.write((char *)&output, sizeof(output));
       // step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
@@ -287,7 +324,8 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     output[8] = particleID;
     output[9] = copyNo;
     output[10] = time;
-    output[11] = pdg_enc;
+    output[11] = processID;
+    //output[12] = ((const G4Ions*)( step->GetTrack()->GetParticleDefinition()))->GetExcitationEnergy();
     // G4cout << "DEBUG: evt:" << eventID << ", ID: " << particleID << "( " << particleName << ")" << G4endl;
     PSfile.write((char *)&output, sizeof(output));
     // if (stepID >= 1)

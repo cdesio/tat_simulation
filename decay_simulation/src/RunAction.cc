@@ -96,9 +96,9 @@ void RunAction::CreateNtuple()
 
   analysisManager->SetFirstNtupleId(0);
 
-  analysisManager->CreateNtuple("Tracking", "Tracking");
+  analysisManager->CreateNtuple("Direct", "Direct");
   analysisManager->CreateNtupleIColumn(0, "EventNo");
-  analysisManager->CreateNtupleDColumn(0, "eDep_MeV");
+  analysisManager->CreateNtupleDColumn(0, "eDep_eV");
   analysisManager->CreateNtupleDColumn(0, "x");
   analysisManager->CreateNtupleDColumn(0, "y");
   analysisManager->CreateNtupleDColumn(0, "z");
@@ -106,40 +106,25 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleSColumn(0, "particle_name");
   analysisManager->CreateNtupleIColumn(0, "copyNo");
   analysisManager->CreateNtupleIColumn(0, "stepID");
-  analysisManager->CreateNtupleDColumn(0, "step_length");
-  analysisManager->CreateNtupleDColumn(0, "energy");
-  analysisManager->CreateNtupleSColumn(0,"volume_name");
+
   analysisManager->FinishNtuple(0);
 
-  analysisManager->CreateNtuple("Direct", "Direct");
-  analysisManager->CreateNtupleIColumn(1, "EventNo");
-  analysisManager->CreateNtupleDColumn(1, "eDep_eV");
-  analysisManager->CreateNtupleDColumn(1, "x");
-  analysisManager->CreateNtupleDColumn(1, "y");
-  analysisManager->CreateNtupleDColumn(1, "z");
-  analysisManager->CreateNtupleIColumn(1, "PID");
-  analysisManager->CreateNtupleSColumn(1, "particle_name");
-  analysisManager->CreateNtupleIColumn(1, "copyNo");
-  analysisManager->CreateNtupleIColumn(1, "stepID");
-
+  analysisManager->CreateNtuple("Info", "Info");
+  analysisManager->CreateNtupleDColumn(1, "ChromatinVolume_m3");
+  analysisManager->CreateNtupleIColumn(1, "NumSecondaries");
+  analysisManager->CreateNtupleIColumn(1, "NumEvents");
+  analysisManager->CreateNtupleSColumn(1, "GitHash");
+  analysisManager->CreateNtupleIColumn(1, "NumIntersecting");
   analysisManager->FinishNtuple(1);
 
-  analysisManager->CreateNtuple("Info", "Info");
-  analysisManager->CreateNtupleDColumn(2, "ChromatinVolume_m3");
-  analysisManager->CreateNtupleIColumn(2, "NumSecondaries");
-  analysisManager->CreateNtupleIColumn(2, "NumEvents");
-  analysisManager->CreateNtupleSColumn(2, "GitHash");
-  analysisManager->CreateNtupleIColumn(2, "NumIntersecting");
-  analysisManager->FinishNtuple(2);
-
   analysisManager->CreateNtuple("EventData", "EventData");
-  analysisManager->CreateNtupleDColumn(3, "Edep_J");
-  analysisManager->CreateNtupleDColumn(3, "Edep_MeV");
-  analysisManager->CreateNtupleIColumn(3, "EventNo");
-  analysisManager->CreateNtupleDColumn(3, "PathLengthChromatin");
-  analysisManager->CreateNtupleIColumn(3, "NumSecondaries");
+  analysisManager->CreateNtupleDColumn(2, "Edep_J");
+  analysisManager->CreateNtupleDColumn(2, "Edep_MeV");
+  analysisManager->CreateNtupleIColumn(2, "EventNo");
+  analysisManager->CreateNtupleDColumn(2, "PathLengthChromatin");
+  analysisManager->CreateNtupleIColumn(2, "NumSecondaries");
 
-  analysisManager->FinishNtuple(3);
+  analysisManager->FinishNtuple(2);
 
   G4cout << "\n----> Histogram file is opened in " << fileName << G4endl;
 }
@@ -155,13 +140,13 @@ void RunAction::WriteNtuple(const G4Run *run)
 
   auto fpEventAction = (EventAction *)G4EventManager::GetEventManager()->GetUserEventAction();
 
-  analysisManager->FillNtupleDColumn(2, 0, chromatinVolume);
-  analysisManager->FillNtupleIColumn(2, 1, fpEventAction->GetNumSecondaries());
-  analysisManager->FillNtupleIColumn(2, 2, run->GetNumberOfEvent());
-  analysisManager->FillNtupleSColumn(2, 3, kGitHash);
-  analysisManager->FillNtupleIColumn(2, 4, numIntersecting);
+  analysisManager->FillNtupleDColumn(1, 0, chromatinVolume);
+  analysisManager->FillNtupleIColumn(1, 1, fpEventAction->GetNumSecondaries());
+  analysisManager->FillNtupleIColumn(1, 2, run->GetNumberOfEvent());
+  analysisManager->FillNtupleSColumn(1, 3, kGitHash);
+  analysisManager->FillNtupleIColumn(1, 4, numIntersecting);
 
-  analysisManager->AddNtupleRow(2);
+  analysisManager->AddNtupleRow(1);
 
   analysisManager->Write();
   analysisManager->CloseFile();

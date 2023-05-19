@@ -78,25 +78,5 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 
     fpParticleGun->GeneratePrimaryVertex(anEvent);
 
-    // CommandLineParser *parser = CommandLineParser::GetParser();
-    // Command *command(0);
 
-    // if ((command = parser->GetCommandIfActive("-out")) != 0)
-    // {
-
-    //     G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
-    //     G4ThreeVector pos = fpParticleGun->GetParticlePosition();
-    //     G4ThreeVector direction = fpParticleGun->GetParticleMomentumDirection();
-
-    //     analysisManager->FillNtupleIColumn(1, 0, anEvent->GetEventID());
-    //     analysisManager->FillNtupleDColumn(1, 1, fpParticleGun->GetParticleEnergy());
-    //     analysisManager->FillNtupleDColumn(1, 2, pos.x());
-    //     analysisManager->FillNtupleDColumn(1, 3, pos.y());
-    //     analysisManager->FillNtupleDColumn(1, 4, pos.z());
-    //     analysisManager->FillNtupleDColumn(1, 5, direction.x());
-    //     analysisManager->FillNtupleDColumn(1, 6, direction.y());
-    //     analysisManager->FillNtupleDColumn(1, 7, direction.z());
-    //     analysisManager->AddNtupleRow(1);
-
-    // }
 }
