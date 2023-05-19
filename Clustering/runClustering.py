@@ -69,7 +69,7 @@ def readClusteringGitHash(builddir):
 
 
 def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxDamage: float, probIndirect: float, sugarPosFilename: str, filenamePhoton: Union[str, bool] = False, separate_r=False, n_boxes = 3200, boxes_per_R = 800):
-
+    print("runClustering OLD VERSION")
     with open(sugarPosFilename, "r") as f:
         data = f.readlines()
 
@@ -286,7 +286,10 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
         else:
             print("INDIRECT check evt")
     # clustering
-    tempResults = clustering(numEvt, eventsListDirect, copyListDirect,
+    evts = list(set(eventsListDirect+eventsListIndirect))
+    
+
+    tempResults = clustering(evts, eventsListDirect, copyListDirect,
                              strandListDirect, eventsListIndirect, copyListIndirect, strandListIndirect)
 
     clusteringResults = tempResults[0]  # strand break number results

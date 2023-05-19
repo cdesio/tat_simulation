@@ -21,7 +21,7 @@ parser.add_argument("--max", type=float,
 parser.add_argument("--indirect", type=float,
                     help="Indirect damage percentage, default 0.405")
 parser.add_argument("--sugar", type=str, help="sugar geometry file")
-parser.add_argument("--primary", type=str, help="select particle to save to output file")
+parser.add_argument("--primary", type=str, help="select particle to save to output file", required=False)
 parser.add_argument("--sepR", type=bool, help="save to separate files for R")
 parser.add_argument("--n_boxes", type=int, help="tot number of dna boxes", default=3200)
 parser.add_argument("--boxes_per_R", type=int, help="number of boxes per R division", default=800)

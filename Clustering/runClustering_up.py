@@ -422,7 +422,7 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
     if up.default_library!='np':
         up.default_library='np'
 
-    info = ufile["ntuple/Info"]
+    info = ufile["output/Info"]
     eventInfo = ufile["ntuple/Events"]
     eventInfo_pid = eventInfo['particleID'].array(library='np')
 
