@@ -3,10 +3,10 @@ project(pyClustering)
 find_package(pybind11 REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(/opt/anaconda3/envs/clustering/lib/python3.6/site-packages/pybind11/include/pybind11/)
+include_directories(/user/home/yw18581/.conda/envs/clustering/lib/python3.6/site-packages/pybind11/include/pybind11/)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-set(pybind11_DIR /opt/anaconda3/envs/clustering/share/cmake/pybind11/)
+set(pybind11_DIR /user/home/yw18581/.conda/envs/clustering/share/cmake/pybind11/)
 
 include(cmake/CheckGit.cmake)
 CheckGitSetup()
