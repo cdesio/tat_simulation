@@ -193,7 +193,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     //G4cout << "dE: " << dE << ", eV: " << eV << ", dE*eV: " << dE/eV << G4endl;
     analysisManager->FillNtupleIColumn(1, 0, step2_eventID);
     analysisManager->FillNtupleIColumn(1, 1, step1_eventID);
-    analysisManager->FillNtupleDColumn(1, 2, dE * eV);
+    analysisManager->FillNtupleDColumn(1, 2, dE / eV);
     analysisManager->FillNtupleDColumn(1, 3, point.x() / nanometer);
     analysisManager->FillNtupleDColumn(1, 4, point.y() / nanometer);
     analysisManager->FillNtupleDColumn(1, 5, point.z() / nanometer);
