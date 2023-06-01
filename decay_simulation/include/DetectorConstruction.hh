@@ -48,8 +48,8 @@ public:
     void set_ndiv_R (G4int);
     void set_ndiv_theta(G4int);
     void set_ndiv_Z(G4int);
-
-
+    int get_ndiv_theta() { return ndiv_theta; }
+    int get_ndiv_Z() { return ndiv_Z; }
 
     G4double chromatinVolume;
 

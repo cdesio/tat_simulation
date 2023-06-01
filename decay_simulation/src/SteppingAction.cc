@@ -46,21 +46,30 @@ using namespace G4DNAPARSER;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-SteppingAction::SteppingAction(/*DetectorConstruction* fpDet*/)
-    : G4UserSteppingAction(), fpEventAction(0)
-// , fpDetector(fpDet)
+SteppingAction::SteppingAction(DetectorConstruction *pDetector)
+    : G4UserSteppingAction(), fpEventAction(0), fpDetector(pDetector)
 {
   fpEventAction = (EventAction *)G4EventManager::GetEventManager()->GetUserEventAction();
 
   CommandLineParser *parser = CommandLineParser::GetParser();
   Command *command(0);
-
+  Command *commandR(0);
   G4String fileName{"PSfile.bin"};
   if ((command = parser->GetCommandIfActive("-out")) != 0)
 
     if (command->GetOption().empty() == false)
     {
-      fileName = command->GetOption() + ".bin";
+
+      if ((commandR = parser->GetCommandIfActive("-outer")) != 0)
+      {
+        G4int boxes_per_r = pDetector->get_ndiv_Z() * pDetector->get_ndiv_theta();
+        G4cout << "n_div_Z: " << pDetector->get_ndiv_Z() << "n_div_theta: " << pDetector->get_ndiv_theta() << G4endl;
+        fileName = command->GetOption() + "_r" + commandR->GetOption() + ".bin";
+      }
+      else
+      {
+        fileName = command->GetOption() + ".bin";
+      }
     }
 
   PSfile.open(fileName, std::ios::out | std::ios::binary);
@@ -138,8 +147,19 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
   G4ThreeVector prePoint = step->GetPreStepPoint()->GetPosition();
   G4ThreeVector postPoint = step->GetPostStepPoint()->GetPosition();
-  
+  CommandLineParser *parser = CommandLineParser::GetParser();
+  Command *commandR(0);
   G4int copyNo = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber();
+  if ((commandR = parser->GetCommandIfActive("-outer")) != 0)
+  {
+    /// G4int boxes_per_r = pDetector->get_ndiv_Z() * pDetector->get_ndiv_theta();
+    // G4cout << "copyNo: " << copyNo << ", thresh:" << std::stoi(commandR->GetOption()) << ", boxes_per_R: "<<  boxes_per_r << G4endl;
+    boxes_per_r = 4000;
+    if (copyNo < std::stoi(commandR->GetOption()) * boxes_per_r)
+    {
+      return;
+    }
+  }
   G4ThreeVector point = prePoint + G4UniformRand() * (postPoint - prePoint);
   G4int stepID = step->GetTrack()->GetCurrentStepNumber();
   auto particleEnergy = step->GetPostStepPoint()->GetKineticEnergy();

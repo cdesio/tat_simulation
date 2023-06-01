@@ -32,22 +32,21 @@
 class EventAction;
 // class G4ParticleDefinition;
 // class G4VPhysicalVolume;
-// class DetectorConstruction;
+class DetectorConstruction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 class SteppingAction : public G4UserSteppingAction
 {
 public:
-    SteppingAction(/*DetectorConstruction* fpDet*/);
-    ~SteppingAction() override;
+  SteppingAction(DetectorConstruction *pDetector);
+  ~SteppingAction() override;
 
-    void UserSteppingAction(const G4Step* step) override;
-    // void Initialize();
+  void UserSteppingAction(const G4Step *step) override;
+  // void Initialize();
 private:
   EventAction* fpEventAction;
-
-    std::ofstream PSfile;
-
-
+  DetectorConstruction *fpDetector;
+  std::ofstream PSfile;
+  G4int boxes_per_r;
 };
