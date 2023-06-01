@@ -191,13 +191,13 @@ def calculateDose(eventEdep, chromatinVolume: float, keys_df):
     ke_dose['edep_J'] = edep_J[evts_step2]
     ke_dose['edep_MeV']=edep_MeV[evts_step2]
 
-    ke_dose = ke_dose.groupby(['step1', 'copyNo','pid'], as_index=False)[['edep_J', 'edep_MeV']].sum()
+    acc_step1 = ke_dose.groupby(['step1', 'copyNo','pid'], as_index=False)[['edep_J', 'edep_MeV']].sum()
 
-    ke_dose['dose'] = ke_dose['edep_J']/(1000*chromatinVolume)
+    acc_step1['dose'] = acc_step1['edep_J']/(1000*chromatinVolume)
 
-    mean_energy = ke_dose.groupby('step1')['edep_MeV'].mean().mean()
+    mean_energy = acc_step1.groupby('step1')['edep_MeV'].mean().mean()
     del edep_J
-    return mean_energy, ke_dose #return mean energy per event, unique pairs, dose, meanke
+    return mean_energy, acc_step1 #return mean energy per event, unique pairs, dose, meanke
 
 def AccumulateEdep(direct, T0: cKDTree, T1: cKDTree, keys_df, out_path):
     print("start accumulate Edep")
