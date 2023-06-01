@@ -106,7 +106,7 @@ n_string = f"{int(numIons/1000)}k" if numIons/1000 >=1 else f"{numIons}"
 
 folder = f"test_At{n_string}_{nboxes_string}_boxes_{startR}um"
 
-print(f"Creating scripts in folder: {folder} with seed {seed}.")
+#print(f"Creating scripts in folder: {folder} with seed {seed}.")
 ####
 
 decay_sim_folder = os.path.join(simulation_parent, "decay_simulation")
@@ -337,4 +337,4 @@ if not slurm:
     print(f"tmux new-session -d -s tat_{n_string}_{seed}\n 'source {filename_runscript}' ")
 else:
     print(f"sbatch {filename_runscript}")
-print("Done.")
+
