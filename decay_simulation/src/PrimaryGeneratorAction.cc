@@ -67,15 +67,6 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 {
-    if (G4UniformRand() < 0.5)
-    {
-        fpParticleGun->GetCurrentSource()->GetEneDist()->SetMonoEnergy(1.1732 * CLHEP::MeV);
-    }
-    else
-    {
-        fpParticleGun->GetCurrentSource()->GetEneDist()->SetMonoEnergy(1.3325 * CLHEP::MeV);
-    }
-
     fpParticleGun->GeneratePrimaryVertex(anEvent);
 
 
