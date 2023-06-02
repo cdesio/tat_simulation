@@ -146,22 +146,24 @@ void Parse(int& argc, char** argv)
                     Command::WithOption,
                     "Give a seed value in argument to be tested", "seed");
 
+ parser->AddCommand("-outer",
+                    Command::WithOption,
+                    "starting radius to evaluate");
 
+ G4String exec;
+ G4String path;
+ GetNameAndPathOfExecutable(argv, exec, path);
 
-  G4String exec;
-  G4String path;
-  GetNameAndPathOfExecutable(argv, exec, path);
+ parser->AddCommand("-out",
+                    Command::OptionNotCompulsory,
+                    "Output files (ROOT is used by default)",
+                    exec);
 
-  parser->AddCommand("-out",
-                     Command::OptionNotCompulsory,
-                     "Output files (ROOT is used by default)",
-                     exec);
-
-  //////////
-  // If -h or --help is given in option : print help and exit
-  //
-  if (parser->Parse(argc, argv) != 0) // help is being printed
-  {
+ //////////
+ // If -h or --help is given in option : print help and exit
+ //
+ if (parser->Parse(argc, argv) != 0) // help is being printed
+ {
     // if you are using ROOT, create a TApplication in this condition in order
     // to print the help from ROOT as well
     CommandLineParser::DeleteInstance();
