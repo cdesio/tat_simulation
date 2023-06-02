@@ -48,9 +48,9 @@ using namespace G4DNAPARSER;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-SteppingAction::SteppingAction(/*DetectorConstruction* fpDet*/)
+SteppingAction::SteppingAction(DetectorConstruction* fpDet)
     : G4UserSteppingAction(), fpEventAction(0)
-// , fpDetector(fpDet)
+ , fpDetector(fpDet)
 {
   fpEventAction = (EventAction *)G4EventManager::GetEventManager()->GetUserEventAction();
 }
@@ -96,9 +96,6 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
     G4String primaryName = generatorAction->primaryName;
 
-    if (step->GetTrack()->GetTrackID()==1){
-    //G4cout << "DEBUG: primaryPID: " << primary_pid << ", primaryName: " << primaryName << ", particleName: " << particleName << G4endl;
-    }
     if ((((particleName == "alpha") || (particleName == "alpha+") || (particleName == "helium")) && (primaryName == "alpha")) || ((primaryName=="e-") && (step->GetTrack()->GetTrackID() == 1)) || (primaryName=="gamma")|| (particleName=="neutron"))
     {
       if (false == fpEventAction->GetStartTrackFound())
@@ -126,33 +123,38 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   dE = step->GetTotalEnergyDeposit();
   if ((volumeName != "world") && (volumeName != "waterBox") && (volumeName != "TrackingVol") && (dE > 0.))
   {
-    
+
     fpEventAction->AddEdep(dE);
     
-    // G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
-    // G4int step2_eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+    G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
+    G4int step2_eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
 
-    // const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
-    //       G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+    const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
+          G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
     
-    // G4int step1_copyNo = generatorAction->step1_copyNo;
-    // G4double step1_time = generatorAction->step1_time;
-    // G4int step1_PID = generatorAction->step1_PID;
-    // G4int step1_eventID = generatorAction->step1_eventID;
-    // G4int step1_processID = generatorAction->step1_processID;
-    // G4double step2_time = step1_time + step->GetTrack()->GetGlobalTime();
-    // G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
-    // //4cout << "DEBUG: dE" << dE << ", step1_eventID: " << step1_eventID << ", step2_eventID: " << step2_eventID << ", volName: " << volumeName << G4endl;
-    // analysisManager->FillNtupleIColumn(5, 0, step2_eventID);
-    // analysisManager->FillNtupleIColumn(5, 1, step1_eventID);
-    // analysisManager->FillNtupleIColumn(5, 2, step1_copyNo);
-    // analysisManager->FillNtupleIColumn(5, 3, step1_PID);
-    // analysisManager->FillNtupleDColumn(5, 4, step2_time);
-    // analysisManager->FillNtupleDColumn(5, 5, dE/joule);
-    // analysisManager->FillNtupleIColumn(5, 6, step1_processID);
-    // analysisManager->FillNtupleSColumn(5, 7, particleName);
-    // analysisManager->AddNtupleRow(5);
-  }
+    G4int step1_copyNo = generatorAction->step1_copyNo;
+    G4double step1_time = generatorAction->step1_time;
+    G4int step1_PID = generatorAction->step1_PID;
+    G4int step1_eventID = generatorAction->step1_eventID;
+    G4int step1_processID = generatorAction->step1_processID;
+    G4double step2_time = step1_time + step->GetTrack()->GetGlobalTime();
+    G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
+    G4int parentID = step->GetTrack()->GetParentID();
+    G4int trackID = step->GetTrack()->GetTrackID();
+    if (step1_eventID == 9)
+    {
+      G4cout << "DEBUG: dE" << dE << ", step1: " << step1_eventID << ", step2: " << step2_eventID << ", copyNo: " << step1_copyNo << ", trackID: " << trackID << ", parent: " << parentID << G4endl;
+    }
+      // analysisManager->FillNtupleIColumn(5, 0, step2_eventID);
+      // analysisManager->FillNtupleIColumn(5, 1, step1_eventID);
+      // analysisManager->FillNtupleIColumn(5, 2, step1_copyNo);
+      // analysisManager->FillNtupleIColumn(5, 3, step1_PID);
+      // analysisManager->FillNtupleDColumn(5, 4, step2_time);
+      // analysisManager->FillNtupleDColumn(5, 5, dE/joule);
+      // analysisManager->FillNtupleIColumn(5, 6, step1_processID);
+      // analysisManager->FillNtupleSColumn(5, 7, particleName);
+      // analysisManager->AddNtupleRow(5);
+    }
 
   if (flagVolume == 0)
   {
@@ -191,6 +193,16 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     G4ThreeVector point = prePoint + G4UniformRand() * (postPoint - prePoint);
     G4double step2_time = step1_time + step->GetTrack()->GetGlobalTime();
     //G4cout << "dE: " << dE << ", eV: " << eV << ", dE*eV: " << dE/eV << G4endl;
+
+    auto fPositions0 = ((DetectorConstruction *)fpDetector)->fPositions0;
+    auto fPositionsBase0 = ((DetectorConstruction *)fpDetector)->fPositionsBase0;
+    auto fPositions1 = ((DetectorConstruction *)fpDetector)->fPositions1;
+    auto fPositionsBase1 = ((DetectorConstruction *)fpDetector)->fPositionsBase1;
+    auto result0 = fPositions0->NearestInRange(point, 1 * nm);
+    auto result1 = fPositions1->NearestInRange(point, 1 * nm);
+    if ((result0->GetSize() == 0) && (result1->GetSize() == 0))
+      return;
+
     analysisManager->FillNtupleIColumn(1, 0, step2_eventID);
     analysisManager->FillNtupleIColumn(1, 1, step1_eventID);
     analysisManager->FillNtupleDColumn(1, 2, dE / eV);
