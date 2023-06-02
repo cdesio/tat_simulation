@@ -181,7 +181,6 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   if (creatprocess)
   {
     G4String creatprocessname = creatprocess->GetProcessName();
-    
     if (creatprocessname == "RadioactiveDecay" || creatprocessname == "Decay" )
     {
       processID = 1;
@@ -211,8 +210,14 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       processID = 7;
     }
     else{G4cout  << creatprocessname << " not saved. " << G4endl;}
+  
     
-    }
+  }
+  // else {
+  //   G4double prestep_energy = step->GetPreStepPoint()->GetKineticEnergy();
+  //   G4double poststep_energy = step->GetPostStepPoint()->GetKineticEnergy();
+  //   G4cout << "DEBUG: eventID: " << eventID << ", PID: " << particleName << ", process: " << processID << ", pre: " << prestep_energy << ", post: " << poststep_energy << G4endl;
+  //}
 
   if (volumeNamePre == "TrackingVol")
   {
@@ -256,22 +261,15 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   }
 
   // if ((step->GetTrack()->GetParticleDefinition()->GetParticleName() == "e-" || step->GetTrack()->GetParticleDefinition()->GetParticleName() == "gamma" || step->GetTrack()->GetParticleDefinition()->GetParticleName() == "alpha") && (volumeName == "waterBox")) // e- from outside the tracking volume
-  if ((volumeNamePre == "waterBox") || (volumeNamePre == "bloodVessel"))
+  if ((volumeNamePre == "waterBox"))
   {
-    // if (particleName == "At211")
-    // {
-    //   G4double postEnergy = step->GetPostStepPoint()->GetKineticEnergy();
-    //   G4double preEnergy = step->GetPostStepPoint()->GetKineticEnergy();
-    //   G4cout << "At: pre E: " << preEnergy << ", post E: " << postEnergy << G4endl;
-    // }
-    if (step->GetPostStepPoint()->GetPhysicalVolume()->GetName() == "TrackingVol") // step ends on boundary to tracking volume
+    G4String volumeNamePost = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
+    if ((volumeNamePost == "TrackingVol")) // step ends on boundary to tracking volume
     {
       //G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
-      //G4int stepID = step->GetTrack()->GetCurrentStepNumber();
+      G4int stepID = step->GetTrack()->GetCurrentStepNumber();
       G4int trackID = step->GetTrack()->GetTrackID();
-      // DEBUG
-      //G4cout << "DEBUG: evt:" << eventID << ", " << particleName << "(ID: " << particleID << ") entered TrackingVol. trackID:  " << trackID << " stepID: " << stepID << G4endl;
-
+    
       G4TouchableHandle touchable = step->GetPostStepPoint()->GetTouchableHandle();
 
       G4ThreeVector worldPos = step->GetPostStepPoint()->GetPosition();
@@ -287,6 +285,10 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       // G4cout << "world mom: " << worldMomentum.x() << ", " << worldMomentum.y() << ", " << worldMomentum.z() << G4endl;
       // G4cout << "local mom: " << localMomentum.x() << ", " << localMomentum.y() << ", " << localMomentum.z() << G4endl;
       G4double time = step->GetPostStepPoint()->GetGlobalTime();
+      
+      G4int parentID = step->GetTrack()->GetParentID();
+
+      //G4cout << "DEBUG: Evt: " << eventID << ", PID: " << particleName << ", process: " << processID << ", parent: " << parentID << ", step: " << stepID << ", track: " << trackID << ", KE: " << particleEnergy << ", copyNo: " << copyNo << G4endl;
 
       float output[12];
       output[0] = localPos.x() / mm;
@@ -304,7 +306,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       //output[12] = ((const G4Ions*)( step->GetTrack()->GetParticleDefinition()))->GetExcitationEnergy();
 
       PSfile.write((char *)&output, sizeof(output));
-      // step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
+      //step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
 
       fpEventAction->AddSecondary();
     }
@@ -328,8 +330,12 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     G4double time = step->GetPreStepPoint()->GetGlobalTime();
 
     auto particleEnergy = step->GetPreStepPoint()->GetKineticEnergy();
-    // DEBUG
-    //G4cout << "DEBUG: evt:" << eventID << ", " << particleID << "( " << particleName << ") inside tracking vol: " << G4endl;
+
+    G4int parentID = step->GetTrack()->GetParentID();
+    G4int stepID = step->GetTrack()->GetCurrentStepNumber();
+    G4int trackID = step->GetTrack()->GetTrackID();
+    G4cout << "DEBUG inside: Evt: " << eventID << ", PID: " << particleName << ", process: " << processID << ", parent: " << parentID << ", step: " << stepID << ", track: " << trackID << ", KE: " << particleEnergy << G4endl;
+
     G4String process = step->GetTrack()->GetCreatorProcess()->GetProcessTypeName(step->GetTrack()->GetCreatorProcess()->GetProcessType());
     
     float output[12];
