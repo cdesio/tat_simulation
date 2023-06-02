@@ -82,7 +82,7 @@ G4EmAndDNA::G4EmAndDNA(G4int ver, const G4String &)
 
   param->SetDefaults();
   param->SetFluo(true);  
-  param->SetAuger(true);  
+  param->SetAuger(false);  
   param->SetDeexcitationIgnoreCut(true);
   param->ActivateDNA();
 

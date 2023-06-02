@@ -52,7 +52,8 @@ PhysicsList::PhysicsList()
     RegisterPhysics(new G4EmStandardPhysics_option4());
 
     G4EmParameters *param = G4EmParameters::Instance();
-    param->SetAugerCascade(true);
+    param->SetAuger(false);
+    param->SetAugerCascade(false);
     param->SetStepFunction(1., 1 * CLHEP::mm);
     param->SetStepFunctionMuHad(1., 1 * CLHEP::mm);
 
@@ -61,7 +62,8 @@ PhysicsList::PhysicsList()
 
     // Radioactive decay
     RegisterPhysics(new G4RadioactiveDecayPhysics());
-
+    
+    
     G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(5 * eV, 1 * GeV);
 }
 
