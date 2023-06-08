@@ -210,7 +210,7 @@ for s in spacing:
             f.write("source /opt/geant4-v11.1.0-install/bin/geant4.sh\n")
         # run decay simulation
         f.write(
-            f"time {makerundir(decay_sim_folder)}/decaySim -mac {filename_mac} -out {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_{seed} -seed {seed}\n"
+            f"/usr/bin/time -v {makerundir(decay_sim_folder)}/decaySim -mac {filename_mac} -out {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_{seed} -seed {seed}\n"
         )
         
 
@@ -243,7 +243,7 @@ for s in spacing:
             f.write("source /opt/geant4-v11.1.0-install/bin/geant4.sh\n")
         # run DNA simulation
         f.write(
-            f"time {makerundir(dna_sim_folder)}/tat -mac {filename_tat_mac} -PS {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_{seed}.bin -out {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root -sugar {sugarFile} -histone {histoneFile} -seed {seed} \n"
+            f"/usr/bin/time -v {makerundir(dna_sim_folder)}/tat -mac {filename_tat_mac} -PS {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_{seed}.bin -out {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root -sugar {sugarFile} -histone {histoneFile} -seed {seed} \n"
         )
 
         
@@ -264,7 +264,7 @@ for s in spacing:
         # f.write("rm {}; fi\n".format(fileToDelete))
 
     filename_clustering = os.path.join(
-        test_dir, f"clustering_At_{n_string}_spacing_{s_string}um_{seed}.sh"
+        test_dir, f"run_clustering_At_{n_string}_spacing_{s_string}um_{seed}.sh"
     )  # to be run from folder created
 
     with open(filename_clustering, "w") as f:
@@ -273,8 +273,8 @@ for s in spacing:
         if slurm:
             f.write(f"#SBATCH --job-name=clustering_At_{n_string}_sp_{s_string}um_{seed}\n")
             f.write(f"#SBATCH --account={projectcode}\n")
-            f.write(f"#SBATCH --output={test_dir}/clustering_At_{n_string}_spacing_{s_string}um.out.%J\n")
-            f.write(f"#SBATCH --error={test_dir}/clustering_At_{n_string}_spacing_{s_string}um.err.%J\n")
+            f.write(f"#SBATCH --output={test_dir}/clustering_At_{n_string}_spacing_{s_string}um_{seed}.out.%J\n")
+            f.write(f"#SBATCH --error={test_dir}/clustering_At_{n_string}_spacing_{s_string}um_{seed}.err.%J\n")
             # maximum job time in D-HH:MM
             f.write(f"#SBATCH --time={time_clustering}\n")
             f.write("#SBATCH --nodes=1\n")
@@ -298,10 +298,16 @@ for s in spacing:
             f.write(
                 f"/user/home/yw18581/.conda/envs/clustering/bin/python3.6 {clustering_dir}/run_up_new.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_upnew.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {boxes_per_R} --primary all\n"
             )
+            f.write(
+                f"/user/home/yw18581/.conda/envs/clustering/bin/python3.6 {clustering_dir}/run_up_proc.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_proc.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {boxes_per_R} --primary all\n"
+            )
         else:
             f.write("conda activate clustering\n")
             f.write(
                 f"python {clustering_dir}/run_up_new.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_upnew.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {n_div_theta*n_div_Z} --primary all\n"
+            )
+            f.write(
+                f"python {clustering_dir}/run_up_proc.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_proc.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {n_div_theta*n_div_Z} --primary all\n"
             )
     filename_runscript = os.path.join(test_dir, f"run_script_At_{n_string}_spacing_{s_string}um_{seed}.sh")
     with open(filename_runscript, "w") as f:
@@ -310,8 +316,8 @@ for s in spacing:
         if slurm:
             f.write(f"#SBATCH --job-name=run_At{n_string}_sp_{s_string}um_{seed}\n")
             f.write(f"#SBATCH --account={projectcode}\n")
-            f.write(f"#SBATCH --output={test_dir}/run_At_{n_string}_spacing_{s_string}um.out.%J\n")
-            f.write(f"#SBATCH --error={test_dir}/run_At_{n_string}_spacing_{s_string}um.err.%J\n")
+            f.write(f"#SBATCH --output={test_dir}/run_At_{n_string}_spacing_{s_string}um_{seed}.out.%J\n")
+            f.write(f"#SBATCH --error={test_dir}/run_At_{n_string}_spacing_{s_string}um_{seed}.err.%J\n")
             f.write(f"#SBATCH --time=1-10:00\n")
             f.write("#SBATCH --nodes=1\n")
             f.write("#SBATCH -p short\n")
