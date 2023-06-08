@@ -141,10 +141,10 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
     G4int parentID = step->GetTrack()->GetParentID();
     G4int trackID = step->GetTrack()->GetTrackID();
-    if (step1_eventID == 9)
-    {
-      G4cout << "DEBUG: dE" << dE << ", step1: " << step1_eventID << ", step2: " << step2_eventID << ", copyNo: " << step1_copyNo << ", trackID: " << trackID << ", parent: " << parentID << G4endl;
-    }
+    // if (step1_eventID == 9)
+    // {
+    //   G4cout << "DEBUG: dE" << dE << ", step1: " << step1_eventID << ", step2: " << step2_eventID << ", copyNo: " << step1_copyNo << ", trackID: " << trackID << ", parent: " << parentID << G4endl;
+    // }
       // analysisManager->FillNtupleIColumn(5, 0, step2_eventID);
       // analysisManager->FillNtupleIColumn(5, 1, step1_eventID);
       // analysisManager->FillNtupleIColumn(5, 2, step1_copyNo);
