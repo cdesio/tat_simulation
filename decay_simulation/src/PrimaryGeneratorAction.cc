@@ -68,6 +68,4 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 {
     fpParticleGun->GeneratePrimaryVertex(anEvent);
-
-
 }
