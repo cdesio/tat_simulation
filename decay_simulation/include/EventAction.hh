@@ -34,7 +34,7 @@
 #include "G4UserEventAction.hh"
 #include "globals.hh"
 #include "G4ThreeVector.hh"
-
+#include <map>
 
 class EventAction : public G4UserEventAction
 {
@@ -56,13 +56,22 @@ public:
 
   // Record the path length though the chomatin fibre segment
   void AddPathLength(G4double val){fpathLengthTotal += val;}
-
+  std::map<G4int, G4int> parentParticle;
 
 private:
   G4double  fEdep;
   G4int numSecondary;
   G4double fpathLengthTotal{0};
-
+  std::map<G4int, G4String> particleMapRev{
+      {1, "alpha"},
+      {2, "gamma"},
+      {3, "e-"},
+      {4, "nu_e"},
+      {5, "At211"},
+      {6, "Po211"},
+      {7, "Bi207"},
+      {8, "Pb207"},
+      {9, "e+"}};
 };
 
 #endif

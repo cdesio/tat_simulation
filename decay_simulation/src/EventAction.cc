@@ -69,9 +69,11 @@ void EventAction::BeginOfEventAction(const G4Event * event)
 {
   fEdep = 0.;
   fpathLengthTotal = 0;
-
+  while (!parentParticle.empty())
+  {
+    parentParticle.erase(parentParticle.begin());
+  }
 }
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void EventAction::EndOfEventAction(const G4Event *)
@@ -99,4 +101,9 @@ void EventAction::EndOfEventAction(const G4Event *)
       fpRunAction->AddIntersecting();
 
   }
+  // for (auto it = parentParticle.cbegin(); it != parentParticle.cend(); ++it)
+  // {
+  //     G4int particleID = (int)it->second;
+  //     G4cout <<"trackID: " << it->first << ", parentID: " << it->second << ", particleName: "<< particleMapRev[particleID] << G4endl;
+  // }
 }
