@@ -192,11 +192,12 @@ def calculateDose(eventEdep, chromatinVolume: float):
 
     ke_dose = edep_df
 
-    ke_dose = ke_dose.groupby(['step1_eventID', 'step1_copyNo', 'step1_PID', 'step1_processID'], as_index=False)[
+    ke_dose = ke_dose.groupby(['step1_eventID', 'step1_copyNo', 'step1_PID', 'step1_primaryID'], as_index=False)[
         ['edep_J', 'edep_MeV']].sum()
     
     ke_dose['dose'] = ke_dose['edep_J']/(1000*chromatinVolume)
-    ke_dose.loc[(ke_dose['step1_PID']==3) & (ke_dose['step1_processID']!=1), 'step1_PID'] = 1
+    # ke_dose.loc[(ke_dose['step1_PID'] == 3) & (
+    #     ke_dose['step1_primaryID'] != 1), 'step1_PID'] = 1
 
     mean_energy = ke_dose.groupby('step1_eventID')['edep_MeV'].mean().mean()
     print(ke_dose[ke_dose['step1_eventID'] == 4].groupby(
@@ -271,10 +272,10 @@ def AccumulateEdep(direct, T0: cKDTree, T1: cKDTree, keys_df, out_path):
     evt1_cp_filtered['edep'] = edep_filtered
 
     cumEdep = evt1_cp_filtered.groupby(
-        ['step1_eventID', 'step1_copyNo', 'strand', 'copy', 'step1_particleID', 'step1_processID'], as_index=False)['edep'].sum()
+        ['step1_eventID', 'step1_copyNo', 'strand', 'copy', 'step1_particleID', 'step1_primaryID'], as_index=False)['edep'].sum()
     print(cumEdep[cumEdep['step1_eventID'] == 4].groupby(['step1_particleID', 'step1_copyNo'])['edep'].sum())
-    cumEdep.loc[(cumEdep['step1_particleID'] == 3) & (
-        cumEdep['step1_processID'] != 1), 'step1_particleID'] = 1
+    # cumEdep.loc[(cumEdep['step1_particleID'] == 3) & (
+    #     cumEdep['step1_primaryID'] != 1), 'step1_particleID'] = 1
     os.remove(out_path+'_temp_mevt.dat')
     os.remove(out_path+'_temp_x.dat')
     os.remove(out_path+'_temp_y.dat')
@@ -348,8 +349,8 @@ def calcIndirectDamage(indirect: dict, probIndirect: float, T0: cKDTree, T1: cKD
         evt2_filtered)].set_index('step2_eventID')
 
     events_indirect = keys_map.loc[np.array(evt2_filtered)]
-    events_indirect.loc[(events_indirect['step1_particleID'] == 3) & (
-        events_indirect['step1_processID'] != 1), 'step1_particleID'] = 1
+    # events_indirect.loc[(events_indirect['step1_particleID'] == 3) & (
+    #     events_indirect['step1_primaryID'] != 1), 'step1_particleID'] = 1
     events_indirect['strand'] = strandListIndirect
     events_indirect['copy'] = copyListIndirect
     
@@ -481,16 +482,16 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
             # events_tot_ids = events_tot['step1'].to_numpy()
 
             unique_pids = list(set(np.concatenate(
-                [np.unique(events_direct['step1_particleID']), np.unique(events_indirect['step1_particleID'])])))
+                [np.unique(events_direct['step1_primaryID']), np.unique(events_indirect['step1_primaryID'])])))
             unique_pids.append(-1)
             #run clustering on selected events
             for particle in unique_pids:
                 if particle == -1:
-                    events_direct_part = events_direct[events_direct['step1_particleID'] != -1]
-                    events_indirect_part = events_indirect[events_indirect['step1_particleID'] != -1]
+                    events_direct_part = events_direct[events_direct['step1_primaryID'] != -1]
+                    events_indirect_part = events_indirect[events_indirect['step1_primaryID'] != -1]
                 else:
-                    events_direct_part = events_direct[events_direct['step1_particleID'] == particle]
-                    events_indirect_part = events_indirect[events_indirect['step1_particleID'] == particle]
+                    events_direct_part = events_direct[events_direct['step1_primaryID'] == particle]
+                    events_indirect_part = events_indirect[events_indirect['step1_primaryID'] == particle]
 
                 numEvts = list(set(np.concatenate(
                     [events_direct_part['step1_eventID'], events_indirect_part['step1_eventID']])))
@@ -539,11 +540,11 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
                                 f.write("{},{},{},{},{}".format(
                                     event,
                                     events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_PID'] != particle)].sum(),
+                                        events_tot['step1_primaryID'] != particle)].sum(),
                                     # evt_copyNo_Ke_dose_df['pid'][evt_copyNo_Ke_dose_df['step1']==event],
                                     particle,
                                     events_tot['edep_MeV'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_PID'] != particle)].sum(),
+                                        events_tot['step1_primaryID'] != particle)].sum(),
                                     str(list(text_SB[i])).strip("[").strip("]")))
                                 f.write('\n')
                             else:
@@ -552,11 +553,11 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
                                 f.write("{},{},{},{},{}".format(
                                     event,
                                     events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_PID'] == particle)].sum(),
+                                        events_tot['step1_primaryID'] == particle)].sum(),
                                     # evt_copyNo_Ke_dose_df['pid'][evt_copyNo_Ke_dose_df['step1']==event],
                                     particle,
                                     events_tot['edep_MeV'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_PID'] == particle)].sum(),
+                                        events_tot['step1_primaryID'] == particle)].sum(),
                                     str(list(text_SB[i])).strip("[").strip("]")))
                                 f.write('\n')
 
@@ -572,14 +573,14 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
                             if particle == -1:
                                 f.write("{},{},{},{}".format(
                                     event, events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_PID'] != particle)].sum(),
+                                        events_tot['step1_primaryID'] != particle)].sum(),
                                     particle,
                                     str(list(text_DSB[i])).strip("[").strip("]")))
                                 f.write('\n')
                             else:
                                 f.write("{},{},{},{}".format(
                                     event, events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_PID'] == particle)].sum(),
+                                        events_tot['step1_primaryID'] == particle)].sum(),
                                     particle,
                                     str(list(text_DSB[i])).strip("[").strip("]")))
                                 f.write('\n')

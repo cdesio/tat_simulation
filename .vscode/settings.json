@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "*.icc": "cpp",
+        "__hash_table": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "regex": "cpp",
+        "set": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp"
+    }
+}
