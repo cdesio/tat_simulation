@@ -54,7 +54,7 @@ public:
     G4int step1_PID;
     G4int step1_copyNo;
     G4int step1_eventID;
-    G4int step1_processID;
+    G4int step1_primaryID;
     G4double step1_time;
     
 

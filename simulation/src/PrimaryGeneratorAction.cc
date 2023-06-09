@@ -93,7 +93,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     step1_PID = (int)fPS_data[step2_eventID][8];
     step1_copyNo = (int)fPS_data[step2_eventID][9];
     step1_time = fPS_data[step2_eventID][10];
-    step1_processID = (int)fPS_data[step2_eventID][11];
+    step1_primaryID = (int)fPS_data[step2_eventID][11];
 
     // // DEBUG
 
@@ -168,7 +168,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
       analysisManager->FillNtupleIColumn(4, 1, step1_eventID);
       analysisManager->FillNtupleIColumn(4, 2, step1_copyNo);
       analysisManager->FillNtupleIColumn(4, 3, step1_PID);
-      analysisManager->FillNtupleIColumn(4, 4, step1_processID);
+      analysisManager->FillNtupleIColumn(4, 4, step1_primaryID);
       analysisManager->AddNtupleRow(4);
     }
   }

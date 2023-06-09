@@ -237,7 +237,7 @@ void TimeStepAction::UserReactionAction(const G4Track &trackA,
     G4int step1_copyNo = generatorAction->step1_copyNo;
     G4int step1_PID = generatorAction->step1_PID;
     G4double step1_time = generatorAction->step1_time;
-    G4int step1_processID = generatorAction->step1_processID;
+    G4int step1_primaryID = generatorAction->step1_primaryID;
 
     analysisManager->FillNtupleIColumn(2, 0, eventID);
     analysisManager->FillNtupleDColumn(2, 1, localPos.x() / nanometer);
@@ -248,7 +248,7 @@ void TimeStepAction::UserReactionAction(const G4Track &trackA,
     analysisManager->FillNtupleIColumn(2, 6, step1_eventID);
     analysisManager->FillNtupleIColumn(2, 7, step1_copyNo);
     analysisManager->FillNtupleIColumn(2, 8, step1_PID);
-    analysisManager->FillNtupleIColumn(2, 9, step1_processID);
+    analysisManager->FillNtupleIColumn(2, 9, step1_primaryID);
     analysisManager->FillNtupleDColumn(2, 10, step1_time + DNAElement->GetGlobalTime());
     analysisManager->AddNtupleRow(2);
   }

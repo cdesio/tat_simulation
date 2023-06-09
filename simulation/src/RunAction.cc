@@ -164,7 +164,7 @@ void RunAction::CreateNtuple()
     analysisManager->CreateNtupleIColumn("step1_eventID");
     analysisManager->CreateNtupleIColumn("step1_PID");
     analysisManager->CreateNtupleIColumn("step1_copyNo");
-    analysisManager->CreateNtupleIColumn("step1_processID");
+    analysisManager->CreateNtupleIColumn("step1_primaryID");
 }
   else
   {
@@ -190,7 +190,7 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleIColumn(1, "step1_copyNo");
   analysisManager->CreateNtupleIColumn(1, "step1_PID");
   analysisManager->CreateNtupleDColumn(1, "time");
-  analysisManager->CreateNtupleIColumn(1, "step1_processID");
+  analysisManager->CreateNtupleIColumn(1, "step1_primaryID");
   analysisManager->FinishNtuple(1);
 
   // For chemistry
@@ -206,7 +206,7 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleIColumn(2, "step1_eventID");
   analysisManager->CreateNtupleIColumn(2, "step1_copyNo");
   analysisManager->CreateNtupleIColumn(2, "step1_PID");
-  analysisManager->CreateNtupleIColumn(2, "step1_processID");
+  analysisManager->CreateNtupleIColumn(2, "step1_primaryID");
   analysisManager->CreateNtupleDColumn(2, "time");
 
   analysisManager->FinishNtuple(2);
@@ -231,7 +231,7 @@ void RunAction::CreateNtuple()
     analysisManager->CreateNtupleIColumn(4, "step1_eventID");
     analysisManager->CreateNtupleIColumn(4, "step1_copyNo");
     analysisManager->CreateNtupleIColumn(4, "step1_particleID");
-    analysisManager->CreateNtupleIColumn(4, "step1_processID");
+    analysisManager->CreateNtupleIColumn(4, "step1_primaryID");
 
     analysisManager->FinishNtuple(4);
 
@@ -242,7 +242,7 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleIColumn(5, "step1_PID");
   analysisManager->CreateNtupleDColumn(5, "step2_time");
   analysisManager->CreateNtupleDColumn(5, "edep_J");
-  analysisManager->CreateNtupleIColumn(5, "step1_processID");
+  analysisManager->CreateNtupleIColumn(5, "step1_primaryID");
   analysisManager->CreateNtupleSColumn(5, "particleName");
 
   analysisManager->FinishNtuple(5);

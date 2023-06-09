@@ -119,7 +119,7 @@ void EventAction::EndOfEventAction(const G4Event *)
     G4int step1_PID = (int)generatorAction->step1_PID;
     G4int step1_eventID = (int)generatorAction->step1_eventID;
     G4int step1_copyNo = (int)generatorAction->step1_copyNo;
-    G4int step1_processID = (int)generatorAction->step1_processID;
+    G4int step1_primaryID = (int)generatorAction->step1_primaryID;
     G4int step2_eventID = (int)G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
 
     //G4cout << "MeV: " << MeV << G4endl;
@@ -129,7 +129,7 @@ void EventAction::EndOfEventAction(const G4Event *)
     analysisManager->FillNtupleIColumn(0, 3, (int)step1_eventID);
     analysisManager->FillNtupleIColumn(0, 4, (int)step1_PID);
     analysisManager->FillNtupleIColumn(0, 5, (int)step1_copyNo);
-    analysisManager->FillNtupleIColumn(0, 6, (int)step1_processID);
+    analysisManager->FillNtupleIColumn(0, 6, (int)step1_primaryID);
     analysisManager->AddNtupleRow(0);
   }
 }

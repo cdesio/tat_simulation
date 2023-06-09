@@ -136,7 +136,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     G4double step1_time = generatorAction->step1_time;
     G4int step1_PID = generatorAction->step1_PID;
     G4int step1_eventID = generatorAction->step1_eventID;
-    G4int step1_processID = generatorAction->step1_processID;
+    G4int step1_primaryID = generatorAction->step1_primaryID;
     G4double step2_time = step1_time + step->GetTrack()->GetGlobalTime();
     G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
     G4int parentID = step->GetTrack()->GetParentID();
@@ -145,15 +145,15 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     // {
     //   G4cout << "DEBUG: dE" << dE << ", step1: " << step1_eventID << ", step2: " << step2_eventID << ", copyNo: " << step1_copyNo << ", trackID: " << trackID << ", parent: " << parentID << G4endl;
     // }
-      // analysisManager->FillNtupleIColumn(5, 0, step2_eventID);
-      // analysisManager->FillNtupleIColumn(5, 1, step1_eventID);
-      // analysisManager->FillNtupleIColumn(5, 2, step1_copyNo);
-      // analysisManager->FillNtupleIColumn(5, 3, step1_PID);
-      // analysisManager->FillNtupleDColumn(5, 4, step2_time);
-      // analysisManager->FillNtupleDColumn(5, 5, dE/joule);
-      // analysisManager->FillNtupleIColumn(5, 6, step1_processID);
-      // analysisManager->FillNtupleSColumn(5, 7, particleName);
-      // analysisManager->AddNtupleRow(5);
+    // analysisManager->FillNtupleIColumn(5, 0, step2_eventID);
+    // analysisManager->FillNtupleIColumn(5, 1, step1_eventID);
+    // analysisManager->FillNtupleIColumn(5, 2, step1_copyNo);
+    // analysisManager->FillNtupleIColumn(5, 3, step1_PID);
+    // analysisManager->FillNtupleDColumn(5, 4, step2_time);
+    // analysisManager->FillNtupleDColumn(5, 5, dE/joule);
+    // analysisManager->FillNtupleIColumn(5, 6, step1_primaryID);
+    // analysisManager->FillNtupleSColumn(5, 7, particleName);
+    // analysisManager->AddNtupleRow(5);
     }
 
   if (flagVolume == 0)
@@ -183,7 +183,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     G4int primary_pid = generatorAction->step1_PID;
     G4int step1_copyNo = generatorAction->step1_copyNo;
     G4double step1_time = generatorAction->step1_time;
-    G4int step1_processID = generatorAction->step1_processID;
+    G4int step1_primaryID = generatorAction->step1_primaryID;
     G4int step1_PID = generatorAction->step1_PID;
     G4int step1_eventID = generatorAction->step1_eventID;
     G4int step2_eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
@@ -214,7 +214,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     analysisManager->FillNtupleIColumn(1, 8, step1_copyNo);
     analysisManager->FillNtupleIColumn(1, 9, step1_PID);
     analysisManager->FillNtupleDColumn(1, 10, step1_time + step->GetTrack()->GetGlobalTime());
-    analysisManager->FillNtupleIColumn(1, 11, step1_processID);
+    analysisManager->FillNtupleIColumn(1, 11, step1_primaryID);
     analysisManager->AddNtupleRow(1);
   }
 }
