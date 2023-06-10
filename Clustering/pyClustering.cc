@@ -4,7 +4,8 @@
 #include <pybind11.h>
 #include <stl.h>
 #include <stdint.h>
-
+#include <stdlib.h>
+#include <iostream>
 namespace py = pybind11;
 
 using namespace std;
