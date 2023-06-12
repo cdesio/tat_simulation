@@ -3,7 +3,7 @@ import argparse
 # currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 # sys.path.insert(0, parentdir)
 
-import runClustering_up_proc
+import runClustering_up_part
 if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--filename", type=str,
@@ -69,6 +69,6 @@ if __name__=='__main__':
         
     
 
-    runClustering_up_proc.runClustering(filename, outputFilename, fEMinDamage, fEMaxDamage,
+    runClustering_up_part.runClustering(filename, outputFilename, fEMinDamage, fEMaxDamage,
                                 probIndirect, sugarPosFilename, filenamePhoton=filenamePhoton, separate_r=args.sepR, 
                                 n_boxes = n_boxes, boxes_per_R = boxes_per_R, primaryParticle=args.primary)
