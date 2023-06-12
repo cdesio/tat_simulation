@@ -34,6 +34,7 @@
 #include "G4DecayPhysics.hh"
 #include "G4RadioactiveDecayPhysics.hh"
 #include "G4EmParameters.hh"
+#include "G4EmPenelopePhysics.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -46,25 +47,23 @@ PhysicsList::PhysicsList()
     G4int verb = 1;
     SetVerboseLevel(verb);
     SetDefaultCutValue(1.0 * nanometer);
-    // RegisterConstructor("G4EmAndDNA");
 
     // EM physics
-    RegisterPhysics(new G4EmStandardPhysics_option4());
+    // RegisterPhysics(new G4EmStandardPhysics_option4());
+    RegisterPhysics(new G4EmPenelopePhysics());
 
     G4EmParameters *param = G4EmParameters::Instance();
-    param->SetAuger(false);
-    param->SetAugerCascade(false);
-    param->SetStepFunction(1., 1 * CLHEP::mm);
-    param->SetStepFunctionMuHad(1., 1 * CLHEP::mm);
+    // param->SetAuger(false);
+    param->SetAugerCascade(true);
 
     // Decay
     RegisterPhysics(new G4DecayPhysics());
 
     // Radioactive decay
     RegisterPhysics(new G4RadioactiveDecayPhysics());
-    
-    
-    G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(5 * eV, 1 * GeV);
+    RegisterPhysics(new G4StepLimiterPhysics());
+
+    G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(100 * eV, 1 * GeV);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
