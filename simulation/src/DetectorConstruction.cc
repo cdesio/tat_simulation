@@ -123,7 +123,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   solidWorld = new G4Box("world", 1 * mm, 1 * mm, 1 * mm);
 
-  solidWaterBox = new G4Orb("waterBox", 10 * um);
+  solidWaterBox = new G4Orb("waterBox", 1 * um);
 
   G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld,
                                                     air,
@@ -155,7 +155,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   G4double chromatin_X = fBoxSize;
   G4double chromatin_Y = fBoxSize;
   G4double chromatin_Z = 300 * nm;
-
+  
   G4Box *solidTrackingVol = new G4Box("TrackingVol", dkill + chromatin_X / 2, dkill + chromatin_Y / 2, dkill + chromatin_Z / 2); // volume to track radicals in dkill larger than chromatin
   G4LogicalVolume *logicTrackingVol = new G4LogicalVolume(solidTrackingVol,
                                                           waterMaterial,
