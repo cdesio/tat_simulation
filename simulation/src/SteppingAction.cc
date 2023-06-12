@@ -126,21 +126,21 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
     fpEventAction->AddEdep(dE);
     
-    G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
-    G4int step2_eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+    // G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
+    // G4int step2_eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
 
-    const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
-          G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+    // const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
+    //       G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
     
-    G4int step1_copyNo = generatorAction->step1_copyNo;
-    G4double step1_time = generatorAction->step1_time;
-    G4int step1_PID = generatorAction->step1_PID;
-    G4int step1_eventID = generatorAction->step1_eventID;
-    G4int step1_primaryID = generatorAction->step1_primaryID;
-    G4double step2_time = step1_time + step->GetTrack()->GetGlobalTime();
-    G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
-    G4int parentID = step->GetTrack()->GetParentID();
-    G4int trackID = step->GetTrack()->GetTrackID();
+    // G4int step1_copyNo = generatorAction->step1_copyNo;
+    // G4double step1_time = generatorAction->step1_time;
+    // G4int step1_PID = generatorAction->step1_PID;
+    // G4int step1_eventID = generatorAction->step1_eventID;
+    // G4int step1_primaryID = generatorAction->step1_primaryID;
+    // G4double step2_time = step1_time + step->GetTrack()->GetGlobalTime();
+    // G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
+    // G4int parentID = step->GetTrack()->GetParentID();
+    // G4int trackID = step->GetTrack()->GetTrackID();
     // if (step1_eventID == 9)
     // {
     //   G4cout << "DEBUG: dE" << dE << ", step1: " << step1_eventID << ", step2: " << step2_eventID << ", copyNo: " << step1_copyNo << ", trackID: " << trackID << ", parent: " << parentID << G4endl;
