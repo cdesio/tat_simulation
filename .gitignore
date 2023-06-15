@@ -1,6 +1,6 @@
 simulation/build/
 simulation/build/CMakeFiles/
-decay_simulation/build/
+decay_simulation/build/*
 decay_simulation/GNUmakefile
 *.csv
 *.root
@@ -17,3 +17,5 @@ simulation/build/CMakeFiles/*
 *cmake
 output/*png
 scripts/ipynb*
+*.out.*
+*.err.*
