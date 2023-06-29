@@ -289,9 +289,9 @@ for s in spacing:
             f.write("source activate clustering\n")
         else:
             f.write("conda activate clustering\n")
-            f.write(
-                f"python {clustering_dir}/run_up_part.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --ndiv_R {n_div_R} --ndiv_Z {n_div_Z} --spacing {s_string} --startR {startR} --primary all\n"
-            )
+        f.write(
+            f"python {clustering_dir}/run_up_part.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_part.csv --sugar {sugarFile}  --sepR True --ndiv_R {n_div_R} --ndiv_Z {n_div_Z} --spacing {s_string} --startR {startR} --primary all\n"
+        )
     filename_runscript = os.path.join(test_dir, f"run_script_At_{n_string}_spacing_{s_string}um_{seed}.sh")
     with open(filename_runscript, "w") as f:
         f.write("#!/bin/bash --login\n")
