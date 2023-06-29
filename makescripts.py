@@ -6,19 +6,19 @@ import random
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--spacing", nargs="+",  type=float ,default = [2.0, 5.0, 10.0], 
+parser.add_argument("--spacing", nargs="+",  type=float ,default = [2.0], 
                     help="spacing in micrometer for the dna voxels")
 
 parser.add_argument("--n_div_R", type=int,
-                    help="n of divisions in R", default = 20)
+                    help="n of divisions in R", default = 80)
 parser.add_argument("--n_div_Z", type=int,
-                    help="n of divisions in R", default = 10)
+                    help="n of divisions in R", default = 40)
 parser.add_argument("--n_div_theta", type=int,
                     help="n of divisions in R", default = 80)
 
 parser.add_argument("--startR", type=float, default = 10.5)
 parser.add_argument("--vessellength", type = float, default = 10.0)
-parser.add_argument("--gpsHalfZ", type = float, default = 3.0)
+parser.add_argument("--gpsHalfZ", type = float, default = 10.0)
 parser.add_argument("--n", type=int, default = 100)
 parser.add_argument("--slurm", type=bool, required=False, default = False)
 parser.add_argument("--seed", type=int, required=False)
@@ -45,11 +45,11 @@ else:
 
 if slurm:
     simulation_parent = os.path.join(
-        "/", "user", "work", "yw18581", "DaRT", "TAT", "tat_simu_2steps"
+        "/", "user", "work", "yw18581", "DaRT", "TAT", "tat_dense"
     )
 else:
     simulation_parent = os.path.join(
-        "/", "home", "cdesio", "TAT", "tat_simu_2steps"
+        "/", "Users", "cdesio", "TAT", "tat_dense"
     )
 
 histoneFile = os.path.join(
@@ -80,10 +80,6 @@ if args.n_div_theta:
 if args.n_div_Z:
     n_div_Z = args.n_div_Z
 
-nboxes = n_div_R*n_div_theta*n_div_Z
-nboxes_string = f"{int(nboxes/1000)}k" if nboxes/1000 >=1 else f"{nboxes}"
-boxes_per_R = n_div_Z*n_div_theta
-
 if args.spacing:
     spacing = args.spacing
 
@@ -100,7 +96,7 @@ printProgress = int(numIons/10)
 
 n_string = f"{int(numIons/1000)}k" if numIons/1000 >=1 else f"{numIons}"
 
-folder = f"test_At{n_string}_{nboxes_string}_boxes_{startR}um"
+folder = f"test_At{n_string}_dense_boxes_{startR}um"
 
 print(f"Creating scripts in folder: {folder} with seed {seed}.")
 ####
@@ -114,8 +110,8 @@ projectcode="IFAC023282"
 
 #### create folder for current test
 test_dir = os.path.join(simulation_parent, f"output/{folder}")
-if not os.path.exists(test_dir):
-    os.makedirs(test_dir)
+
+os.makedirs(test_dir, exist_ok=True)
 
 #### create one file per spacing
 for s in spacing:
@@ -131,7 +127,7 @@ for s in spacing:
         f.write("/control/verbose 2\n")
         f.write("\n")
         f.write(f"/det/set_ndiv_R {n_div_R}\n")
-        f.write(f"/det/set_ndiv_theta {n_div_theta}\n")
+        # f.write(f"/det/set_ndiv_theta {n_div_theta}\n")
         f.write(f"/det/set_ndiv_Z {n_div_Z}\n")
         f.write("\n")
         f.write(f"/det/set_spacing {s} um\n")
@@ -260,7 +256,7 @@ for s in spacing:
         # f.write("rm {}; fi\n".format(fileToDelete))
 
     filename_clustering = os.path.join(
-        test_dir, f"clustering_At_{n_string}_spacing_{s_string}um_{seed}.sh"
+        test_dir, f"run_clustering_At_{n_string}_spacing_{s_string}um_{seed}.sh"
     )  # to be run from folder created
 
     with open(filename_clustering, "w") as f:
@@ -291,13 +287,10 @@ for s in spacing:
         if slurm:
             f.write("source /user/home/yw18581/.bash_profile\n")
             f.write("source activate clustering\n")
-            f.write(
-                f"/user/home/yw18581/.conda/envs/clustering/bin/python3.6 {clustering_dir}/run.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {boxes_per_R}\n"
-            )
         else:
             f.write("conda activate clustering\n")
             f.write(
-                f"python {clustering_dir}/run.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --n_boxes {nboxes} --boxes_per_R {n_div_theta*n_div_Z}\n"
+                f"python {clustering_dir}/run_up_part.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.csv --sugar {sugarFile}  --sepR True --ndiv_R {n_div_R} --ndiv_Z {n_div_Z} --spacing {s_string} --startR {startR} --primary all\n"
             )
     filename_runscript = os.path.join(test_dir, f"run_script_At_{n_string}_spacing_{s_string}um_{seed}.sh")
     with open(filename_runscript, "w") as f:
@@ -323,7 +316,6 @@ for s in spacing:
             f.write(f"source {filename_decay}\n")
             f.write(f"source {filename_DNA}\n")
             f.write(f"source {filename_clustering}\n")
-            f.write(f"python {os.path.join(simulation_parent, 'plot_results_DNA.py')} --folder {clustering_outdir} --fname_prefix out_AtDNA_{n_string}_spacing --spacing {s_string} --seed {seed} --n_div_R {n_div_R} --out_folder {test_dir}")
         if  slurm:
             f.write(f"sbatch {filename_decay}\n")
             f.write(f"sbatch {filename_DNA}\n")
