@@ -4,12 +4,13 @@
 #include <pybind11.h>
 #include <stl.h>
 #include <stdint.h>
-
+#include <stdlib.h>
+#include <iostream>
 namespace py = pybind11;
 
 using namespace std;
 
-std::vector<vector<vector<int64_t>>> clustering(int64_t numEvt, std::vector<int64_t> eventsListDirect, std::vector<int64_t> copyListDirect, std::vector<int64_t> strandListDirect, std::vector<int64_t> eventsListIndirect, std::vector<int64_t> copyListIndirect, std::vector<int64_t> strandListIndirect)
+std::vector<vector<vector<int64_t>>> clustering(std::vector <int64_t> numEvt, std::vector<int64_t> eventsListDirect, std::vector<int64_t> copyListDirect, std::vector<int64_t> strandListDirect, std::vector<int64_t> eventsListIndirect, std::vector<int64_t> copyListIndirect, std::vector<int64_t> strandListIndirect)
 {
     std::vector<vector<int64_t>> SBresults;
     std::vector<vector<int64_t>> clusterFrequency; // direct, indirect, total
@@ -20,7 +21,7 @@ std::vector<vector<vector<int64_t>>> clustering(int64_t numEvt, std::vector<int6
     ClusteringAlgorithm *fpClusteringTotal = new ClusteringAlgorithm(10, 2, 5, 37.5);    // eV
 
     // Clustering
-    for (int64_t e = 0; e < numEvt; ++e)
+    for (auto e: numEvt)
     {
         std::vector<int64_t> tempResults(13, 0);
         std::vector<int64_t> clusterFrequencyTemp(51, 0); // direct, indirect, total
