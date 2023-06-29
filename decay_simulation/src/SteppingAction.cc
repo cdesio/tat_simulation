@@ -145,9 +145,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   
   //tracking all particles
   
-
   G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
-
   G4ThreeVector prePoint = step->GetPreStepPoint()->GetPosition();
   G4ThreeVector postPoint = step->GetPostStepPoint()->GetPosition();
   CommandLineParser *parser = CommandLineParser::GetParser();
