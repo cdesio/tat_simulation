@@ -184,14 +184,14 @@ for s in spacing:
     with open(filename_decay, "w") as f:
         f.write("#!/bin/bash --login\n")
         if slurm:
-            f.write(f"SBATCH --account={projectcode}\n")
+            f.write(f"#SBATCH --account={projectcode}\n")
             f.write(f"#SBATCH --job-name=Atdecay_spacing_{s_string}um_{seed}\n")
             f.write(f"#SBATCH --output=Atdecay_spacing_{s_string}um_{seed}.out.%J\n")
             f.write(f"#SBATCH --error=Atdecay_spacing_{s_string}um_{seed}.err.%J\n")
             # maximum job time in D-HH:MM
             f.write(f"#SBATCH --time={time_decay}\n")
             f.write("#SBATCH --nodes=1\n")
-            f.write("#SBATCH -p short\n")
+            # f.write("#SBATCH -p short\n")
             f.write(f"#SBATCH --ntasks-per-node={numThread}\n")
             f.write(f"#SBATCH --mem 2GB\n")
             f.write("\n")
@@ -218,14 +218,14 @@ for s in spacing:
     with open(filename_DNA, "w") as f:
         f.write("#!/bin/bash --login\n")
         if slurm:
-            f.write(f"SBATCH --account={projectcode}\n")
+            f.write(f"#SBATCH --account={projectcode}\n")
             f.write(f"#SBATCH --job-name=AtDNA_spacing_{s_string}um_{seed}\n")
             f.write(f"#SBATCH --output=AtDNA_spacing_{s_string}um_{seed}.out.%J\n")
             f.write(f"#SBATCH --error=AtDNA_spacing_{s_string}um_{seed}.err.%J\n")
             # maximum job time in D-HH:MM
             f.write(f"#SBATCH --time={time_DNA}\n")
             f.write("#SBATCH --nodes=1\n")
-            f.write("#SBATCH -p short\n")
+            # f.write("#SBATCH -p short\n")
             f.write(f"#SBATCH --ntasks-per-node={numThread}\n")
             f.write(f"#SBATCH --mem {mem}GB\n")
             f.write("\n")
@@ -268,13 +268,13 @@ for s in spacing:
 
         if slurm:
             f.write(f"#SBATCH --job-name=clustering_At_{n_string}_spacing_{s_string}um\n")
-            f.write(f"SBATCH --account={projectcode}\n")
+            f.write(f"#SBATCH --account={projectcode}\n")
             f.write(f"#SBATCH --output=clustering_At_{n_string}_spacing_{s_string}um.out.%J\n")
             f.write(f"#SBATCH --error=clustering_At_{n_string}_spacing_{s_string}um.err.%J\n")
             # maximum job time in D-HH:MM
             f.write(f"#SBATCH --time={time_clustering}\n")
             f.write("#SBATCH --nodes=1\n")
-            f.write("#SBATCH -p short\n")
+            # f.write("#SBATCH -p short\n")
             f.write("#SBATCH --ntasks-per-node=1\n")
             f.write(f"#SBATCH --mem {mem}GB\n")
             f.write("\n")
@@ -307,7 +307,7 @@ for s in spacing:
             f.write(f"#SBATCH --error=run_At_{n_string}_spacing_{s_string}um_{seed}.err.%J\n")
             f.write(f"#SBATCH --time=0-10:00\n")
             f.write("#SBATCH --nodes=1\n")
-            f.write("#SBATCH -p short\n")
+            # f.write("#SBATCH -p short\n")
             f.write("#SBATCH --ntasks-per-node=1\n")
             f.write(f"#SBATCH --mem 1GB\n")
             f.write("\n")
