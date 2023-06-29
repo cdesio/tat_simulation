@@ -50,6 +50,7 @@
 #include "G4LogicalVolumeStore.hh"
 
 #include <fstream>
+#include <math.h>
 #include "CommandLineParser.hh"
 
 #include "Randomize.hh"
@@ -177,33 +178,43 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                           "TrackingVol");
   int ibox = 0;
   int i_r = 0;
+  G4cout << "pi: " << M_PI << G4endl;
   for (G4int r = 0; r < ndiv_R; r += 1)
   {
+    ndiv_theta = (int)(std::ceil(2 * M_PI * (start_R / um + r * spacing / um) / 0.5));
+    long double th_incr = M_PI / (ndiv_theta / 2);
+    G4cout << "th_incr: " << th_incr << G4endl;
+    G4cout << "DEBUG: ndiv_theta: " << ndiv_theta << ", boxes_per_R: " << ndiv_theta*ndiv_Z << ", start_R/um: " << start_R/um <<", spacing: " << spacing/um << ", r: " << r << G4endl;
+    
     for (G4int k = 0; k < ndiv_Z; k++)
     {
-      ndiv_theta = (int)((2 * 3.14159 * (start_R/um + r*spacing/um) / 0.5));
-      G4cout << "DEBUG: " << ndiv_theta << ", " << start_R <<  ", " << spacing << ", " << r << G4endl; 
-      for (G4double theta = 0; theta < 2 * 3.14159; theta += 3.14159 / (ndiv_theta / 2))
-        {
+      G4double theta = 0;
+     // for (long double theta = 0; theta < 2 * M_PI; theta += th_incr)
+      for (G4int th = 0; th < ndiv_theta; th++)
+      {
+        G4RotationMatrix *rot = new G4RotationMatrix(theta,
+                                                     0,
+                                                     0);
+        // G4cout << "n_div_R: " << ndiv_R << ", ndiv_Z: " << ndiv_Z << ", ndiv_Theta: " << ndiv_theta << ", start_R: " << start_R << ", spacing: " << spacing << G4endl;
 
-          G4RotationMatrix *rot = new G4RotationMatrix(theta,
-                                                       0,
-                                                       0);
-          // G4cout << "n_div_R: " << ndiv_R << ", ndiv_Z: " << ndiv_Z << ", ndiv_Theta: " << ndiv_theta << ", start_R: " << start_R << ", spacing: " << spacing << G4endl;
-
-          G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector(((start_R + (r * spacing)) * cos(theta)), (start_R + (r * spacing)) * sin(theta), ((-vessel_length / um + (k + 1) * (vessel_length / um * 2) / ndiv_Z) - 0.3) * um),
-                                                              logicTrackingVol,
-                                                              "TrackingVol",
-                                                              logicWaterBox,
-                                                              false,
-                                                              ibox,
-                                                              false);
-          ibox++;
+        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector(((start_R + (r * spacing)) * cos(theta)), (start_R + (r * spacing)) * sin(theta), ((-vessel_length / um + (k + 1) * (vessel_length / um * 2) / ndiv_Z) - 0.3) * um),
+                                                            logicTrackingVol,
+                                                            "TrackingVol",
+                                                            logicWaterBox,
+                                                            false,
+                                                            ibox,
+                                                            false);
+        //G4cout << "boxes placed: " << ibox << ", r: " << r << ", z: " << k << ", th: " << theta <<  G4endl;
+        ibox++;
+        theta+= th_incr;
+          
         }
+      
     }
     i_r++;
-  }
-  G4cout << "DEBUG: " << vessel_length/ndiv_Z << G4endl;
+    
+    }
+  G4cout << "DEBUG: vessel length/ndiv_Z: " << vessel_length / ndiv_Z << "boxes: " << ibox << G4endl;
   logicTrackingVol->SetVisAttributes(&visGrey);
 
   chromatinVolume = boxSize / m * boxSize / m * boxSize / m; // in m3

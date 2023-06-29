@@ -26,34 +26,29 @@
 
 #include "PhysicsList.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4EmDNAPhysics_option7.hh"
 #include "G4EmAndDNA.hh"
 #include "G4EmDNAChemistry_option3.hh"
 #include "G4PhysicsConstructorRegistry.hh"
 #include "CommandLineParser.hh"
 #include "G4StepLimiterPhysics.hh"
-#include "G4DecayPhysics.hh"
-#include "G4RadioactiveDecayPhysics.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-using namespace G4DNAPARSER;
+    //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+    using namespace G4DNAPARSER;
 
 PhysicsList::PhysicsList()
     : G4VModularPhysicsList(), fDNAPhysicsList(nullptr), fChemistryList_option3(nullptr)
 {
     SetDefaultCutValue(1.0 * nanometer);
     SetVerboseLevel(1);
-    RegisterConstructor("G4EmAndDNA");
+    RegisterConstructor("G4EmDNAPhysics_option7");
     if (CommandLineParser::GetParser()->GetCommandIfActive("-chemOFF") == 0)
     {
         RegisterConstructor("G4EmDNAChemistry_option3");
     }
 
-    // Decay
-    RegisterPhysics(new G4DecayPhysics());
-
-    // Radioactive decay
-    RegisterPhysics(new G4RadioactiveDecayPhysics());
     G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(5 * eV, 1 * GeV);
 }
 
@@ -107,9 +102,9 @@ void PhysicsList::RegisterConstructor(const G4String &name)
         G4cout << "===== Register constructor ==== " << name << G4endl;
     }
 
-    if (name == "G4EmAndDNA")
+    if (name == "G4EmDNAPhysics_option7")
     {
-        fDNAPhysicsList.reset(new G4EmAndDNA(verboseLevel));
+        fDNAPhysicsList.reset(new G4EmDNAPhysics_option7(verboseLevel));
         fPhysDNAName = name;
     }
     else if (name == "G4EmDNAChemistry_option3")

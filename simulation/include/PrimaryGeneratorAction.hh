@@ -51,8 +51,12 @@ public:
     ~PrimaryGeneratorAction() override;
     void GeneratePrimaries(G4Event *event) override;
     G4String primaryName;
-    G4int copyNo;
-    G4double time;
+    G4int step1_PID;
+    G4int step1_copyNo;
+    G4int step1_eventID;
+    G4int step1_primaryID;
+    G4double step1_time;
+    
 
 private:
     G4GeneralParticleSource *fpParticleGun;

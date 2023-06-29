@@ -38,14 +38,14 @@ class DetectorConstruction;
 class SteppingAction : public G4UserSteppingAction
 {
 public:
-  SteppingAction(/*DetectorConstruction* fpDet*/);
+  SteppingAction(DetectorConstruction* fpDet);
   ~SteppingAction() override;
 
   void UserSteppingAction(const G4Step *step) override;
   // void Initialize();
 private:
   EventAction *fpEventAction;
-
+  DetectorConstruction *fpDetector;
   void RemoveTracks(const G4Step *step);
 
   std::map<G4String, int> particleID = {

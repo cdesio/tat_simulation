@@ -39,6 +39,7 @@
 #include "G4RunManager.hh"
 #include "RunAction.hh"
 #include "CommandLineParser.hh"
+#include "PrimaryGeneratorAction.hh"
 
 using namespace G4DNAPARSER;
 
@@ -88,6 +89,7 @@ void EventAction::BeginOfEventAction(const G4Event *event)
 
 void EventAction::EndOfEventAction(const G4Event *)
 {
+  
   G4double projectedRange = sqrt(GetStartTrackPos().diff2(GetEndTrackPos()));
 
   CommandLineParser *parser = CommandLineParser::GetParser();
@@ -111,9 +113,23 @@ void EventAction::EndOfEventAction(const G4Event *)
   }
   else if (command = parser->GetCommandIfActive("-PS")) // all secondary electrons in phase space file are in the volume
   {
+    const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
+      G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+    
+    G4int step1_PID = (int)generatorAction->step1_PID;
+    G4int step1_eventID = (int)generatorAction->step1_eventID;
+    G4int step1_copyNo = (int)generatorAction->step1_copyNo;
+    G4int step1_primaryID = (int)generatorAction->step1_primaryID;
+    G4int step2_eventID = (int)G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+
+    //G4cout << "MeV: " << MeV << G4endl;
     analysisManager->FillNtupleDColumn(0, 0, (fEdep / joule));
-    analysisManager->FillNtupleDColumn(0, 1, (fEdep / MeV));
-    analysisManager->FillNtupleIColumn(0, 2, G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID());
-    analysisManager->AddNtupleRow();
+    analysisManager->FillNtupleIColumn(0, 1, (int)step2_eventID);
+    analysisManager->FillNtupleDColumn(0, 2, (fEdep / MeV));
+    analysisManager->FillNtupleIColumn(0, 3, (int)step1_eventID);
+    analysisManager->FillNtupleIColumn(0, 4, (int)step1_PID);
+    analysisManager->FillNtupleIColumn(0, 5, (int)step1_copyNo);
+    analysisManager->FillNtupleIColumn(0, 6, (int)step1_primaryID);
+    analysisManager->AddNtupleRow(0);
   }
 }
