@@ -65,7 +65,7 @@ sugarFile = os.path.join(
 )
 
 time_decay = "0-10:00:00"
-time_DNA = "0-24:00:00"
+time_DNA = "2-24:00:00"
 time_clustering = "0-6:00:00"
 
 
@@ -186,8 +186,8 @@ for s in spacing:
         if slurm:
             f.write(f"#SBATCH --account={projectcode}\n")
             f.write(f"#SBATCH --job-name=Atdecay_spacing_{s_string}um_{seed}\n")
-            f.write(f"#SBATCH --output=Atdecay_spacing_{s_string}um_{seed}.out.%J\n")
-            f.write(f"#SBATCH --error=Atdecay_spacing_{s_string}um_{seed}.err.%J\n")
+            f.write(f"#SBATCH --output={test_dir}/Atdecay_spacing_{s_string}um_{seed}.out.%J\n")
+            f.write(f"#SBATCH --error={test_dir}/Atdecay_spacing_{s_string}um_{seed}.err.%J\n")
             # maximum job time in D-HH:MM
             f.write(f"#SBATCH --time={time_decay}\n")
             f.write("#SBATCH --nodes=1\n")
@@ -195,7 +195,7 @@ for s in spacing:
             f.write(f"#SBATCH --ntasks-per-node={numThread}\n")
             f.write(f"#SBATCH --mem 2GB\n")
             f.write("\n")
-            f.write("module load apps/geant/4.11.1.0\n")
+            f.write("module load apps/geant/4.11.1\n")
             f.write("module load apps/root/6.26.00\n")
 		
             f.write("source /user/home/yw18581/.bash_profile\n")
@@ -220,8 +220,8 @@ for s in spacing:
         if slurm:
             f.write(f"#SBATCH --account={projectcode}\n")
             f.write(f"#SBATCH --job-name=AtDNA_spacing_{s_string}um_{seed}\n")
-            f.write(f"#SBATCH --output=AtDNA_spacing_{s_string}um_{seed}.out.%J\n")
-            f.write(f"#SBATCH --error=AtDNA_spacing_{s_string}um_{seed}.err.%J\n")
+            f.write(f"#SBATCH --output={test_dir}/AtDNA_spacing_{s_string}um_{seed}.out.%J\n")
+            f.write(f"#SBATCH --error={test_dir}/AtDNA_spacing_{s_string}um_{seed}.err.%J\n")
             # maximum job time in D-HH:MM
             f.write(f"#SBATCH --time={time_DNA}\n")
             f.write("#SBATCH --nodes=1\n")
@@ -229,7 +229,7 @@ for s in spacing:
             f.write(f"#SBATCH --ntasks-per-node={numThread}\n")
             f.write(f"#SBATCH --mem {mem}GB\n")
             f.write("\n")
-            f.write("module load apps/geant/4.11.1.0\n")
+            f.write("module load apps/geant/4.11.1\n")
             f.write("module load apps/root/6.26.00\n")
             f.write("source /user/home/yw18581/.bash_profile\n")
             f.write("source activate dart\n")
@@ -269,8 +269,8 @@ for s in spacing:
         if slurm:
             f.write(f"#SBATCH --job-name=clustering_At_{n_string}_spacing_{s_string}um\n")
             f.write(f"#SBATCH --account={projectcode}\n")
-            f.write(f"#SBATCH --output=clustering_At_{n_string}_spacing_{s_string}um.out.%J\n")
-            f.write(f"#SBATCH --error=clustering_At_{n_string}_spacing_{s_string}um.err.%J\n")
+            f.write(f"#SBATCH --output={test_dir}/clustering_At_{n_string}_spacing_{s_string}um.out.%J\n")
+            f.write(f"#SBATCH --error={test_dir}/clustering_At_{n_string}_spacing_{s_string}um.err.%J\n")
             # maximum job time in D-HH:MM
             f.write(f"#SBATCH --time={time_clustering}\n")
             f.write("#SBATCH --nodes=1\n")
@@ -303,8 +303,8 @@ for s in spacing:
         if slurm:
             f.write(f"#SBATCH --job-name=run_At{n_string}_sp_{s_string}um_{seed}\n")
             f.write(f"#SBATCH --account={projectcode}\n")
-            f.write(f"#SBATCH --output=run_At_{n_string}_spacing_{s_string}um_{seed}.out.%J\n")
-            f.write(f"#SBATCH --error=run_At_{n_string}_spacing_{s_string}um_{seed}.err.%J\n")
+            f.write(f"#SBATCH --output={test_dir}/run_At_{n_string}_spacing_{s_string}um_{seed}.out.%J\n")
+            f.write(f"#SBATCH --error={test_dir}/run_At_{n_string}_spacing_{s_string}um_{seed}.err.%J\n")
             f.write(f"#SBATCH --time=0-10:00\n")
             f.write("#SBATCH --nodes=1\n")
             # f.write("#SBATCH -p short\n")
