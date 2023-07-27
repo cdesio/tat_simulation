@@ -13,6 +13,6 @@ def get_ranges_radii(ndiv_R = 80, ndiv_Z = 40, spacing=1, start_R = 10.5):
 
         ranges_radii[ri] = range(i, i+ip1)
         # print(range(i, i+ip1), ip1, i+ip1)
-    return ranges_radii
+    return ranges_radii, boxes_per_r
 
 
