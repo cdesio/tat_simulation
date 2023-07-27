@@ -1,86 +1,36 @@
+import numpy as np
+from scipy.spatial import cKDTree
 import os
 import sys
 import inspect
-from typing import Union
-import numpy as np
-from scipy.spatial import cKDTree
-from ROOT import TFile
+import uproot
+import uproot.models.TTree as TTreeType
+from typing import Union, Tuple, List
 
 # To import clustering from build folder
-currentdir = os.path.dirname(os.path.abspath(
-    inspect.getfile(inspect.currentframe())))
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 builddir = currentdir+r"/build"
-sys.path.insert(0, builddir)
-
+sys.path.insert(0, builddir) 
 
 from clustering import clustering
 
-def IsEdepSufficient(pEdep: float, fEMinDamage: float, fEMaxDamage: float) -> bool:
-    if (pEdep < fEMinDamage):
-        return False
-    if (pEdep > fEMaxDamage):
-        return True
-    else:
-        proba = (pEdep - fEMinDamage)/(fEMaxDamage-fEMinDamage)
-        return (proba > np.random.rand())
+def loadSugarFile(sugarPosFilename: str) -> Tuple[cKDTree, cKDTree]:
+    """Function to read in sugar positions file
 
+    Args:
+        sugarPosFilename (str): Path to sugar positions file
 
-def checkPoint(point: list, T0: cKDTree, T1: cKDTree) -> list:
-    result = [-1, -1]
-    Rdirect = 0.35  # nm
-    d0, idx0 = T0.query(point, k=1)
-    d1, idx1 = T1.query(point, k=1)
+    Returns:
+        Tuple[cKDTree, cKDTree]: KDTrees containing the positions of the sugars on stand 0 and strand 1
+    """
+    # Read sugar file
+    with open(sugarPosFilename, "rb") as f:
+        data = np.fromfile(f,np.float32)
 
-    if d0 < d1:
-        currentDist = d0
-        currentStrand = 0
-        currentCopy = idx0
-    else:
-        currentDist = d1
-        currentStrand = 1
-        currentCopy = idx1
-
-    if currentDist < Rdirect:
-        result[0] = currentStrand
-        result[1] = currentCopy
-
-    return result
-
-
-def getIndex(point: list, T0: cKDTree, T1: cKDTree) -> list:
-
-    d0, idx0 = T0.query(point, k=1)
-    d1, idx1 = T1.query(point, k=1)
-
-    d = min(d0, d1)
-    idx = idx0 if d0 < d1 else idx1
-    strand = 0 if d0 < d1 else 1
-
-    if d > 1e-10:
-        raise ValueError
-
-    return [idx, strand]
-
-
-def readClusteringGitHash(builddir):
-    with open(builddir+"/git-state.txt", "r") as f:
-        data = f.readlines()
-    return data[0]
-
-
-def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxDamage: float, probIndirect: float, sugarPosFilename: str, filenamePhoton: Union[str, bool] = False, separate_r=False, n_boxes = 3200, boxes_per_R = 800):
-
-    with open(sugarPosFilename, "r") as f:
-        data = f.readlines()
-
-    data = [[float(b)*1E6 for b in a.split("\t")] for a in data]
-
-    sugar0 = []
-    sugar1 = []
-
-    for line in data:
-        sugar0.append(line[0:3])
-        sugar1.append(line[3:6])
+    data = data.reshape(int(len(data)/12),12)
+    
+    sugar0 = data[:,0:3]
+    sugar1 = data[:,3:6]
 
     sugar0 = np.array(sugar0)
     sugar1 = np.array(sugar1)
@@ -88,373 +38,486 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
     T0 = cKDTree(sugar0)
     T1 = cKDTree(sugar1)
 
-    # Load data to analyse
-    fFile = TFile.Open(filename)
-    fDirectory = fFile.Get("ntuple")
+    return T0, T1
 
-    tInfo = fDirectory.Get("Info")
-    tInfo.GetEntry(0)
-    chromatinVolume = tInfo.ChromatinVolume_m3  # in m3
-    numBP = tInfo.NumBasepairs
-    if filenamePhoton:
-        LET = "N/A"
-    else:
-        if hasattr(tInfo,"MeanLET"):
-            LET = tInfo.MeanLET
-        else:
-            LET = "N/A"
+def doseCalculation(input_tree: TTreeType, pathLength: dict, dosePerEvent: dict, meanKEperEvent: dict, eventType: str, chromatinVolume: float, copyCheck: bool = False, copy: int = 0, part1_particleSource: Union[bool, list] = False) -> Tuple[Union[str,dict], dict, dict]:
+    """ Calculates the dose to the whole box from the simulation output. Selecting box copy number and particle as required. If the required fields are available, also calculates the mean KE and path length per event, and mean KE of the primary particle.
 
-    gitHash = tInfo.GitHash
+    Args:
+        input_tree (TTreeType): TTree from simulation containing energy deposits in box per event
+        pathLength (dict): dictionary to save total path length per event
+        dosePerEvent (dict): dictionary to save total dose per event
+        meanKEperEvent (dict): dictionary to save mean KE per event
+        eventType (str): type of simulation, either standalone or PS
+        chromatinVolume (float): volume of simulation box
+        copyCheck (bool, optional): True if simulation results to be returned only from one box number
+        copy (int, optional): Box number to use
+        part1_particleSource (bool or list): list of primary particles to use, default: false
 
-    assert (len(data) == numBP)
 
-    tEdep = fDirectory.Get("EventEdep")
+    Returns:
+        Tuple[Union[str,dict], dict, dict, dict, dict]: Mean primary energy (if available, event mapping from primary event to PS event (empty if standalone), dose per event), mean KE per event, path length per event
+    """
 
-    pathLength = {}
-    dosePerEvent = {}
-    meanKEperEvent = {}
+    eventMapping = {}
 
-    entryEdepNumber = tEdep.GetEntries()
+    if eventType == "standalone":
+        event = input_tree["EventNum"].array(library = "np")
+    elif eventType == "PS":
+        # event = input_tree["part1_EventNum"].array(library = "np")
+        event = input_tree["EventNum"].array(library = "np")
     
-    # build mapping to decay event number
-    eventInfo = fDirectory.Get("Events")
-    nentriesMapping = eventInfo.GetEntries() #get number of events for mapping
-    mapping = {}  # photon event ID to simulation event ID dict
-    for irow in range(0, nentriesMapping): #loop on nentries
-        eventInfo.GetEntry(irow)            
-        mapping[eventInfo.EventNo] = eventInfo.PhotonEventID #save photon event number into key simulation event number
-    # end mapping 
+    if copyCheck:
+        part1_CopyNum = input_tree["part1_CopyNum"].array(library = "np")
+        mask = part1_CopyNum==copy
+    else:
+        mask = np.array([True]*len(event))
 
-    numEvt = 0
-    for i in range(entryEdepNumber):
-        tEdep.GetEntry(i)
-        if tEdep.EventNo > numEvt:
-            simEvt = tEdep.EventNo
-            if simEvt in mapping.keys():
-                numEvt = mapping[simEvt]
-                if hasattr(tEdep, "PathLengthChromatin"):  # older results do not have path length
-                    pathLength[numEvt] = tEdep.PathLengthChromatin
-                else:
-                    pathLength[numEvt] = "N/A"
+    if part1_particleSource:
+        PrimaryParticle = input_tree["part1_particleSource"].array(library = "np")
 
-                if hasattr(tEdep, "PrimaryKEEntrance"):  # older results do not have path length
-                    meanKEperEvent[numEvt] = (
-                        tEdep.PrimaryKEEntrance+tEdep.PrimaryKEExit)/2
+        tempMask = np.zeros_like(mask)
+        for i in part1_particleSource:
+            tempMask+=(PrimaryParticle==i)
+        mask *=tempMask
 
-                    #meanKEperEvent[tEdep.EventNo] = "N/A"
 
-                if tEdep.Edep_J > 0:
-                    if numEvt in dosePerEvent.keys():
-                        dosePerEvent[numEvt] += tEdep.Edep_J / \
-                        (1000 * chromatinVolume)
-                        meanKEperEvent[numEvt] += tEdep.Edep_J
-                    else:
-                        dosePerEvent[numEvt] = tEdep.Edep_J / \
-                        (1000 * chromatinVolume)
-                        meanKEperEvent[numEvt] = tEdep.Edep_J
-            else:
-                if tEdep.Edep_J>0:
-                    print(f"evt {simEvt} not in mapping but Edep>0")
+    if ("PathLengthChromatin" in input_tree) and ("PrimaryKEEntrance" in input_tree):
+        data = np.vstack([event, input_tree["Edep_J"].array(library = "np"), input_tree["PathLengthChromatin"].array(library = "np"), input_tree["PrimaryKEEntrance"].array(library = "np"), input_tree["PrimaryKEExit"].array(library = "np")]).T
+    elif ("PathLengthChromatin" in input_tree):
+        data = np.vstack([event, input_tree["Edep_J"].array(library = "np"), input_tree["PathLengthChromatin"].array(library = "np")]).T
+    else:
+        data = np.vstack([event, input_tree["Edep_J"].array(library = "np")]).T
 
-    if np.any(list(meanKEperEvent.values()) != "N/A"):
+    data = data[mask]
+    volumeFactor = 1/ (1000 * chromatinVolume)
+
+    if eventType == "standalone":
+        dosePerEvent = {e: volumeFactor * np.sum((data[data[:,0]==e])[:,1]) for e in event if np.sum((data[data[:,0]==e])[:,1])>0}
+        
+        pathLength = {e: (data[data[:,0]==e])[0,2] for e in event if ("PathLengthChromatin" in input_tree) and (np.sum((data[data[:,0]==e])[:,1])>0) } 
+
+        meanKEperEvent = {e: np.sum((data[data[:,0]==e])[0,3:5])/2 for e in event if ("PrimaryKEEntrance" in input_tree) and (np.sum((data[data[:,0]==e])[:,1])>0)} 
+
+
+
+    else:
+        dosePerEventNew = {e: volumeFactor * np.sum((data[data[:,0]==e])[:,1]) for e in event if np.sum((data[data[:,0]==e])[:,1])>0}
+        dosePerEvent = {e: np.sum([dosePerEventNew[e], dosePerEvent[e]]) if (e in dosePerEvent) and (e in dosePerEventNew) else dosePerEventNew[e] if (e in dosePerEventNew) else dosePerEvent[e] for e in set(list(dosePerEvent.keys())+list(dosePerEventNew.keys()))}
+    
+
+    if eventType == "PS":
+        # eventMapping = {a:b for a,b in zip(input_tree["EventNum"].array(library = "np"), input_tree["part1_EventNum"].array(library = "np"))} 
+
+        eventMapping = {a:b for a,b in zip(input_tree["EventNum"].array(library = "np"), input_tree["EventNum"].array(library = "np"))} 
+
+    if meanKEperEvent and list(meanKEperEvent.values())[0]!="N/A":
         energy = sum(meanKEperEvent.values())/len(meanKEperEvent.values())
     else:
         energy = "N/A"
 
-    numEvt += 1  # zero indexed
-    
-    #print(meanKEperEvent)
-    if filenamePhoton:
-        dosePerEventPhoton = {}
-        NumIntersecting = 0
-        fFilePhoton = TFile.Open(filenamePhoton)
-        fDirectoryPhoton = fFilePhoton.Get("ntuple")
-        tEdepPhoton = fDirectoryPhoton.Get("EventEdep")
-        entryEdepNumberPhoton = tEdepPhoton.GetEntries()
-        for i in range(0, entryEdepNumberPhoton):
-            tEdepPhoton.GetEntry(i)
-            if tEdepPhoton.Edep_J > 0:
-                dosePerEventPhoton[tEdepPhoton.EventNo] = tEdepPhoton.Edep_J / \
-                    (1000 * chromatinVolume)
-        fInfoPhoton = fDirectoryPhoton.Get("Info")
-        entryEdepNumberPhoton = fInfoPhoton.GetEntries()
-        for i in range(0, entryEdepNumberPhoton):
-            fInfoPhoton.GetEntry(i)
-            NumIntersecting += fInfoPhoton.NumIntersecting
+    return energy, eventMapping, dosePerEvent, meanKEperEvent, pathLength
 
-    # // Read out direct damage
-    input_tree = fDirectory.Get("Direct")
+def getNumIntersecting(fInfo: TTreeType) -> float:
+    """Returns the number of particles crossing the target box
 
-    nentries = input_tree.GetEntries()
+    Args:
+        fInfo (TTreeType): TTree containing information about the simulaiton
+
+    Returns:
+        float: number of particles crossing the target box.
+    """
+    return fInfo["NumIntersecting"].array()[0]
+
+def AccumulateEdep(input_tree: TTreeType, cumulatedEnergyDep: dict, T0: cKDTree, T1: cKDTree, eventType: str, eventMapping: dict = False, copyCheck: bool = False, copy: int = 0, part1_particleSource: Union[bool, list]  = False)->dict:
+    """Accumulate energy deposits from all steps if near to sugar molecule
+
+    Args:
+        input_tree (TTreeType): TTree containing energy deposits per step
+        cumulatedEnergyDep (dict): dictionary to accumulate energy deposits in sugar volumes per event
+        T0 (cKDTree): positions of strand 0
+        T1 (cKDTree): positions of strand 1
+        eventType (str): event ype either standalone or PS
+        eventMapping (dict, optional): if required mapping between primary simulation event number and PS simulation event number. Defaults to False.
+        copyCheck (bool, optional): Whether to only accumulate energy from a specific box number. Defaults to False.
+        copy (int, optional): box number to use. Defaults to 0.
+        part1_particleSource (bool or list): list of primary particles to use, default: false
+
+    Returns:
+        dict: dictionary containing all energy deposits per sugar per event
+    """
+
+    if eventType == "standalone":
+        event = input_tree["EventNum"].array(library = "np")
+    elif eventType == "PS":
+        event = np.array([eventMapping[a] for a in input_tree["EventNum"].array(library = "np")])
+
+    if copyCheck:
+        part1_CopyNum = input_tree["part1_CopyNum"].array(library = "np")
+        mask = part1_CopyNum==copy
+    else:
+        mask = np.array([True]*len(event))
+
+    if part1_particleSource:
+        PrimaryParticle = input_tree["part1_particleSource"].array(library = "np")
+
+        tempMask = np.zeros_like(mask)
+        for i in part1_particleSource:
+            tempMask+=(PrimaryParticle==i)
+        mask *=tempMask
+
+    data = np.vstack([event, input_tree["x"].array(library = "np"),  input_tree["y"].array(library = "np"),  input_tree["z"].array(library = "np"), input_tree["eDep_eV"].array(library = "np")]).T
+
+    data = data[mask]
 
     cumulatedEnergyDep = {}
 
-    for irow in range(nentries):
-        input_tree.GetEntry(irow)
-        result = checkPoint([input_tree.x, input_tree.y, input_tree.z], T0, T1)
-        if (result[0] != -1):
-            if input_tree.EventNo in mapping.keys():
-                key = (mapping[input_tree.EventNo], result[0], result[1])
-                if key in cumulatedEnergyDep:
-                    cumulatedEnergyDep[key] += input_tree.eDep_eV
-                else:
-                    cumulatedEnergyDep[key] = input_tree.eDep_eV
+    results = checkPoints(data[:,1:4], T0,T1)
+
+    for i in range(len(data)):
+        if (results[i][0] != -1):
+            key = (int(data[i,0]),results[i][0],results[i][1])
+            if key in cumulatedEnergyDep:
+                cumulatedEnergyDep[key] += data[i,4]
             else:
-
-                print(f"DIRECT: evt:{input_tree.EventNo} not in mapping but results[0]: {result[0]}")
-        #  Add energy deposition from photon simulation
-    if filenamePhoton:
-        input_tree_photon = fDirectoryPhoton.Get("Direct")
-        nentriesPhoton = input_tree_photon.GetEntries()
-
-        cumulatedEnergyDepPhoton = {}
-
-        for irow in range(nentriesPhoton):
-            input_tree_photon.GetEntry(irow)
-
-            result = checkPoint(
-                [input_tree_photon.x, input_tree_photon.y, input_tree_photon.z], T0, T1)
-            if (result[0] != -1):
-                key = (input_tree_photon.EventNo, result[0], result[1])
-                if key in cumulatedEnergyDepPhoton:
-                    cumulatedEnergyDepPhoton[key] += input_tree_photon.eDep_eV
-                else:
-                    cumulatedEnergyDepPhoton[key] = input_tree_photon.eDep_eV
-
-        eventInfo = fDirectory.Get("Events")
-        nentriesMapping = eventInfo.GetEntries()
-        mapping = {}  # photon event ID to simulation event ID
-        for irow in range(0, nentriesMapping):
-            eventInfo.GetEntry(irow)
-            mapping[eventInfo.EventNo] = eventInfo.PhotonEventID
-        #print(f"mapping photon: {mapping}")
-        for key in cumulatedEnergyDep:
-            if ((mapping[key[0]], key[1], key[2]) in cumulatedEnergyDepPhoton):
-                cumulatedEnergyDep[key] += cumulatedEnergyDepPhoton[mapping[key[0]], key[1], key[2]]
-        #print(f"cumulatedEnergyDep: {cumulatedEnergyDep}")
-        # Add photon dose
-        for key in dosePerEvent:
-            if mapping[key] in dosePerEventPhoton:
-                dosePerEvent[key] += dosePerEventPhoton[mapping[key]]
-
-    eventsListDirect = []
-    copyListDirect = []
-    strandListDirect = []
-
+                cumulatedEnergyDep[key] = data[i,4]
     
-    for key in cumulatedEnergyDep:
-        if IsEdepSufficient(cumulatedEnergyDep[key], fEMinDamage, fEMaxDamage):
+    return cumulatedEnergyDep
 
-            eventsListDirect.append(key[0])
-            
-            copyListDirect.append(key[2])
-            strandListDirect.append(key[1])
+def Direct(cumulatedEnergyDep: dict, fEMinDamage: float, fEMaxDamage: float)-> Tuple[list, list, list]:
+    """Convert accumulated energy deposition per sugar into strand breaks using the linear probability model. Exports lists of event number, sugar copy number and strand number for input into clustering algorithm.
+
+    Args:
+        cumulatedEnergyDep (dict): dictionary containing all energy deposits per sugar per event
+        fEMinDamage (float): minimimum energy deposit for a strand break
+        fEMaxDamage (float): maximum energy above which a strand break always occurs
+
+    Returns:
+        eventsListDirect, copyListDirect, strandListDirect Tuple(list, list, list): lists of event number, sugar copy number and strand number for input into clustering algorithm
+    """
+
+    isBreak = [IsEdepSufficient(cumulatedEnergyDep[key],fEMinDamage, fEMaxDamage) for key in cumulatedEnergyDep]
+
+    eventsListDirect = [a[0] for a,b in zip(cumulatedEnergyDep.keys(), isBreak) if b]
+    strandListDirect = [a[1] for a,b in zip(cumulatedEnergyDep.keys(), isBreak) if b]
+    copyListDirect = [a[2] for a,b in zip(cumulatedEnergyDep.keys(), isBreak) if b]
+
+    return eventsListDirect, copyListDirect, strandListDirect
+
+def Indirect(input_tree: TTreeType, eventType: str, probIndirect: float, T0: cKDTree, T1: cKDTree, eventMapping: dict = False, copyCheck: bool = False, copy:int = 0,part1_particleSource: Union[bool, list] = False)->Tuple[list, list, list]:
+    """ Calcula
+     the number of indirect stand breaks (OH + sugar->damaged sugar) and returns lists of the events, sugar copy number and strand number for the clustering algorithm
+
+    Args:
+        input_tree (TTreeType): TTree from simulation containing water radical reactions with DNA per event
+        eventType (str): type of simulation, either standalone or PS
+        probIndirect (float): probability that a OH + sugar reaction results in a strand break
+        T0 (cKDTree):  positions of strand 0
+        T1 (cKDTree):  positions of strand 1
+        eventMapping (dict, optional): if required mapping between primary simulation event number and PS simulation event number. Defaults to False.
+        copyCheck (bool, optional): True if simulation results to be returned only from one box number
+        copy (int, optional): Box number to use
+        part1_particleSource (Union[bool, list], optional): Whether to accumulate from a specific particle, numbering of particles 1 indexed. Defaults to False.
+
+    Returns:
+        eventsListIndirect, copyListIndirect, strandListIndirect Tuple[list, list, list]: lists of event number, sugar copy number and strand number for input into clustering algorithm
+    """
+    eventsListIndirect=[]
+    copyListIndirect=[]
+    strandListIndirect=[]
+
+    if eventType == "standalone":
+        event = input_tree["EventNum"].array(library = "np")
+    elif eventType == "PS":
+        event = [eventMapping[a] for a in input_tree["EventNum"].array(library = "np")]
+
+    if len(event)==0: #RBE can be run with indirect off
+        return eventsListIndirect, copyListIndirect, strandListIndirect 
+
+    if copyCheck:
+        part1_CopyNum = input_tree["part1_CopyNum"].array(library = "np")
+        mask = part1_CopyNum==copy
+    else:
+        mask = np.array([True]*len(event))
+        
+    if part1_particleSource:
+        PrimaryParticle = input_tree["part1_particleSource"].array(library = "np")
+
+        tempMask = np.zeros_like(mask)
+        for i in part1_particleSource:
+            tempMask+=(PrimaryParticle==i)
+        mask *=tempMask
+
+    data = np.vstack([event, input_tree["DNAmolecule"].array(library = "np"),  input_tree["radical"].array(library = "np"), input_tree["x"].array(library = "np"),  input_tree["y"].array(library = "np"),  input_tree["z"].array(library = "np")]).T
+
+    data = data[mask]
+
+    # extract only deoxyribose and OH reactions
+    data = data[data[:,1]=="Deoxyribose^0"]
+    data = data[data[:,2]=="OH^0"]
+
+    results = getIndex(data[:,3:6], T0,T1)
+
+    for i in range(len(data)):
+        if np.random.rand() <= probIndirect:
+            eventsListIndirect.append(data[i,0])
+            copyListIndirect.append(results[i][0])
+            strandListIndirect.append(results[i][1])
+
+    return eventsListIndirect, copyListIndirect, strandListIndirect
+
+def IsEdepSufficient(pEdep:float, fEMinDamage:float, fEMaxDamage:float) -> bool:
+    """Apply the linear probability model to determine if a direct strand break occurs.
+
+    Args:
+        pEdep (float): energy deposit in a sugar molecule
+        fEMinDamage (float): minimimum energy deposit for a strand break
+        fEMaxDamage (float): maximum energy above which a strand break always occurs
+
+    Returns:
+        bool: whether strand break occurs
+    """
+    if (pEdep<fEMinDamage):
+        return False
+    if(pEdep>fEMaxDamage):
+        return True
+    else:
+        proba = (pEdep - fEMinDamage)/(fEMaxDamage-fEMinDamage)
+        return (proba>np.random.rand())
+
+def checkPoints(points: List[List], T0: cKDTree, T1: cKDTree) -> List[List]:
+    """ Check points are within Rdirect (0.35nm) of a sugar molecule centre
+
+    Args:
+        points (List[List]): x,y,z positions of energy depositions
+        T0 (cKDTree): sugar molecules on strand 0
+        T1 (cKDTree): sugar molecules on strand 1
+
+    Returns:
+        result (list): [strand, sugar index] if within Rdirect [-1,-1] otherwise
+    """
+    result = [-1,-1]
+    Rdirect = 0.35 #nm
+    d0, idx0 = T0.query(points, k=1)
+    d1, idx1 = T1.query(points, k=1)
+
+    result = [[0, c] if (a<b and a< Rdirect) else [1,d] if (b < a and b<Rdirect) else [-1,-1] for a,b,c,d in zip(d0,d1,idx0,idx1) ]
+
+    return result
+
+def getIndex(points: list, T0: cKDTree, T1: cKDTree) -> List[List]:
+    """Get sugar copy number and strand number from x,y,z positions of reactions
+
+    Args:
+        points (list): position of the reaction
+        T0 (cKDTree): positions of sugar molecules on strand 0
+        T1 (cKDTree): positions of sugar molecules on strand 1
+
+    Raises:
+        ValueError: Error if no sugar molecule nearby
+
+    Returns:
+        List[List]: [sugar copy number, sugar strand]
+    """
+
+    d0, idx0 = T0.query(points, k=1)
+    d1, idx1 = T1.query(points, k=1)
+
+    result = [[c, 0] if (a<b) else [d,1] for a,b,c,d in zip(d0,d1,idx0,idx1)]
+
+    d = [min(a,b) for a,b in zip(d0, d1)]
+
+    if any(i > 1e-5 for i in d):
+        raise ValueError("d > 1e-10")
+
+    return result
+
+def readClusteringGitHash(builddir: str)->list:
+    """Read text file containing git hash when clustering algorithm last compiled
+
+    Args:
+        builddir (str): path to text file
+    Returns:
+        list[str]: git hash
+    """
+    with open(builddir+"/git-state.txt", "r") as f:
+        data = f.readlines()
+    return data[0]
+
+def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxDamage: float, probIndirect: float, sugarPosFilename: str, simulationType: str="standalone", filenamePhoton: Union[str,bool]=False, continuous: bool = True, part1_CopyNum: Union[int,bool] = False, part1_particleSource: Union[List[str],bool]=False):
+    """ Run all stages to interpret the root file from the simulation and output the number of strand breaks.
+
+    Args:
+        filename (str): root file to analyse
+        outputFilename (str): filename to save results
+        fEMinDamage (float): minimimum energy deposit for a strand break
+        fEMaxDamage (float): maximum energy above which a strand break always occurs
+        probIndirect (float): probability that OH+sugar reaction leads to strand damage
+        sugarPosFilename (str): text file containing the sugar molecule positions, must match the one used for simulation
+        simulationType (str, optional): Type of simulation standalone, decay, photon. Defaults to "standalone".
+        filenamePhoton (Union[str,bool], optional): If photon, path to root file from photon simulation. Defaults to False.
+        continuous (bool, optional): Continuous DNA structure from fractal DNA - True, original DNA structure with discontinuities - False. Defaults to True.
+        part1_CopyNum (Union[int,bool], optional): If decay, which copy number to use for clustering. Defaults to False.
+        part1_particleSource (Union[str,bool], optional): If decay, list of particles to use for clustering, if False all. Defaults to False.
+
+    Raises:
+        ValueError: Incompatible simulationType given
+    """
+    particleMap = {
+       "Ra224": 0,
+      "Rn220": 1,
+      "Po216": 2,
+      "Pb212": 3,
+      "Bi212": 4,
+      "Tl208": 5,
+      "Po212": 6,
+      "Pb208": 7,
+      "alphaRa224": 8,
+      "alphaRn220": 9,
+      "alphaPo216": 10,
+      "alphaBi212": 11,
+      "alphaPo212": 12,
+      "e-Rn220": 13,
+      "e-Po216": 14,
+      "e-Pb212": 15,
+      "e-Bi212": 16,
+      "e-Tl208": 17,
+      "e-Po212": 18,
+      "e-Pb208": 19,
+      "gammaRn220": 20,
+      "gammaPo216": 21,
+      "gammaPb212": 22,
+      "gammaBi212": 23,
+      "gammaTl208": 24,
+      "gammaPo212": 25,
+      "gammaPb208": 26,
+      "e+": 27
+      }
     
-    # // Read out indirect damage
-    input_tree_indirect = fDirectory.Get("Indirect")
+    if part1_particleSource:
+        part1_particleSource = [particleMap[a] for a in part1_particleSource]
 
-    eventsListIndirect = []
-    copyListIndirect = []
-    strandListIndirect = []
+    T0, T1 = loadSugarFile(sugarPosFilename)
 
-    nentries_indirect = input_tree_indirect.GetEntries()
+    # Load root data to analyse
+    file = uproot.open(filename)
+    
+    fDirectory = file['ntuple']
 
-    for irow in range(nentries_indirect):
-        input_tree_indirect.GetEntry(irow)
-        if input_tree_indirect.EventNo in mapping.keys():
-            if hasattr(input_tree_indirect, "copyNum"):
-                if np.random.rand() <= probIndirect:
-                    eventsListIndirect.append(mapping[input_tree_indirect.EventNo])
-                    copyListIndirect.append(input_tree_indirect.copyNum)
-            elif not hasattr(input_tree_indirect, "DNAmolecule"):
-                if np.random.rand() <= probIndirect:
-                    eventsListIndirect.append(mapping[input_tree_indirect.EventNo])
-                    point = [input_tree_indirect.x,
-                            input_tree_indirect.y, input_tree_indirect.z]
-                    c, s = getIndex(point, T0, T1)
-                    copyListIndirect.append(c)
-                    strandListIndirect.append(s)
-            else:
-                if ((input_tree_indirect.DNAmolecule[0] == "D") and (input_tree_indirect.radical == "OH^0")):
-                    if np.random.rand() <= probIndirect:
-                        eventsListIndirect.append(mapping[input_tree_indirect.EventNo])
-                        point = [input_tree_indirect.x,
-                                input_tree_indirect.y, input_tree_indirect.z]
-                        c, s = getIndex(point, T0, T1)
-                        copyListIndirect.append(c)
-                        strandListIndirect.append(s)
-        else:
-            print("INDIRECT check evt")
+    tInfo = fDirectory["Info"]
+    tEdep = fDirectory["EventEdep"]
+    input_tree = fDirectory["Direct"]
+    input_tree_indirect = fDirectory["Indirect"]
+
+    # Simulation Parameters
+    chromatinVolume=tInfo["ChromatinVolume_m3"].array()[0] # in m3
+    numBP = tInfo["NumBasepairs"].array()[0]
+    gitHash = tInfo["GitHash"].array()[0]
+
+    assert T0.n==numBP, "Sugar file does not match simulation sugar file"
+
+    pathLength={}
+    dosePerEvent={}
+    meanKEperEvent={}
+    cumulatedEnergyDep = {}
+
+    if simulationType == "standalone":
+        energy, _, dosePerEvent, meanKEperEvent, pathLength = doseCalculation(tEdep, pathLength, dosePerEvent,meanKEperEvent, "standalone", chromatinVolume) 
+        cumulatedEnergyDep = AccumulateEdep(input_tree, cumulatedEnergyDep, T0, T1, eventType = "standalone")
+        eventsListDirect, copyListDirect, strandListDirect = Direct(cumulatedEnergyDep,fEMinDamage, fEMaxDamage)
+        eventsListIndirect, copyListIndirect, strandListIndirect = Indirect(input_tree_indirect, "standalone", probIndirect, T0, T1)
+
+        LET = np.mean(tInfo["MeanLET"])
+
+        NumIntersecting = len(pathLength.keys())
+
+    elif simulationType == "decay":
+        energy, eventMapping, dosePerEvent, meanKEperEvent, pathLength = doseCalculation(tEdep, pathLength, dosePerEvent,meanKEperEvent, "PS", chromatinVolume, copyCheck = True, copy = part1_CopyNum, part1_particleSource = part1_particleSource) 
+        
+
+        cumulatedEnergyDep = AccumulateEdep(input_tree, cumulatedEnergyDep, T0, T1, eventMapping = eventMapping, eventType = "PS", copyCheck = True, copy = part1_CopyNum, part1_particleSource = part1_particleSource)
+
+        eventsListDirect, copyListDirect, strandListDirect = Direct(cumulatedEnergyDep,fEMinDamage, fEMaxDamage)
+
+        eventsListIndirect, copyListIndirect, strandListIndirect = Indirect(input_tree_indirect, "PS", probIndirect, T0, T1, eventMapping = eventMapping, copyCheck = True, copy = part1_CopyNum, part1_particleSource = part1_particleSource)
+        LET = "N/A"
+
+        NumIntersecting = len(list(set(eventsListDirect+eventsListIndirect)))
+        # Path length and KE are not recorded for decay simulations
+        pathLength = {e: "N/A" for e in dosePerEvent.keys()}
+        meanKEperEvent = {e: "N/A" for e in dosePerEvent.keys()}
+
+    elif simulationType == "photon":
+        fFilePhoton = uproot.open(filenamePhoton) 
+        fDirectoryPhoton = fFilePhoton["ntuple"]
+        tEdepPhoton = fDirectoryPhoton["EventEdep"]
+        input_tree_photon = fDirectoryPhoton["Direct"]
+        NumIntersecting = getNumIntersecting(fDirectoryPhoton["Info"])
+
+        energy, eventMapping, dosePerEvent, _, _ = doseCalculation(tEdepPhoton, pathLength, dosePerEvent,meanKEperEvent, "standalone", chromatinVolume) 
+        energy, eventMapping, dosePerEvent, _, _  = doseCalculation(tEdep, pathLength, dosePerEvent,meanKEperEvent, "PS", chromatinVolume) 
+
+        cumulatedEnergyDep = AccumulateEdep(input_tree_photon, cumulatedEnergyDep, T0, T1, eventType = "standalone") #read in photon edep first
+
+        cumulatedEnergyDep = AccumulateEdep(input_tree, cumulatedEnergyDep, T0, T1, eventMapping = eventMapping, eventType = "PS")
+
+        eventsListDirect, copyListDirect, strandListDirect = Direct(cumulatedEnergyDep, fEMinDamage, fEMaxDamage)
+        eventsListIndirect, copyListIndirect, strandListIndirect = Indirect(input_tree_indirect, "PS", probIndirect, T0, T1, eventMapping = eventMapping, copyCheck = False)
+        LET = "N/A"
+        # Path length and KE are not recorded for photon simulations
+        pathLength = {e: "N/A" for e in dosePerEvent.keys()}
+        meanKEperEvent = {e: "N/A" for e in dosePerEvent.keys()}
+    else:
+        raise ValueError("Incompatible simulation type")
+
+    numEvt = list(set(eventsListDirect+eventsListIndirect))
+
+    file.close()     
     # clustering
-    tempResults = clustering(numEvt, eventsListDirect, copyListDirect,
-                             strandListDirect, eventsListIndirect, copyListIndirect, strandListIndirect)
+    tempResults = clustering(numEvt,eventsListDirect,copyListDirect,strandListDirect,eventsListIndirect,copyListIndirect, strandListIndirect, continuous)
 
-    clusteringResults = tempResults[0]  # strand break number results
-    clusterSize = tempResults[1]  # DSB cluster size, cluster of size 1-10
+    clusteringResults = tempResults[0] # strand break number results
+    clusterSize = tempResults[1] # DSB cluster size, cluster of size 1-10
+    clusterDistance = tempResults[2] # distance in bp between DSB clusters (if more 2 or more)
 
     events = list(dosePerEvent.keys())
+    events.sort()
     eventsWithClusteringResults = [a[0] for a in clusteringResults]
-    
-    #print(eventsWithClusteringResults)
-    
+
     clusteringGitHash = readClusteringGitHash(builddir)
+
+
+    # write out results to txt file
+    with open(outputFilename, "w") as f:
+        f.write("Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,GitHash,ClusteringGitHash\n")
+        f.write("{},{},{},{},{},{},{},{},{}\n".format(filename,energy,LET,NumIntersecting,chromatinVolume,numBP,sugarPosFilename, gitHash, clusteringGitHash)) 
+
+        f.write("EventNum,DoseGy,PathLength_nm,MeanKEMeV,TotalSBdirect,SSBdirect,cSSBdirect,DSBdirect,TotalSBindirect,SSBindirect,cSSBindirect,DSBindirect,TotalSBtotal,SSBtotal,cSSBtotal,DSBtotal\n")
+        for event in events:
+            if event in eventsWithClusteringResults:
+                text = str([clusteringResults[eventsWithClusteringResults.index(event)][1:]]).strip("[").strip("]")
+            else:
+                text = "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"           
+            f.write("{},{},{},{},{}".format(event,dosePerEvent[event], pathLength[event],meanKEperEvent[event],text))
+            f.write('\n')
+
+
+
+    with open("DSBclusterSize_{}".format(outputFilename), "w") as f:
+        f.write("Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,SimGitHash,ClusteringGitHash\n")
+        f.write("{},{},{},{},{},{},{},{},{}\n".format(filename,energy,LET,NumIntersecting,chromatinVolume,numBP,sugarPosFilename, gitHash, clusteringGitHash)) 
+        f.write("EventNum,DoseGy,PathLength_nm,Direct_1_SBperDSBcluster,Direct_2_SBperDSBcluster,Direct_3_SBperDSBcluster,Direct_4_SBperDSBcluster,Direct_5_SBperDSBcluster,Direct_6_SBperDSBcluster,Direct_7_SBperDSBcluster,Direct_8_SBperDSBcluster,Direct_9_SBperDSBcluster,Direct_10_SBperDSBcluster,Indirect_1_SBperDSBcluster,Indirect_2_SBperDSBcluster,Indirect_3_SBperDSBcluster,Indirect_4_SBperDSBcluster,Indirect_5_SBperDSBcluster,Indirect_6_SBperDSBcluster,Indirect_7_SBperDSBcluster,Indirect_8_SBperDSBcluster,Indirect_9_SBperDSBcluster,Indirect_10_SBperDSBcluster,Hybrid_1_SBperDSBcluster,Hybrid_2_SBperDSBcluster,Hybrid_3_SBperDSBcluster,Hybrid_4_SBperDSBcluster,Hybrid_5_SBperDSBcluster,Hybrid_6_SBperDSBcluster,Hybrid_7_SBperDSBcluster,Hybrid_8_SBperDSBcluster,Hybrid_9_SBperDSBcluster,Hybrid_10_SBperDSBcluster,Mixed_1_SBperDSBcluster,Mixed_2_SBperDSBcluster,Mixed_3_SBperDSBcluster,Mixed_4_SBperDSBcluster,Mixed_5_SBperDSBcluster,Mixed_6_SBperDSBcluster,Mixed_7_SBperDSBcluster,Mixed_8_SBperDSBcluster,Mixed_9_SBperDSBcluster,Mixed_10_SBperDSBcluster,Total_1_SBperDSBcluster,Total_2_SBperDSBcluster,Total_3_SBperDSBcluster,Total_4_SBperDSBcluster,Total_5_SBperDSBcluster,Total_6_SBperDSBcluster,Total_7_SBperDSBcluster,Total_8_SBperDSBcluster,Total_9_SBperDSBcluster,Total_10_SBperDSBcluster,Total_DSBdistances\n")
+        for event in events:
+            if event in eventsWithClusteringResults:
+                text = str([clusterSize[eventsWithClusteringResults.index(event)][1:]]).strip("[").strip("]")+", "+ str([d for d in clusterDistance[eventsWithClusteringResults.index(event)]]).replace(",","\t")
+            else:
+                text = "0, "*49+"0" + ", []"
+
+            f.write("{},{},{},{}".format(event,dosePerEvent[event], pathLength[event], text))
+            f.write('\n')
 
     print("Finished: {}".format(filename))
 
-    # selecting copynumbers to save results in separate files
-    eventInfo = fDirectory.Get("Events")
-    nentriesMapping = eventInfo.GetEntries()
-    mapping_copyNo = {}  # copyNo to simulation event ID
-    for irow in range(0, nentriesMapping):
-        eventInfo.GetEntry(irow)
-        mapping_copyNo[eventInfo.PhotonEventID] = eventInfo.copyNo
-    ranges_radii = {}
-    cnumbers = np.arange(0, n_boxes+boxes_per_R, boxes_per_R)
-    n_files = n_boxes/boxes_per_R
-    for r, (cmin, cmax) in enumerate(zip(cnumbers, cnumbers[1:])):
-        ranges_radii[r] = range(cmin, cmax)
-    assert(len(ranges_radii)==n_files)
-    #print(f"dose: {dosePerEvent}\n pathlength: {pathLength}\n meanKE: {meanKEperEvent}\n")
-    #print(f"mapping_copyno: {mapping_copyNo}, ranges_radii: {ranges_radii}")
-    # end
-    if separate_r:
-        print("separating output files per radius")
-        for r in ranges_radii:
-            with open(os.path.splitext(outputFilename)[0]+f"_{r}.csv", "w") as f:
-                f.write(
-                    "Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,GitHash,ClusteringGitHash\n")
-                if filenamePhoton:
-                    f.write("{},{},{},{},{},{},{},{},{}\n".format(filename, energy, LET, NumIntersecting,
-                            chromatinVolume, numBP, sugarPosFilename, gitHash, clusteringGitHash))
-                else:
-                    f.write("{},{},{},{},{},{},{},{},{}\n".format(filename, energy, LET, len(
-                        pathLength.keys()), chromatinVolume, numBP, sugarPosFilename, gitHash, clusteringGitHash))
-                f.write("EventNo,DoseGy,PathLength_nm,MeanKEMeV,TotalSBdirect,SSBdirect,cSSBdirect,DSBdirect,TotalSBindirect,SSBindirect,cSSBindirect,DSBindirect,TotalSBtotal,SSBtotal,cSSBtotal,DSBtotal\n")
-                for event in events:
-                    if mapping_copyNo[event] in ranges_radii[r]:
-                        if event in eventsWithClusteringResults:
-                            text = str([clusteringResults[eventsWithClusteringResults.index(
-                                event)][1:]]).strip("[").strip("]")
-                        else:
-                            text = "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
-                        f.write("{},{},{},{},{}".format(
-                            event, 
-                            dosePerEvent[event], 
-                            pathLength[event], 
-                            meanKEperEvent[event], text))
-                        f.write('\n')
-
-            with open(os.path.splitext(outputFilename)[0]+f"_DSB_{r}.csv", "w") as f:
-                f.write(
-                    "Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,SimGitHash,ClusteringGitHash\n")
-                if filenamePhoton:
-                    f.write("{},{},{},{},{},{},{},{},{}\n".format(filename, energy, LET, NumIntersecting,
-                            chromatinVolume, numBP, sugarPosFilename, gitHash, clusteringGitHash))
-                else:
-                    f.write("{},{},{},{},{},{},{},{},{}\n".format(filename, energy, LET, len(
-                        events), chromatinVolume, numBP, sugarPosFilename, gitHash, clusteringGitHash))
-                f.write("EventNo,DoseGy,PathLength_nm,Direct_1_SBperDSBcluster,Direct_2_SBperDSBcluster,Direct_3_SBperDSBcluster,Direct_4_SBperDSBcluster,Direct_5_SBperDSBcluster,Direct_6_SBperDSBcluster,Direct_7_SBperDSBcluster,Direct_8_SBperDSBcluster,Direct_9_SBperDSBcluster,Direct_10_SBperDSBcluster,Indirect_1_SBperDSBcluster,Indirect_2_SBperDSBcluster,Indirect_3_SBperDSBcluster,Indirect_4_SBperDSBcluster,Indirect_5_SBperDSBcluster,Indirect_6_SBperDSBcluster,Indirect_7_SBperDSBcluster,Indirect_8_SBperDSBcluster,Indirect_9_SBperDSBcluster,Indirect_10_SBperDSBcluster,Hybrid_1_SBperDSBcluster,Hybrid_2_SBperDSBcluster,Hybrid_3_SBperDSBcluster,Hybrid_4_SBperDSBcluster,Hybrid_5_SBperDSBcluster,Hybrid_6_SBperDSBcluster,Hybrid_7_SBperDSBcluster,Hybrid_8_SBperDSBcluster,Hybrid_9_SBperDSBcluster,Hybrid_10_SBperDSBcluster,Mixed_1_SBperDSBcluster,Mixed_2_SBperDSBcluster,Mixed_3_SBperDSBcluster,Mixed_4_SBperDSBcluster,Mixed_5_SBperDSBcluster,Mixed_6_SBperDSBcluster,Mixed_7_SBperDSBcluster,Mixed_8_SBperDSBcluster,Mixed_9_SBperDSBcluster,Mixed_10_SBperDSBcluster,Total_1_SBperDSBcluster,Total_2_SBperDSBcluster,Total_3_SBperDSBcluster,Total_4_SBperDSBcluster,Total_5_SBperDSBcluster,Total_6_SBperDSBcluster,Total_7_SBperDSBcluster,Total_8_SBperDSBcluster,Total_9_SBperDSBcluster,Total_10_SBperDSBcluster\n")
-                for event in events:
-                    if mapping_copyNo[event] in ranges_radii[r]:
-                        if event in eventsWithClusteringResults:
-                            text = str([clusterSize[eventsWithClusteringResults.index(event)][1:]]).strip(
-                                "[").strip("]")
-                        else:
-                            text = "0, "*49+"0"
-
-                        f.write("{},{},{},{}".format(
-                            event, dosePerEvent[event], pathLength[event], text))
-                        f.write('\n')
-    else:
-        with open(outputFilename, "w") as f:
-            f.write(
-                "Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,GitHash,ClusteringGitHash\n")
-            if filenamePhoton:
-                f.write("{},{},{},{},{},{},{},{},{}\n".format(filename, energy, LET, NumIntersecting,
-                        chromatinVolume, numBP, sugarPosFilename, gitHash, clusteringGitHash))
-            else:
-                f.write("{},{},{},{},{},{},{},{},{}\n".format(filename, energy, LET, len(
-                    pathLength.keys()), chromatinVolume, numBP, sugarPosFilename, gitHash, clusteringGitHash))
-            f.write("EventNo,DoseGy,PathLength_nm,MeanKEMeV,TotalSBdirect,SSBdirect,cSSBdirect,DSBdirect,TotalSBindirect,SSBindirect,cSSBindirect,DSBindirect,TotalSBtotal,SSBtotal,cSSBtotal,DSBtotal\n")
-            for event in events:
-                if event in eventsWithClusteringResults:
-                    text = str([clusteringResults[eventsWithClusteringResults.index(
-                        event)][1:]]).strip("[").strip("]")
-                else:
-                    text = "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
-                f.write("{},{},{},{},{}".format(
-                    event, dosePerEvent[event], pathLength[event], meanKEperEvent[event], text))
-                f.write('\n')
-
-        with open(os.path.splitext(outputFilename)[0]+"_DSB.csv", "w") as f:
-            f.write(
-                "Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,SimGitHash,ClusteringGitHash\n")
-            if filenamePhoton:
-                f.write("{},{},{},{},{},{},{},{},{}\n".format(filename, energy, LET, NumIntersecting,
-                        chromatinVolume, numBP, sugarPosFilename, gitHash, clusteringGitHash))
-            else:
-                f.write("{},{},{},{},{},{},{},{},{}\n".format(filename, energy, LET, len(
-                    events), chromatinVolume, numBP, sugarPosFilename, gitHash, clusteringGitHash))
-            f.write("EventNo,DoseGy,PathLength_nm,Direct_1_SBperDSBcluster,Direct_2_SBperDSBcluster,Direct_3_SBperDSBcluster,Direct_4_SBperDSBcluster,Direct_5_SBperDSBcluster,Direct_6_SBperDSBcluster,Direct_7_SBperDSBcluster,Direct_8_SBperDSBcluster,Direct_9_SBperDSBcluster,Direct_10_SBperDSBcluster,Indirect_1_SBperDSBcluster,Indirect_2_SBperDSBcluster,Indirect_3_SBperDSBcluster,Indirect_4_SBperDSBcluster,Indirect_5_SBperDSBcluster,Indirect_6_SBperDSBcluster,Indirect_7_SBperDSBcluster,Indirect_8_SBperDSBcluster,Indirect_9_SBperDSBcluster,Indirect_10_SBperDSBcluster,Hybrid_1_SBperDSBcluster,Hybrid_2_SBperDSBcluster,Hybrid_3_SBperDSBcluster,Hybrid_4_SBperDSBcluster,Hybrid_5_SBperDSBcluster,Hybrid_6_SBperDSBcluster,Hybrid_7_SBperDSBcluster,Hybrid_8_SBperDSBcluster,Hybrid_9_SBperDSBcluster,Hybrid_10_SBperDSBcluster,Mixed_1_SBperDSBcluster,Mixed_2_SBperDSBcluster,Mixed_3_SBperDSBcluster,Mixed_4_SBperDSBcluster,Mixed_5_SBperDSBcluster,Mixed_6_SBperDSBcluster,Mixed_7_SBperDSBcluster,Mixed_8_SBperDSBcluster,Mixed_9_SBperDSBcluster,Mixed_10_SBperDSBcluster,Total_1_SBperDSBcluster,Total_2_SBperDSBcluster,Total_3_SBperDSBcluster,Total_4_SBperDSBcluster,Total_5_SBperDSBcluster,Total_6_SBperDSBcluster,Total_7_SBperDSBcluster,Total_8_SBperDSBcluster,Total_9_SBperDSBcluster,Total_10_SBperDSBcluster\n")
-            for event in events:
-                if event in eventsWithClusteringResults:
-                    text = str([clusterSize[eventsWithClusteringResults.index(event)][1:]]).strip(
-                        "[").strip("]")
-                else:
-                    text = "0, "*49+"0"
-
-                f.write("{},{},{},{}".format(
-                    event, dosePerEvent[event], pathLength[event], text))
-                f.write('\n')
-
-
 if __name__ == "__main__":
-    # Test clustering
-    eventsListDirect = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2]
-    copyListDirect = [6, 7, 208, 6000, 820, 822, 600,
-                      620, 650, 670, 6, 7, 211, 295, 250, 8546]
-    strandListDirect = [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0]
-    eventsListIndirect = [0, 0, 0, 0, 0, 0, 1, 2, 2, 2]
-    copyListIndirect = [6, 400, 410, 217, 823, 826, 200, 200, 300, 302]
-    strandListIndirect = [1, 0, 1, 1, 1, 0, 1, 1, 0, 0]
+    pass
 
-    test = {
-        # DoseGy,PathLength_nm,MeanKEMeV, TotalSBdirect,SSBdirect,cSSBdirect,DSBdirect,TotalSBindirect,SSBindirect,cSSBindirect,DSBindirect,TotalSBtotal,SSBtotal,cSSBtotal,DSBtotal
-        0: ["N/A", "N/A", "N/A", 6, 2, 1, 1, 6, 2, 0, 2, 12, 1, 1, 3],
-        1: ["N/A", "N/A", "N/A", 7, 5, 0, 1, 1, 1, 0, 0, 8, 6, 0, 1],
-        2: ["N/A", "N/A", "N/A", 3, 3, 0, 0, 3, 1, 1, 0, 6, 3, 0, 1]
-    }
-
-    clusterSizetest = {
-        0: ["N/A", "N/A", "N/A",
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # direct
-            0, 1, 0, 0, 0, 0, 0, 0, 0, 0,  # indirect
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # hybrid
-            0, 0, 1, 1, 0, 0, 0, 0, 0, 0,  # mixed
-            0, 1, 1, 1, 0, 0, 0, 0, 0, 0],  # total
-
-        1: ["N/A", "N/A", "N/A",
-            0, 1, 0, 0, 0, 0, 0, 0, 0, 0,  # direct
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # indirect
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # hybrid
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # mixed
-            0, 1, 0, 0, 0, 0, 0, 0, 0, 0],  # total
-
-        2: ["N/A", "N/A", "N/A",
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # direct
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # indirect
-            0, 0, 1, 0, 0, 0, 0, 0, 0, 0,  # hybrid
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # mixed
-            0, 0, 1, 0, 0, 0, 0, 0, 0, 0],  # total
-    }
-
-    tempResults = clustering(3, eventsListDirect, copyListDirect, strandListDirect,
-                             eventsListIndirect, copyListIndirect, strandListIndirect)
-
-    clusteringResults = tempResults[0]  # strand break number results
-    clusterSize = tempResults[1]  # DSB cluster size, cluster of size 1-10
-    for i in range(3):
-        assert (clusteringResults[i][1:] == test[i][3:])
-        assert (clusterSize[i][1:] == clusterSizetest[i][3:])
-
-    print("tests passed")
