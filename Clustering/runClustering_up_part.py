@@ -156,8 +156,6 @@ def calculateDose(eventEdep, chromatinVolume: float):
     #     ke_dose['step1_primaryID'] != 1), 'step1_PID'] = 1
 
     mean_energy = ke_dose.groupby('step1_eventID')['edep_MeV'].mean().mean()
-    print(ke_dose[ke_dose['step1_eventID'] == 4].groupby(
-        ['step1_PID', 'step1_copyNo'], as_index=False)['edep_MeV'].sum())
 
     # return mean energy per event, unique pairs, dose, meanke
     return mean_energy, ke_dose
@@ -229,7 +227,7 @@ def AccumulateEdep(direct, T0: cKDTree, T1: cKDTree, keys_df, out_path):
 
     cumEdep = evt1_cp_filtered.groupby(
         ['step1_eventID', 'step1_copyNo', 'strand', 'copy', 'step1_particleID', 'step1_primaryID'], as_index=False)['edep'].sum()
-    print(cumEdep[cumEdep['step1_eventID'] == 4].groupby(['step1_particleID', 'step1_copyNo'])['edep'].sum())
+    # print(cumEdep[cumEdep['step1_eventID'] == 4].groupby(['step1_particleID', 'step1_copyNo'])['edep'].sum())
     # cumEdep.loc[(cumEdep['step1_particleID'] == 3) & (
     #     cumEdep['step1_primaryID'] != 1), 'step1_particleID'] = 1
     os.remove(out_path+'_temp_mevt.dat')
@@ -419,7 +417,7 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
 
     if separate_r:
         from ranges_radii_dense import get_ranges_radii
-        ranges_radii =get_ranges_radii(ndiv_R = ndiv_R, ndiv_Z = ndiv_Z, spacing = spacing, start_R = start_R)
+        ranges_radii =get_ranges_radii(ndiv_R = ndiv_R, ndiv_Z = ndiv_Z, spacing = spacing, start_R = start_R)[0]
 
         print("separating results per radius")
         for r in ranges_radii:
