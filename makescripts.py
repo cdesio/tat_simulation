@@ -54,7 +54,7 @@ if slurm:
     )
 else:
     simulation_parent = os.path.join(
-        "/", "Users", "cdesio", "TAT", "tat_dense"
+        "/", "home", "cdesio", "TAT", "tat_dense"
     )
 
 histoneFile = os.path.join(
@@ -100,7 +100,7 @@ printProgress = int(numIons/10)
 
 n_string = f"{int(numIons/1000)}k" if numIons/1000 >=1 else f"{numIons}"
 
-folder = f"test_At{n_string}_dense_boxes_{startR}um"
+folder = f"test_At{n_string}_dense_boxes_{startR}um_{n_div_R}R"
 
 # print(f"Creating scripts in folder: {folder} with seed {seed}.")
 ####
@@ -327,7 +327,8 @@ for s in spacing:
             f.write(f"job_clustering=$(sbatch --dependency=afterany:$job_DNA {filename_clustering})\n")
         
 if not slurm:      
-    print(f"tmux new-session -d -s tat_{n_string}_{seed}\n 'source {filename_runscript}' ")
+    # print(f"tmux new-session -d -s tat_{n_string}_{seed}\n 'source {filename_runscript}' ")
+    print(f"{seed}", end=' ')
 else:
     # print(f"sbatch {filename_runscript}")
     print(f"{seed}", end=' ')
