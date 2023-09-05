@@ -495,7 +495,7 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
                                 f.write("{},{},{},{},{}".format(
                                     event,
                                     events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_primaryID'] != particle)].sum(),
+                                        events_tot['step1_primaryID'] != particle)].sum(),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] != particle)].count(),
                                     # evt_copyNo_Ke_dose_df['pid'][evt_copyNo_Ke_dose_df['step1']==event],
                                     particle,
                                     events_tot['edep_MeV'][(events_tot['step1_eventID'] == event) & (
@@ -508,7 +508,7 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
                                 f.write("{},{},{},{},{}".format(
                                     event,
                                     events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_primaryID'] == particle)].sum(),
+                                        events_tot['step1_primaryID'] == particle)].sum(),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] == particle)].count(),
                                     # evt_copyNo_Ke_dose_df['pid'][evt_copyNo_Ke_dose_df['step1']==event],
                                     particle,
                                     events_tot['edep_MeV'][(events_tot['step1_eventID'] == event) & (
@@ -528,14 +528,14 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
                             if particle == -1:
                                 f.write("{},{},{},{}".format(
                                     event, events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_primaryID'] != particle)].sum(),
+                                        events_tot['step1_primaryID'] != particle)].sum(),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] != particle)].count(),
                                     particle,
                                     str(list(text_DSB[i])).strip("[").strip("]")))
                                 f.write('\n')
                             else:
                                 f.write("{},{},{},{}".format(
                                     event, events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_primaryID'] == particle)].sum(),
+                                        events_tot['step1_primaryID'] == particle)].sum(),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] == particle)].count(),
                                     particle,
                                     str(list(text_DSB[i])).strip("[").strip("]")))
                                 f.write('\n')
