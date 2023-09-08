@@ -162,6 +162,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                       logicBloodVessel, "bloodVessel", logicWaterBox, 0, false, 0);
 
   G4VisAttributes *vesselVisAttr = new G4VisAttributes(G4Colour(0.8, 0.0, 0.4, 0.9));//(G4Colour(0.83, 0.83, 0.83, 0.5));
+
   vesselVisAttr->SetForceSolid(true);
   vesselVisAttr->SetVisibility(true);
   logicBloodVessel->SetVisAttributes(vesselVisAttr);
@@ -176,46 +177,81 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   G4LogicalVolume *logicTrackingVol = new G4LogicalVolume(solidTrackingVol,
                                                           waterMaterial,
                                                           "TrackingVol");
+ 
+  
   int ibox = 0;
   int i_r = 0;
+  G4double shell_rin =0;
+  G4double shell_rfin = 0;
   G4cout << "pi: " << M_PI << G4endl;
   for (G4int r = 0; r < ndiv_R; r += 1)
   {
-    ndiv_theta = (int)(std::ceil(2 * M_PI * (start_R / um + r * spacing / um) / 0.5));
-    long double th_incr = M_PI / (ndiv_theta / 2);
-    G4cout << "th_incr: " << th_incr << G4endl;
-    G4cout << "DEBUG: ndiv_theta: " << ndiv_theta << ", boxes_per_R: " << ndiv_theta*ndiv_Z << ", start_R/um: " << start_R/um <<", spacing: " << spacing/um << ", r: " << r << G4endl;
-    
-    for (G4int k = 0; k < ndiv_Z; k++)
-    {
-      G4double theta = 0;
-     // for (long double theta = 0; theta < 2 * M_PI; theta += th_incr)
-      for (G4int th = 0; th < ndiv_theta; th++)
-      {
-        G4RotationMatrix *rot = new G4RotationMatrix(theta,
-                                                     0,
-                                                     0);
-        // G4cout << "n_div_R: " << ndiv_R << ", ndiv_Z: " << ndiv_Z << ", ndiv_Theta: " << ndiv_theta << ", start_R: " << start_R << ", spacing: " << spacing << G4endl;
+  // G4cout << "start: " << start_R+ r*spacing + boxSize/2 << ", stop: " << start_R + (r+1)* spacing - boxSize/2 << G4endl;
+  // G4cout << "start_R: " << start_R << ", r * spacing: " << r* spacing << ", box/2: " << boxSize/2 << G4endl;
+  if(r==0){
+    //shell_rin = 10*um; //use this to make shells that go from vessel to start of first line
+    shell_rin = start_R-boxSize/2; //use this to make shells that are as big as the voxels 
+  }
+  else{
+    //shell_rin = start_R+(r-1)*spacing+boxSize; //use this to make shells that go end of the previous line to the start of the next one
+    shell_rin = start_R+(r*spacing)-boxSize/2; //use this to make shells that are as big as the voxels
+  }
+  //shell_rfin = (start_R+(r)*spacing)-boxSize/2; //use this to make shells that go end of the previous line to the start of the next one
+  shell_rfin = shell_rin+boxSize; //use this to make shells that are as big as the voxels
+  G4Tubs *solidShell = new G4Tubs("shell", shell_rin, shell_rfin, vessel_length, 0, 360 * degree);
+  
+  G4LogicalVolume *logicShell = new G4LogicalVolume(solidShell,
+                                                         waterMaterial,
+                                                         "shell");
+  //logicShell->SetUserLimits(fStepLimit);
+  G4VisAttributes *vesselVisAttr = new G4VisAttributes(G4Colour(0.8, 0.0, 0.4, 0.9));//(G4Colour(0.83, 0.83, 0.83, 0.5));
 
-        G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector(((start_R + (r * spacing)) * cos(theta)), (start_R + (r * spacing)) * sin(theta), ((-vessel_length / um + (k + 1) * (vessel_length / um * 2) / ndiv_Z) - 0.3) * um),
-                                                            logicTrackingVol,
-                                                            "TrackingVol",
-                                                            logicWaterBox,
-                                                            false,
-                                                            ibox,
-                                                            false);
-        //G4cout << "boxes placed: " << ibox << ", r: " << r << ", z: " << k << ", th: " << theta <<  G4endl;
-        ibox++;
-        theta+= th_incr;
+  logicShell->SetVisAttributes(&visRed);
+  G4PVPlacement *physiCell = new G4PVPlacement(0,
+                                                     G4ThreeVector(),
+                                                     logicShell,
+                                                     "shell",
+                                                     logicWaterBox,
+                                                     0,
+                                                     r,
+                                                     0);
+    
+
+    // ndiv_theta = (int)(std::ceil(2 * M_PI * (start_R / um + r * spacing / um) / 0.5));
+    // long double th_incr = M_PI / (ndiv_theta / 2);
+    // // G4cout << "th_incr: " << th_incr << G4endl;
+    // // G4cout << "DEBUG: ndiv_theta: " << ndiv_theta << ", boxes_per_R: " << ndiv_theta*ndiv_Z << ", start_R/um: " << start_R/um <<", spacing: " << spacing/um << ", r: " << r << G4endl;
+    
+    // for (G4int k = 0; k < ndiv_Z; k++)
+    // {
+    //   G4double theta = 0;
+    //  // for (long double theta = 0; theta < 2 * M_PI; theta += th_incr)
+    //   for (G4int th = 0; th < ndiv_theta; th++)
+    //   {
+    //     G4RotationMatrix *rot = new G4RotationMatrix(theta,
+    //                                                  0,
+    //                                                  0);
+    //     // G4cout << "n_div_R: " << ndiv_R << ", ndiv_Z: " << ndiv_Z << ", ndiv_Theta: " << ndiv_theta << ", start_R: " << start_R << ", spacing: " << spacing << G4endl;
+
+    //     G4PVPlacement *physiTrackingVol = new G4PVPlacement(rot, G4ThreeVector((((start_R + (r * spacing))) * cos(theta)), ((start_R + (r * spacing))) * sin(theta), ((-vessel_length / um + (k + 1) * (vessel_length / um * 2) / ndiv_Z) - 0.3) * um),
+    //                                                         logicTrackingVol,
+    //                                                         "TrackingVol",
+    //                                                         logicWaterBox,
+    //                                                         false,
+    //                                                         ibox,
+    //                                                         false);
+    //     //G4cout << "boxes placed: " << ibox << ", r: " << r << ", z: " << k << ", th: " << theta <<  G4endl;
+    //     ibox++;
+    //     theta+= th_incr;
           
-        }
+    //     }
       
-    }
-    i_r++;
+    // }
+    // i_r++;
     
     }
-  G4cout << "DEBUG: vessel length/ndiv_Z: " << vessel_length / ndiv_Z << "boxes: " << ibox << G4endl;
-  logicTrackingVol->SetVisAttributes(&visGrey);
+  // G4cout << "DEBUG: vessel length/ndiv_Z: " << vessel_length / ndiv_Z << "boxes: " << ibox << G4endl;
+  // logicTrackingVol->SetVisAttributes(&visGrey);
 
   chromatinVolume = boxSize / m * boxSize / m * boxSize / m; // in m3
 

@@ -82,6 +82,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   G4double dE = step->GetTotalEnergyDeposit();
 
   const G4String &volumeNamePre = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+
   // G4int pdg_enc = step->GetTrack()->GetParticleDefinition()->GetPDGEncoding();
   // G4int particleID = particleMap[particleName];
   G4int particleID = -1;
@@ -131,7 +132,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     G4cout << particleName << " outside  not saved" << G4endl;
     return;
   }
-  // G4cout << "DEBUG: " << particleName << ", ID: " << particleID << " vol: " << volumeNamePre << G4endl;
+  //G4cout << "DEBUG: " << particleName << ", ID: " << particleID << " vol: " << volumeNamePre << G4endl;
   
   //tracking all particles
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
@@ -179,8 +180,8 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
       return;
     }
-
-    if (volumeNamePre == "TrackingVol")
+  
+    if (volumeNamePre == "shell")
     {
       G4DNAPARSER::CommandLineParser *parser = G4DNAPARSER::CommandLineParser::GetParser();
       G4DNAPARSER::Command *command(0);
@@ -189,7 +190,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       fpEventAction->AddPathLength(step->GetStepLength());
     }
 
-    if ((volumeNamePre == "TrackingVol") && (dE > 0))
+    if ((volumeNamePre == "shell") && (dE > 0))
     {
       G4DNAPARSER::CommandLineParser *parser = G4DNAPARSER::CommandLineParser::GetParser();
       G4DNAPARSER::Command *command(0);
@@ -224,10 +225,12 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     if ((volumeNamePre == "waterBox"))
     {
       G4String volumeNamePost = step->GetPostStepPoint()->GetPhysicalVolume()->GetName();
-      if ((volumeNamePost == "TrackingVol")) // step ends on boundary to tracking volume
+      if ((volumeNamePost == "shell")) // step ends on boundary to tracking volume
       {
+        
         if (step->GetPreStepPoint()->GetKineticEnergy() > 0)
         {
+          //G4cout << "in shell losing energy" << G4endl;
           // G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
           G4int stepID = step->GetTrack()->GetCurrentStepNumber();
           G4int trackID = step->GetTrack()->GetTrackID();
@@ -240,7 +243,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
           G4ThreeVector worldMomentum = step->GetPostStepPoint()->GetMomentumDirection();
 
-          G4ThreeVector localMomentum = (*(touchable->GetHistory()->GetTopVolume()->GetRotation())) * worldMomentum; // rotate momentum direction by volume rotation
+          //G4ThreeVector localMomentum = (*(touchable->GetHistory()->GetTopVolume()->GetRotation())) * worldMomentum; // rotate momentum direction by volume rotation
           // G4cout << "world pos: " << worldPos.x() << ", " << worldPos.y() << ", " << worldPos.z() << G4endl;
           // G4cout << "local pos: " << localPos.x() << ", " << localPos.y() << ", " << localPos.z() << G4endl;
 
@@ -249,14 +252,14 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
           G4double time = step->GetPostStepPoint()->GetGlobalTime();
           G4int parentID = step->GetTrack()->GetParentID();
           G4int mapped_PID = fpEventAction->parentParticle[trackID];
-
+          
           float output[12];
           output[0] = localPos.x() / mm;
           output[1] = localPos.y() / mm;
           output[2] = localPos.z() / mm;
-          output[3] = localMomentum.x();
-          output[4] = localMomentum.y();
-          output[5] = localMomentum.z();
+          output[3] = worldMomentum.x();
+          output[4] = worldMomentum.y();
+          output[5] = worldMomentum.z();
           output[6] = particleEnergy / MeV;
           output[7] = eventID;
           output[8] = particleID;
@@ -272,7 +275,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     }
     }
 
-    if ((volumeNamePre == "TrackingVol") && (step->IsFirstStepInVolume())) //(step->GetTrack()->GetCurrentStepNumber() == 1)) // e- from interactions inside the tracking volume
+    if ((volumeNamePre == "shell") && (step->IsFirstStepInVolume())) //(step->GetTrack()->GetCurrentStepNumber() == 1)) // e- from interactions inside the tracking volume
     {
       if (step->GetPreStepPoint()->GetProcessDefinedStep() != nullptr)
         return; // if prestep process is nullptr this is the first step of particle created by interaction in the cell - only save those created by processes in cell
@@ -286,7 +289,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         G4ThreeVector worldPos = step->GetPreStepPoint()->GetPosition();
         G4ThreeVector localPos = touchable->GetHistory()->GetTopTransform().TransformPoint(worldPos);
         G4ThreeVector worldMomentum = step->GetPreStepPoint()->GetMomentumDirection();
-        G4ThreeVector localMomentum = (*(touchable->GetHistory()->GetTopVolume()->GetRotation())) * worldMomentum;
+        //G4ThreeVector localMomentum = (*(touchable->GetHistory()->GetTopVolume()->GetRotation())) * worldMomentum;
 
         G4double time = step->GetPreStepPoint()->GetGlobalTime();
 
@@ -301,9 +304,9 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         output[0] = localPos.x() / mm;
         output[1] = localPos.y() / mm;
         output[2] = localPos.z() / mm;
-        output[3] = localMomentum.x();
-        output[4] = localMomentum.y();
-        output[5] = localMomentum.z();
+        output[3] = worldMomentum.x();
+        output[4] = worldMomentum.y();
+        output[5] = worldMomentum.z();
         output[6] = particleEnergy / MeV;
         output[7] = eventID;
         output[8] = particleID;
