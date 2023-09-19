@@ -207,6 +207,12 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       // G4ThreeVector point = prePoint + G4UniformRand() * (postPoint - prePoint);
       // DEBUG
       // G4cout << "DEBUG: " << particleName << "(ID: " << particleID << ") losing E in chromatinSegment : " << eventID << G4endl;
+      G4int trackID = step->GetTrack()->GetTrackID();
+      G4int parentID = step->GetTrack()->GetParentID();
+      G4int mapped_PID = fpEventAction->parentParticle[trackID];
+      G4double steplength = step->GetStepLength();
+      //G4cout << "step: " <<  steplength << G4endl; 
+
       analysisManager->FillNtupleIColumn(0, 0, eventID);
       analysisManager->FillNtupleDColumn(0, 1, dE / eV);
       analysisManager->FillNtupleDColumn(0, 2, postPoint.x() / nanometer);
@@ -216,11 +222,51 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       analysisManager->FillNtupleSColumn(0, 6, particleName);
       analysisManager->FillNtupleIColumn(0, 7, copyNo);
       analysisManager->FillNtupleIColumn(0, 8, stepID);
+      analysisManager->FillNtupleIColumn(0, 9, mapped_PID);
+      analysisManager->FillNtupleDColumn(0, 10, particleEnergy/MeV);
+      analysisManager->FillNtupleDColumn(0, 11, steplength);
       analysisManager->AddNtupleRow(0);
 
       fpEventAction->AddEdep(dE);
     }
+    else{
+      if ((volumeNamePre == "bloodVessel") && (dE > 0))
+    {
+      G4DNAPARSER::CommandLineParser *parser = G4DNAPARSER::CommandLineParser::GetParser();
+      G4DNAPARSER::Command *command(0);
+      if ((command = parser->GetCommandIfActive("-out")) == 0)
+        return;
 
+      G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
+
+      // G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+
+      // G4ThreeVector prePoint = step->GetPreStepPoint()->GetPosition();
+      // G4ThreeVector postPoint = step->GetPostStepPoint()->GetPosition();
+      // G4int copyNo = step->GetPostStepPoint()->GetTouchableHandle()->GetCopyNumber();
+      // G4ThreeVector point = prePoint + G4UniformRand() * (postPoint - prePoint);
+      // DEBUG
+      // G4cout << "DEBUG: " << particleName << "(ID: " << particleID << ") losing E in chromatinSegment : " << eventID << G4endl;
+      G4int trackID = step->GetTrack()->GetTrackID();
+      G4int parentID = step->GetTrack()->GetParentID();
+      G4int mapped_PID = fpEventAction->parentParticle[trackID];
+
+      analysisManager->FillNtupleIColumn(0, 0, eventID);
+      analysisManager->FillNtupleDColumn(0, 1, dE / eV);
+      analysisManager->FillNtupleDColumn(0, 2, postPoint.x() / nanometer);
+      analysisManager->FillNtupleDColumn(0, 3, postPoint.y() / nanometer);
+      analysisManager->FillNtupleDColumn(0, 4, postPoint.z() / nanometer);
+      analysisManager->FillNtupleIColumn(0, 5, particleID);
+      analysisManager->FillNtupleSColumn(0, 6, particleName);
+      analysisManager->FillNtupleIColumn(0, 7, -1);
+      analysisManager->FillNtupleIColumn(0, 8, stepID);
+      analysisManager->FillNtupleIColumn(0, 9, mapped_PID);
+      analysisManager->FillNtupleDColumn(0, 10, particleEnergy/MeV);
+      analysisManager->AddNtupleRow(0);
+
+      fpEventAction->AddEdep(dE);
+    }
+    }
     // if ((step->GetTrack()->GetParticleDefinition()->GetParticleName() == "e-" || step->GetTrack()->GetParticleDefinition()->GetParticleName() == "gamma" || step->GetTrack()->GetParticleDefinition()->GetParticleName() == "alpha") && (volumeName == "waterBox")) // e- from outside the tracking volume
     if ((volumeNamePre == "waterBox"))
     {

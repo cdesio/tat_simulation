@@ -31,6 +31,7 @@
 #include "CommandLineParser.hh"
 #include "G4StepLimiterPhysics.hh"
 #include "G4EmStandardPhysics_option4.hh"
+#include "G4EmPenelopePhysics.hh"
 #include "G4DecayPhysics.hh"
 #include "G4RadioactiveDecayPhysics.hh"
 #include "G4EmParameters.hh"
@@ -49,7 +50,8 @@ PhysicsList::PhysicsList()
     // RegisterConstructor("G4EmAndDNA");
 
     // EM physics
-    RegisterPhysics(new G4EmStandardPhysics_option4());
+    //RegisterPhysics(new G4EmStandardPhysics_option4());
+    RegisterPhysics(new G4EmPenelopePhysics());
 
     G4EmParameters *param = G4EmParameters::Instance();
     param->SetAugerCascade(true);
