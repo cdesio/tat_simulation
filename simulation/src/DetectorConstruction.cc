@@ -123,7 +123,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   solidWorld = new G4Box("world", 1 * mm, 1 * mm, 1 * mm);
 
-  solidWaterBox = new G4Orb("waterBox", 200 * um);
+  solidWaterBox = new G4Orb("waterBox", 1 * um);
 
   G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld,
                                                     air,
