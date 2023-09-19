@@ -158,8 +158,8 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                    false,
                                                    0);
 
-  G4PVPlacement *physiBloodVessel = new G4PVPlacement(0, G4ThreeVector(0, 0, 0),
-                                                      logicBloodVessel, "bloodVessel", logicWaterBox, 0, false, 0);
+  // G4PVPlacement *physiBloodVessel = new G4PVPlacement(0, G4ThreeVector(0, 0, 0),
+                                                      // logicBloodVessel, "bloodVessel", logicWaterBox, 0, false, 0);
 
   G4VisAttributes *vesselVisAttr = new G4VisAttributes(G4Colour(0.8, 0.0, 0.4, 0.9));//(G4Colour(0.83, 0.83, 0.83, 0.5));
 
