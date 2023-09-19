@@ -123,13 +123,13 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
 
   G4Box *solidWorld{nullptr};
   G4Orb *solidWaterBox{nullptr};
-  G4Tubs *solidVessel{nullptr};
+  G4Orb *solidVessel{nullptr};
 
   // larger world volume to provide build up for CPE for photon beam
   solidWorld = new G4Box("world", 0.21 * mm, 0.21 * mm, 0.21 * mm);
 
   solidWaterBox = new G4Orb("waterBox", .2 * mm);
-  solidVessel = new G4Tubs("bloodVessel", 0, 10 * um, vessel_length, 0, 360 * deg);
+  solidVessel = new G4Orb("bloodVessel", 10 * um);
 
   G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld,
                                                     air,
@@ -198,7 +198,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   }
   //shell_rfin = (start_R+(r)*spacing)-boxSize/2; //use this to make shells that go end of the previous line to the start of the next one
   shell_rfin = shell_rin+boxSize; //use this to make shells that are as big as the voxels
-  G4Tubs *solidShell = new G4Tubs("shell", shell_rin, shell_rfin, vessel_length, 0, 360 * degree);
+  G4Sphere *solidShell = new G4Sphere("shell", shell_rin, shell_rfin, 0,360*degree, 0, 360 * degree);
   
   G4LogicalVolume *logicShell = new G4LogicalVolume(solidShell,
                                                          waterMaterial,
