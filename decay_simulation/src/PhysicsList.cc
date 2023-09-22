@@ -65,6 +65,8 @@ PhysicsList::PhysicsList()
     RegisterPhysics(new G4RadioactiveDecayPhysics());
 
     G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(100 * eV, 1 * GeV);
+    G4StepLimiterPhysics* stepLimitPhys = new G4StepLimiterPhysics();
+    RegisterPhysics(stepLimitPhys);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
