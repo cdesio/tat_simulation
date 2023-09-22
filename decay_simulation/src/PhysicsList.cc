@@ -64,7 +64,7 @@ PhysicsList::PhysicsList()
     // Radioactive decay
     RegisterPhysics(new G4RadioactiveDecayPhysics());
 
-    G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(5 * eV, 1 * GeV);
+    G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(100 * eV, 1 * GeV);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
