@@ -203,6 +203,10 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   G4LogicalVolume *logicShell = new G4LogicalVolume(solidShell,
                                                          waterMaterial,
                                                          "shell");
+  G4UserLimits* userLimits = new G4UserLimits();
+  userLimits->SetMaxAllowedStep(0.003 * um);
+  logicShell->SetUserLimits(userLimits);
+  logicWaterBox->SetUserLimits(userLimits);
   //logicShell->SetUserLimits(fStepLimit);
   G4VisAttributes *vesselVisAttr = new G4VisAttributes(G4Colour(0.8, 0.0, 0.4, 0.9));//(G4Colour(0.83, 0.83, 0.83, 0.5));
 
@@ -214,7 +218,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                      logicWaterBox,
                                                      0,
                                                      r,
-                                                     0);
+                                                     true);
     
 
     // ndiv_theta = (int)(std::ceil(2 * M_PI * (start_R / um + r * spacing / um) / 0.5));
