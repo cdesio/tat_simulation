@@ -1,7 +1,7 @@
 /run/verbose 2
 /control/verbose 2
 
-/det/set_ndiv_R 80
+/det/set_ndiv_R 100
 /det/set_ndiv_theta 80
 /det/set_ndiv_Z 40
 
@@ -25,5 +25,5 @@
 /gps/ene/type Mono
 /gps/energy 0 MeV
 /run/printProgress 10
-
+/run/setCut 1 km
 /run/beamOn 0
