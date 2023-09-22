@@ -109,6 +109,7 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleIColumn(0, "parentID");
   analysisManager->CreateNtupleDColumn(0, "particleEnergy");
   analysisManager->CreateNtupleDColumn(0, "stepLength");
+  analysisManager->CreateNtupleDColumn(0, "time");
 
   analysisManager->FinishNtuple(0);
 
