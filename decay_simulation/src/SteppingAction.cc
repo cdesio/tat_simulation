@@ -211,6 +211,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       G4int parentID = step->GetTrack()->GetParentID();
       G4int mapped_PID = fpEventAction->parentParticle[trackID];
       G4double steplength = step->GetStepLength();
+      G4double time = step->GetPostStepPoint()->GetGlobalTime();
       //G4cout << "step: " <<  steplength << G4endl; 
 
       analysisManager->FillNtupleIColumn(0, 0, eventID);
@@ -225,6 +226,8 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       analysisManager->FillNtupleIColumn(0, 9, mapped_PID);
       analysisManager->FillNtupleDColumn(0, 10, particleEnergy/MeV);
       analysisManager->FillNtupleDColumn(0, 11, steplength);
+      analysisManager->FillNtupleDColumn(0,12, time);
+
       analysisManager->AddNtupleRow(0);
 
       fpEventAction->AddEdep(dE);
@@ -250,7 +253,9 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       G4int trackID = step->GetTrack()->GetTrackID();
       G4int parentID = step->GetTrack()->GetParentID();
       G4int mapped_PID = fpEventAction->parentParticle[trackID];
-
+      G4double steplength = step->GetStepLength();
+      G4double time = step->GetPostStepPoint()->GetGlobalTime();
+      
       analysisManager->FillNtupleIColumn(0, 0, eventID);
       analysisManager->FillNtupleDColumn(0, 1, dE / eV);
       analysisManager->FillNtupleDColumn(0, 2, postPoint.x() / nanometer);
@@ -262,6 +267,8 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       analysisManager->FillNtupleIColumn(0, 8, stepID);
       analysisManager->FillNtupleIColumn(0, 9, mapped_PID);
       analysisManager->FillNtupleDColumn(0, 10, particleEnergy/MeV);
+      analysisManager->FillNtupleDColumn(0, 11, steplength);
+      analysisManager->FillNtupleDColumn(0,12, time);
       analysisManager->AddNtupleRow(0);
 
       fpEventAction->AddEdep(dE);
