@@ -79,6 +79,12 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   {
     return;
   }
+   if (step->GetPostStepPoint()->GetPhysicalVolume()->GetName() == "world")
+    {
+      step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
+
+      return;
+    }
   G4double dE = step->GetTotalEnergyDeposit();
 
   const G4String &volumeNamePre = step->GetPreStepPoint()->GetPhysicalVolume()->GetName();
@@ -174,12 +180,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       }
     }
   }
-    if (step->GetPostStepPoint()->GetPhysicalVolume()->GetName() == "world")
-    {
-      step->GetTrack()->SetTrackStatus(fKillTrackAndSecondaries);
-
-      return;
-    }
+   
   
     if (volumeNamePre == "shell")
     {
