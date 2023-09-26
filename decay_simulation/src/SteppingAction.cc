@@ -230,7 +230,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       fpEventAction->AddEdep(dE);
     }
     else{
-      if ((volumeNamePre == "bloodVessel") && (dE > 0))
+      if ((volumeNamePre == "waterBox") && (dE > 0))
     {
       G4DNAPARSER::CommandLineParser *parser = G4DNAPARSER::CommandLineParser::GetParser();
       G4DNAPARSER::Command *command(0);
@@ -258,7 +258,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       analysisManager->FillNtupleDColumn(0, 4, postPoint.z() / nanometer);
       analysisManager->FillNtupleIColumn(0, 5, particleID);
       analysisManager->FillNtupleSColumn(0, 6, particleName);
-      analysisManager->FillNtupleIColumn(0, 7, -1);
+      analysisManager->FillNtupleIColumn(0, 7, -99);
       analysisManager->FillNtupleIColumn(0, 8, stepID);
       analysisManager->FillNtupleIColumn(0, 9, mapped_PID);
       analysisManager->FillNtupleDColumn(0, 10, particleEnergy/MeV);
