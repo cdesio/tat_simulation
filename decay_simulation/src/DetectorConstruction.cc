@@ -168,7 +168,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   logicBloodVessel->SetVisAttributes(vesselVisAttr);
 
   logicWorld->SetVisAttributes(&visWhite);
-  logicWaterBox->SetVisAttributes(&visInvWhite);
+  logicWaterBox->SetVisAttributes(&visWhite);
   
 
   G4double delta = 10 * nm;
@@ -198,13 +198,13 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   }
   //shell_rfin = (start_R+(r)*spacing)-boxSize/2; //use this to make shells that go end of the previous line to the start of the next one
   shell_rfin = shell_rin+boxSize; //use this to make shells that are as big as the voxels
-  G4Tubs *solidShell = new G4Tubs("shell", shell_rin, shell_rfin, vessel_length, 0, 360 * degree);
+  G4Tubs *solidShell = new G4Tubs("shell", shell_rin, shell_rfin, vessel_length+r*spacing/2, 0, 360 * degree);
   
   G4LogicalVolume *logicShell = new G4LogicalVolume(solidShell,
                                                          waterMaterial,
                                                          "shell");
   G4UserLimits* userLimits = new G4UserLimits();
-  userLimits->SetMaxAllowedStep(0.003 * um);
+  userLimits->SetMaxAllowedStep(3 * nm);
   logicShell->SetUserLimits(userLimits);
   logicWaterBox->SetUserLimits(userLimits);
   //logicShell->SetUserLimits(fStepLimit);
