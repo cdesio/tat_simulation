@@ -31,15 +31,7 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include <memory>
 #include "G4ThreeVector.hh"
-
-#include "G4SingleParticleSource.hh"
-#include "G4GeneralParticleSourceMessenger.hh"
-#include "G4GeneralParticleSourceData.hh"
-
-#include "G4SPSPosDistribution.hh"
-#include "G4SPSAngDistribution.hh"
-#include "G4SPSRandomGenerator.hh"
-
+#include "G4ParticleGun.hh"
 class G4GeneralParticleSource;
 
 class PrimaryGeneratorAction
@@ -51,6 +43,6 @@ public:
     void GeneratePrimaries(G4Event *event) override;
 
 private:
-    G4GeneralParticleSource *fpParticleGun;
+    G4ParticleGun *fpParticleGun;
 
 };
