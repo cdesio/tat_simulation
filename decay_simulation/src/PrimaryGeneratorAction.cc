@@ -81,7 +81,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     G4double x_part = (vessel_radius)*cos(angle_part);
     G4double y_part = (vessel_radius)*sin(angle_part);
 
-    fpParticleGun->SetParticlePosition(G4ThreeVector(x_part,y_part,z_part));   
+    fpParticleGun->SetParticlePosition(G4ThreeVector(x_part,y_part,z_part)); 
+      
+//    fpParticleGun->SetParticleMomentumDirection(G4ThreeVector(cos(angle_part),sin(angle_part),0));
     fpParticleGun->GeneratePrimaryVertex(anEvent);
 
     
