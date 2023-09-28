@@ -198,7 +198,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   }
   //shell_rfin = (start_R+(r)*spacing)-boxSize/2; //use this to make shells that go end of the previous line to the start of the next one
   shell_rfin = shell_rin+boxSize; //use this to make shells that are as big as the voxels
-  G4Tubs *solidShell = new G4Tubs("shell", shell_rin, shell_rfin, vessel_length+r*spacing/2, 0, 360 * degree);
+  G4Tubs *solidShell = new G4Tubs("shell", shell_rin, shell_rfin, vessel_length, 0, 360 * degree);
   
   G4LogicalVolume *logicShell = new G4LogicalVolume(solidShell,
                                                          waterMaterial,
