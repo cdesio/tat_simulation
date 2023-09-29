@@ -26,7 +26,7 @@
 
 #include "PhysicsList.hh"
 #include "G4SystemOfUnits.hh"
-#include "G4EmAndDNA.hh"
+
 #include "G4PhysicsConstructorRegistry.hh"
 #include "CommandLineParser.hh"
 #include "G4StepLimiterPhysics.hh"
@@ -35,6 +35,8 @@
 #include "G4DecayPhysics.hh"
 #include "G4RadioactiveDecayPhysics.hh"
 #include "G4EmParameters.hh"
+#include "G4DecayPhysics.hh"
+#include "G4RadioactiveDecayPhysics.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
