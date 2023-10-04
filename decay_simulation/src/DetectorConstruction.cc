@@ -208,9 +208,13 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   logicShell->SetUserLimits(userLimits);
   logicWaterBox->SetUserLimits(userLimits);
   //logicShell->SetUserLimits(fStepLimit);
-  G4VisAttributes *vesselVisAttr = new G4VisAttributes(G4Colour(0.8, 0.0, 0.4, 0.9));//(G4Colour(0.83, 0.83, 0.83, 0.5));
 
-  logicShell->SetVisAttributes(&visRed);
+  G4VisAttributes *shellVisAttri = new G4VisAttributes(G4Colour(1.0, 0.0, 0.0, 0.2));//(G4Colour(0.83, 0.83, 0.83, 0.5));
+
+  shellVisAttri->SetForceSolid(true);
+  shellVisAttri->SetVisibility(true);
+  logicShell->SetVisAttributes(shellVisAttri);
+
   G4PVPlacement *physiCell = new G4PVPlacement(0,
                                                      G4ThreeVector(),
                                                      logicShell,
