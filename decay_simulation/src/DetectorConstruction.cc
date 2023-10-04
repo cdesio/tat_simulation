@@ -81,7 +81,7 @@ static G4VisAttributes visBlue(true, G4Colour(0.0, 0.0, 1.0));
 static G4VisAttributes visWhite(true, G4Colour(1.0, 1.0, 1.0));
 static G4VisAttributes visPink(true, G4Colour(0.9,  0.6,  0.7, 0.5));
 static G4VisAttributes visCyan(true, G4Colour(0.0, 1.0, 1.0));
-static G4VisAttributes visRed(true, G4Colour(1.0, 0.0, 0.0));
+static G4VisAttributes visRed(true, G4Colour(1.0, 0.0, 0.0, 0.5));
 static G4VisAttributes visGreen(true, G4Colour(0.0, 1.0, 0.0));
 static G4VisAttributes visGrey(true, G4Colour(0.839216, 0.839216, 0.839216));
 static G4VisAttributes visDarkRed(true, G4Colour(0.8, 0.0, 0.3, 0.9));
@@ -208,9 +208,16 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   logicShell->SetUserLimits(userLimits);
   logicWaterBox->SetUserLimits(userLimits);
   //logicShell->SetUserLimits(fStepLimit);
-  G4VisAttributes *vesselVisAttr = new G4VisAttributes(G4Colour(0.8, 0.0, 0.4, 0.9));//(G4Colour(0.83, 0.83, 0.83, 0.5));
 
-  logicShell->SetVisAttributes(&visRed);
+
+
+  G4VisAttributes *shellVisAttri = new G4VisAttributes(G4Colour(1.0, 0.0, 0.0, 0.2));//(G4Colour(0.83, 0.83, 0.83, 0.5));
+
+  shellVisAttri->SetForceSolid(true);
+  shellVisAttri->SetVisibility(true);
+  logicShell->SetVisAttributes(shellVisAttri);
+
+ 
   G4PVPlacement *physiCell = new G4PVPlacement(0,
                                                      G4ThreeVector(),
                                                      logicShell,
