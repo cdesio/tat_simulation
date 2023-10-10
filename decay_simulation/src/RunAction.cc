@@ -129,6 +129,15 @@ void RunAction::CreateNtuple()
 
   analysisManager->FinishNtuple(2);
 
+
+  analysisManager->CreateNtuple("Activity", "Activity");
+  analysisManager->CreateNtupleDColumn(3, "At211");
+  analysisManager->CreateNtupleDColumn(3, "Po211");
+  analysisManager->CreateNtupleDColumn(3, "Pb207");
+  analysisManager->CreateNtupleDColumn(3, "Bi207");
+
+  analysisManager->FinishNtuple(3);
+
   G4cout << "\n----> Histogram file is opened in " << fileName << G4endl;
 }
 
