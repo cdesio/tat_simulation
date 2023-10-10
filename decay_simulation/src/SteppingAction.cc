@@ -133,9 +133,31 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     return;
   }
   //G4cout << "DEBUG: " << particleName << ", ID: " << particleID << " vol: " << volumeNamePre << G4endl;
-  
-  //tracking all particles
+
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
+  // Save per nuclei activity
+  if ((step->GetPreStepPoint()->GetKineticEnergy() == 0) && (particleName == "At211"))
+  {
+    analysisManager->FillNtupleDColumn(3, 0,  step->GetPostStepPoint()->GetGlobalTime() / day);
+  }
+  else if ((step->GetPreStepPoint()->GetKineticEnergy() == 0) && (volumeNamePre != "bloodVessel"))
+  {
+    if (particleName == "Po211")
+    {
+      analysisManager->FillNtupleDColumn(3, 1,  step->GetPostStepPoint()->GetGlobalTime() / day);
+    }
+    else if (particleName == "Bi207")
+    {
+      analysisManager->FillNtupleDColumn(3, 3,  step->GetPostStepPoint()->GetGlobalTime() / day);
+    }
+    else if (G4StrUtil::contains(particleName, "Pb207"))
+    {
+      analysisManager->FillNtupleDColumn(3, 2,  step->GetPostStepPoint()->GetGlobalTime() / day);
+    }
+  }
+
+  //tracking all particles
+  
 
   G4int eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
 
