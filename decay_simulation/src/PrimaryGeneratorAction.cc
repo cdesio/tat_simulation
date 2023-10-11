@@ -29,13 +29,17 @@
 
 #include "PrimaryGeneratorAction.hh"
 #include "Randomize.hh"
+#include "G4Event.hh"
 #include "G4GeneralParticleSource.hh"
 #include "CommandLineParser.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "G4AnalysisManager.hh"
+#include <math.h>
+#include <G4SystemOfUnits.hh>
 
-using namespace G4DNAPARSER;
-using CLHEP::nanometer;
+
+// using namespace G4DNAPARSER;
+// using CLHEP::nanometer;
 
 /*
 Using GPS method, but adapted so that the intersection between the initial ray and the tracking cylinder
@@ -43,10 +47,10 @@ can be determined. All initially generated positions and directions are recorded
 intersect are added as a primary vertex.
 */
 
-namespace
-{
-    G4Mutex messangerInit = G4MUTEX_INITIALIZER;
-}
+// namespace
+// {
+//     G4Mutex messangerInit = G4MUTEX_INITIALIZER;
+// }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -54,40 +58,34 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
     : G4VUserPrimaryGeneratorAction(), fpParticleGun(nullptr)
 {
 
-    fpParticleGun = new G4GeneralParticleSource();
+    // fpParticleGun = new G4GeneralParticleSource();
+    G4int n_particle = 1;
+    fpParticleGun = new G4ParticleGun(n_particle);
+
+    fpParticleGun->SetParticleEnergy(0*eV);
+    fpParticleGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
 {
+    delete fpParticleGun;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 {
+    G4double vessel_length = 20*um; 
+    G4double vessel_radius = 10*um;
+    G4double z_part = (G4UniformRand() - 0.5) * vessel_length;
+    G4double angle_part = G4UniformRand() * 2 * M_PI;
+    G4double x_part = (vessel_radius)*cos(angle_part);
+    G4double y_part = (vessel_radius)*sin(angle_part);
+
+    fpParticleGun->SetParticlePosition(G4ThreeVector(x_part,y_part,z_part)); 
+      
+    fpParticleGun->SetParticleMomentumDirection(G4ThreeVector(cos(angle_part),sin(angle_part),0));
     fpParticleGun->GeneratePrimaryVertex(anEvent);
-
-    // CommandLineParser *parser = CommandLineParser::GetParser();
-    // Command *command(0);
-
-    // if ((command = parser->GetCommandIfActive("-out")) != 0)
-    // {
-
-    //     G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
-    //     G4ThreeVector pos = fpParticleGun->GetParticlePosition();
-    //     G4ThreeVector direction = fpParticleGun->GetParticleMomentumDirection();
-
-    //     analysisManager->FillNtupleIColumn(1, 0, anEvent->GetEventID());
-    //     analysisManager->FillNtupleDColumn(1, 1, fpParticleGun->GetParticleEnergy());
-    //     analysisManager->FillNtupleDColumn(1, 2, pos.x());
-    //     analysisManager->FillNtupleDColumn(1, 3, pos.y());
-    //     analysisManager->FillNtupleDColumn(1, 4, pos.z());
-    //     analysisManager->FillNtupleDColumn(1, 5, direction.x());
-    //     analysisManager->FillNtupleDColumn(1, 6, direction.y());
-    //     analysisManager->FillNtupleDColumn(1, 7, direction.z());
-    //     analysisManager->AddNtupleRow(1);
-
-    // }
 }

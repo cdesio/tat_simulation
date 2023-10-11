@@ -50,11 +50,11 @@ else:
     mem = 20
 if slurm:
     simulation_parent = os.path.join(
-        "/", "user", "work", "yw18581", "DaRT", "TAT", "tat_dense"
+        "/", "user", "work", "yw18581", "DaRT", "TAT", "tat_dense_gun"
     )
 else:
     simulation_parent = os.path.join(
-        "/", "Users", "cdesio", "TAT", "tat_dense"
+        "/", "home", "cdesio", "TAT", "tat_dense_gun"
     )
 
 histoneFile = os.path.join(
@@ -141,18 +141,9 @@ for s in spacing:
         f.write("/run/initialize\n")
         f.write("\n")
     
-        f.write("/gps/pos/type Surface\n")
-        f.write("/gps/pos/shape Cylinder\n")
-        f.write("/gps/pos/centre 0 0 0 um\n")
-        f.write(f"/gps/pos/radius {gpsRadius} um\n")
-        f.write(f"/gps/pos/halfz {gpsHalfZ} um\n")
-        f.write("\n")
-
-        f.write("/gps/ang/type cos\n")
-        f.write("/gps/particle ion\n")
-        f.write("/gps/ion 85 211\n")
-        f.write("/gps/ene/type Mono\n")
-        f.write(f"/gps/energy 0 MeV\n")
+        f.write("/gun/particle ion\n")
+        f.write("/gun/ion 85 211\n")
+        f.write(f"/gun/energy 0 MeV\n")
         f.write("\n")
         f.write(f"/run/printProgress {printProgress}\n")
         f.write(f"/run/beamOn {numIons}\n")
