@@ -315,7 +315,7 @@ def calcIndirectDamage(indirect: dict, probIndirect: float, T0: cKDTree, T1: cKD
     return events_indirect
 
 
-def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fEMaxDamage: float, probIndirect: float, sugarFname: str, ndiv_R: int, ndiv_Z: int, spacing: float, primaryParticle: str = None, filenamePhoton: Union[str, bool] = False,  separate_r=False, start_R=10.5):
+def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fEMaxDamage: float, probIndirect: float, sugarFname: str, ndiv_R: int, ndiv_Z: int, spacing: float, primaryParticle: str = None, filenamePhoton: Union[str, bool] = False,  separate_r=False, start_R=10.5, continuous: bool = True):
     """ Run clustering on the DNA root file and output DNA damage
     
     Args:
@@ -451,7 +451,7 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
                 numEvts = list(set(np.concatenate(
                     [events_direct_part['step1_eventID'], events_indirect_part['step1_eventID']])))
                 tempResults_part = clustering(numEvts, np.array(events_direct_part['step1_eventID']), np.array(events_direct_part['copy']), np.array(events_direct_part['strand']),
-                                              np.array(events_indirect_part['step1_eventID']), np.array(events_indirect_part['copy']), np.array(events_indirect_part['strand']))
+                                              np.array(events_indirect_part['step1_eventID']), np.array(events_indirect_part['copy']), np.array(events_indirect_part['strand']), continuous)
                 #print(tempResults)
                 # strand break number results
                 clusteringResults = np.asarray(tempResults_part[0], dtype=int)
