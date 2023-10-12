@@ -28,7 +28,7 @@
 #pragma once
 #include "G4VUserActionInitialization.hh"
 #include <vector>
-
+#include "G4String.hh"
 class DetectorConstruction;
 // class PhysicsList;
 
@@ -37,12 +37,12 @@ class DetectorConstruction;
 class ActionInitialization: public G4VUserActionInitialization
 {
 public:
-    ActionInitialization(DetectorConstruction* pDetector, std::vector<std::vector<float>> PS_data);
+    ActionInitialization(DetectorConstruction* pDetector, G4String PS_data);
     virtual ~ActionInitialization() override;
     void BuildForMaster() const override;
     void Build() const override;
 
 private:
     DetectorConstruction* fpDetector;
-    std::vector<std::vector<float>> fPS_data;
+    G4String fPS_data;
 };

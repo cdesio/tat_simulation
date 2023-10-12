@@ -158,7 +158,7 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleDColumn("edep_J");
   analysisManager->CreateNtupleIColumn("step2_eventID");
 
-  if (command = parser->GetCommandIfActive("-PS")){
+  if (command == parser->GetCommandIfActive("-PS")){
 
     analysisManager->CreateNtupleDColumn("edep_MeV");
     analysisManager->CreateNtupleIColumn("step1_eventID");

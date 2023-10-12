@@ -41,7 +41,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-ActionInitialization::ActionInitialization(DetectorConstruction *pDetector, std::vector<std::vector<float>> PS_data)
+ActionInitialization::ActionInitialization(DetectorConstruction *pDetector, G4String PS_data)
     : G4VUserActionInitialization(), fpDetector(pDetector), fPS_data(PS_data)
 {
 }

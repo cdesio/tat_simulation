@@ -47,7 +47,7 @@ namespace
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PrimaryGeneratorAction::PrimaryGeneratorAction(std::vector<std::vector<float>> PS_data)
+PrimaryGeneratorAction::PrimaryGeneratorAction(G4String PS_data)
     : G4VUserPrimaryGeneratorAction(), fpParticleGun(nullptr), fPS_data(PS_data)
 {
   CommandLineParser *parser = CommandLineParser::GetParser();
@@ -82,18 +82,27 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
   {
     G4int step2_eventID = anEvent->GetEventID();
 
-    G4double positionX = fPS_data[step2_eventID][0];
-    G4double positionY = fPS_data[step2_eventID][1];
-    G4double positionZ = fPS_data[step2_eventID][2];
-    G4double momentumX = fPS_data[step2_eventID][3];
-    G4double momentumY = fPS_data[step2_eventID][4];
-    G4double momentumZ = fPS_data[step2_eventID][5];
-    G4double particleEnergy = fPS_data[step2_eventID][6];
-    step1_eventID = (int)fPS_data[step2_eventID][7];
-    step1_PID = (int)fPS_data[step2_eventID][8];
-    step1_copyNo = (int)fPS_data[step2_eventID][9];
-    step1_time = fPS_data[step2_eventID][10];
-    step1_primaryID = (int)fPS_data[step2_eventID][11];
+    std::ifstream ps_file (fPS_data, std::ifstream::binary);
+
+    ps_file.seekg(step2_eventID*12*4, ps_file.beg); //position of event data, 12 floats with 4 bytes precision
+
+    float line[12];
+
+    ps_file.read((char *)&line, sizeof line);
+    ps_file.close();
+
+    G4double positionX = line[0];
+    G4double positionY = line[1];
+    G4double positionZ = line[2];
+    G4double momentumX = line[3];
+    G4double momentumY = line[4];
+    G4double momentumZ = line[5];
+    G4double particleEnergy = line[6];
+    step1_eventID = (int)line[7];
+    step1_PID = (int)line[8];
+    step1_copyNo = (int)line[9];
+    step1_time = line[10];
+    step1_primaryID = (int)line[11];
 
     // // DEBUG
 
