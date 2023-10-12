@@ -61,5 +61,5 @@ private:
      DetectorMessenger* fDetectorMessenger;
     G4bool placeSugars;
     G4bool placeHistones;
-    G4double dkill{9*CLHEP::nm};
+    G4double dkill{20*CLHEP::nm};
 };
