@@ -93,13 +93,12 @@ void EventAction::EndOfEventAction(const G4Event *)
   G4double projectedRange = sqrt(GetStartTrackPos().diff2(GetEndTrackPos()));
 
   CommandLineParser *parser = CommandLineParser::GetParser();
-  Command *command(0);
-  if ((command = parser->GetCommandIfActive("-out")) == 0)
+  if ((parser->GetCommandIfActive("-out")) == 0)
     return;
 
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
 
-  if (((command = parser->GetCommandIfActive("-PS"))==0) && (projectedRange > 0)) // if the track passes through the chromatin fibre volume
+  if (((parser->GetCommandIfActive("-PS"))==0) && (projectedRange > 0)) // if the track passes through the chromatin fibre volume
   {
     fTrackMeanKE.push_back((fTrackStartKE + fTrackEndKE) / 2);
     analysisManager->FillNtupleDColumn(0, 0, (fEdep / joule));
@@ -111,7 +110,7 @@ void EventAction::EndOfEventAction(const G4Event *)
     analysisManager->FillNtupleIColumn(0, 6, fTrackStoppedBox);
     analysisManager->AddNtupleRow();
   }
-  else if (command = parser->GetCommandIfActive("-PS")) // all secondary electrons in phase space file are in the volume
+  else if (parser->GetCommandIfActive("-PS")) // all secondary electrons in phase space file are in the volume
   {
     const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
       G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
