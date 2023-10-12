@@ -178,13 +178,13 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                           "TrackingVol");
   int ibox = 0;
   int i_r = 0;
-  G4cout << "pi: " << M_PI << G4endl;
+  // G4cout << "pi: " << M_PI << G4endl;
   for (G4int r = 0; r < ndiv_R; r += 1)
   {
     ndiv_theta = (int)(std::ceil(2 * M_PI * (start_R / um + r * spacing / um) / 0.5));
     long double th_incr = M_PI / (ndiv_theta / 2);
-    G4cout << "th_incr: " << th_incr << G4endl;
-    G4cout << "DEBUG: ndiv_theta: " << ndiv_theta << ", boxes_per_R: " << ndiv_theta*ndiv_Z << ", start_R/um: " << start_R/um <<", spacing: " << spacing/um << ", r: " << r << G4endl;
+    // G4cout << "th_incr: " << th_incr << G4endl;
+    // G4cout << "DEBUG: ndiv_theta: " << ndiv_theta << ", boxes_per_R: " << ndiv_theta*ndiv_Z << ", start_R/um: " << start_R/um <<", spacing: " << spacing/um << ", r: " << r << G4endl;
     
     for (G4int k = 0; k < ndiv_Z; k++)
     {
@@ -214,7 +214,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
     i_r++;
     
     }
-  G4cout << "DEBUG: vessel length/ndiv_Z: " << vessel_length / ndiv_Z << "boxes: " << ibox << G4endl;
+  // G4cout << "DEBUG: vessel length/ndiv_Z: " << vessel_length / ndiv_Z << "boxes: " << ibox << G4endl;
   logicTrackingVol->SetVisAttributes(&visGrey);
 
   chromatinVolume = boxSize / m * boxSize / m * boxSize / m; // in m3
