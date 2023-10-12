@@ -50,18 +50,18 @@ else:
     mem = 20
 if slurm:
     simulation_parent = os.path.join(
-        "/", "user", "work", "yw18581", "DaRT", "TAT", "tat_dense_gun"
+        "/", "user", "work", "yw18581", "DaRT", "TAT", "tat_dense_gun_fractal"
     )
 else:
     simulation_parent = os.path.join(
-        "/", "home", "cdesio", "TAT", "tat_dense_gun"
+        "/", "home", "cdesio", "TAT", "tat_dense_gun_fractal"
     )
 
 histoneFile = os.path.join(
-    simulation_parent, "geometryFiles", "histonePositions_4x4_300nm.csv"
+    simulation_parent, "geometryFiles", "histonePos_output.bin"
 )
 sugarFile = os.path.join(
-    simulation_parent, "geometryFiles", "sugarPos_4x4_300nm.csv"
+    simulation_parent, "geometryFiles", "sugarPos_output.bin"
 )
 
 time_decay = "0-10:00:00"
