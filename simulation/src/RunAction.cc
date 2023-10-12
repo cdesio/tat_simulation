@@ -142,7 +142,7 @@ void RunAction::CreateNtuple()
 {
   CommandLineParser *parser = CommandLineParser::GetParser();
   Command *command(0);
-  if ((command = parser->GetCommandIfActive("-out")) == 0)
+  if ((parser->GetCommandIfActive("-out")) == 0)
     return;
 
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
@@ -158,7 +158,7 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleDColumn("edep_J");
   analysisManager->CreateNtupleIColumn("step2_eventID");
 
-  if (command == parser->GetCommandIfActive("-PS")){
+  if (parser->GetCommandIfActive("-PS")){
 
     analysisManager->CreateNtupleDColumn("edep_MeV");
     analysisManager->CreateNtupleIColumn("step1_eventID");
@@ -217,13 +217,13 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleSColumn("GitHash");
   analysisManager->CreateNtupleSColumn("G4Version");
   analysisManager->CreateNtupleSColumn("IRTmodel");
-  if ((command = parser->GetCommandIfActive("-PS")) == 0)
+  if ((parser->GetCommandIfActive("-PS")) == 0)
   {
     analysisManager->CreateNtupleDColumn("MeanLET");
   }
   analysisManager->FinishNtuple(3);
 
-  if ((command = parser->GetCommandIfActive("-PS")))
+  if ((parser->GetCommandIfActive("-PS")))
   {
     analysisManager->CreateNtuple("PS_data", "PS_data");
 
@@ -254,8 +254,7 @@ void RunAction::CreateNtuple()
 void RunAction::WriteNtuple()
 {
   CommandLineParser *parser = CommandLineParser::GetParser();
-  Command *command(0);
-  if ((command = parser->GetCommandIfActive("-out")) == 0)
+  if ((parser->GetCommandIfActive("-out")) == 0)
     return;
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
 
@@ -264,7 +263,7 @@ void RunAction::WriteNtuple()
   analysisManager->FillNtupleSColumn(3, 2, kGitHash);
   analysisManager->FillNtupleSColumn(3, 3, G4Version);
   analysisManager->FillNtupleSColumn(3, 4, "IRT");
-  if ((command = parser->GetCommandIfActive("-PS")) == 0)
+  if ((parser->GetCommandIfActive("-PS")) == 0)
   {
     analysisManager->FillNtupleDColumn(3, 5, LET);
   }
