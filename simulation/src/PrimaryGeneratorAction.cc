@@ -87,7 +87,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     ps_file.seekg(step2_eventID*12*4, ps_file.beg); //position of event data, 12 floats with 4 bytes precision
 
     float line[12];
-
+    
     ps_file.read((char *)&line, sizeof line);
     ps_file.close();
 
@@ -106,7 +106,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 
     // // DEBUG
 
-    //G4cout << "step1 Evt: " << step1_eventID << ") PID: " << step1_PID << ". processID: " << step1_processID << " copyNo: " << step1_copyNo << " time: "<< step1_time << G4endl;
+    // G4cout << "step1 Evt: " << step1_eventID << ") PID: " << step1_PID << " copyNo: " << step1_copyNo << " time: "<< step1_time << ", primaryID: " << step1_primaryID << G4endl;
     // // DEBUG
     G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
     G4IonTable *ionTable = G4IonTable::GetIonTable();
