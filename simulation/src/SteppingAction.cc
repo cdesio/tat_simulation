@@ -205,7 +205,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     auto result1 = fPositions1->NearestInRange(point, 1 * nm);
     if ((result0->GetSize() == 0) && (result1->GetSize() == 0))
       return;
-    G4cout << "vol: "<< flagVolume << ", 1: "<< step1_eventID << ", 2: "<< step2_eventID << ", PID: "<< step1_PID << G4endl;
+    
     analysisManager->FillNtupleIColumn(1, 0, step2_eventID);
     analysisManager->FillNtupleIColumn(1, 1, step1_eventID);
     analysisManager->FillNtupleDColumn(1, 2, dE / eV);
