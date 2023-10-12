@@ -100,6 +100,7 @@ void EventAction::EndOfEventAction(const G4Event *)
 
   if (((parser->GetCommandIfActive("-PS"))==0) && (projectedRange > 0)) // if the track passes through the chromatin fibre volume
   {
+    
     fTrackMeanKE.push_back((fTrackStartKE + fTrackEndKE) / 2);
     analysisManager->FillNtupleDColumn(0, 0, (fEdep / joule));
     analysisManager->FillNtupleIColumn(0, 1, G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID());
@@ -120,15 +121,16 @@ void EventAction::EndOfEventAction(const G4Event *)
     G4int step1_copyNo = (int)generatorAction->step1_copyNo;
     G4int step1_primaryID = (int)generatorAction->step1_primaryID;
     G4int step2_eventID = (int)G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
-
+    // G4cout << "PID: " << step1_PID << ", step2evtID: " << step2_eventID << ", edep: " << fEdep/MeV << ", step1evtID: " << step1_eventID << G4endl;
+    // G4cout << ", step1copyNo: " << step1_copyNo << ", parent: " << step1_primaryID << G4endl;
     //G4cout << "MeV: " << MeV << G4endl;
-    analysisManager->FillNtupleDColumn(0, 0, (fEdep / joule));
-    analysisManager->FillNtupleIColumn(0, 1, (int)step2_eventID);
-    analysisManager->FillNtupleDColumn(0, 2, (fEdep / MeV));
-    analysisManager->FillNtupleIColumn(0, 3, (int)step1_eventID);
-    analysisManager->FillNtupleIColumn(0, 4, (int)step1_PID);
-    analysisManager->FillNtupleIColumn(0, 5, (int)step1_copyNo);
-    analysisManager->FillNtupleIColumn(0, 6, (int)step1_primaryID);
+    analysisManager->FillNtupleDColumn(0, 0, fEdep / joule);
+    analysisManager->FillNtupleIColumn(0, 1, step2_eventID);
+    analysisManager->FillNtupleDColumn(0, 2, fEdep / MeV);
+    analysisManager->FillNtupleIColumn(0, 3, step1_eventID);
+    analysisManager->FillNtupleIColumn(0, 4, step1_PID);
+    analysisManager->FillNtupleIColumn(0, 5, step1_copyNo);
+    analysisManager->FillNtupleIColumn(0, 6, step1_primaryID);
     analysisManager->AddNtupleRow(0);
   }
 }
