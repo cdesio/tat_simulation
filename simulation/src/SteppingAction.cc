@@ -85,7 +85,10 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   {
     flagVolume = 4;
   }
-
+  else if (volumeName == "TrackingVol")
+  {
+    flagVolume = 5;
+  }
   if (flagVolume != 0)
   {
 
@@ -125,17 +128,22 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
   {
 
     fpEventAction->AddEdep(dE);
-    
+    const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
+          G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+    G4int step1_eventID = generatorAction->step1_eventID;
+    G4int step2_eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+    G4int step1_copyNo = generatorAction->step1_copyNo;
+    G4cout << "stepping - 1evtID: " << step1_eventID << ", 2evtID: " << step2_eventID << ", copyNo: " << step1_copyNo << G4endl;
     // G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
     // G4int step2_eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
 
     // const PrimaryGeneratorAction *generatorAction = static_cast<const PrimaryGeneratorAction *>(
     //       G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
     
-    // G4int step1_copyNo = generatorAction->step1_copyNo;
+   
     // G4double step1_time = generatorAction->step1_time;
     // G4int step1_PID = generatorAction->step1_PID;
-    // G4int step1_eventID = generatorAction->step1_eventID;
+    
     // G4int step1_primaryID = generatorAction->step1_primaryID;
     // G4double step2_time = step1_time + step->GetTrack()->GetGlobalTime();
     // G4String particleName = step->GetTrack()->GetParticleDefinition()->GetParticleName();
@@ -156,7 +164,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     // analysisManager->AddNtupleRow(5);
     }
 
-  if (flagVolume == 0)
+  if ((flagVolume == 0) || (flagVolume==5))
   {
     return;
   }
@@ -202,7 +210,8 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     auto result1 = fPositions1->NearestInRange(point, 1 * nm);
     if ((result0->GetSize() == 0) && (result1->GetSize() == 0))
       return;
-
+    
+    
     analysisManager->FillNtupleIColumn(1, 0, step2_eventID);
     analysisManager->FillNtupleIColumn(1, 1, step1_eventID);
     analysisManager->FillNtupleDColumn(1, 2, dE / eV);

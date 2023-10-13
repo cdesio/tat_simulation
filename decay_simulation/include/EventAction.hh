@@ -49,19 +49,13 @@ public:
   G4double GetEdep() {return fEdep;};
   void SetEdep(G4double pVal) {fEdep=pVal;};
   void AddEdep(G4double pVal) {fEdep+=pVal;};
-
-
-  void AddSecondary(){numSecondary+=1;}
-  G4int GetNumSecondaries(){return numSecondary;}
-
-  // Record the path length though the chomatin fibre segment
-  void AddPathLength(G4double val){fpathLengthTotal += val;}
   std::map<G4int, G4int> parentParticle;
-
+  std::map<G4int, G4ThreeVector> particlePos;
+  std::map<G4int, G4ThreeVector> particleDist;
+  std::map<G4int, G4ThreeVector> decayPos;
+  std::vector<G4int> tracks;
 private:
   G4double  fEdep;
-  G4int numSecondary;
-  G4double fpathLengthTotal{0};
   std::map<G4int, G4String> particleMapRev{
       {1, "alpha"},
       {2, "gamma"},

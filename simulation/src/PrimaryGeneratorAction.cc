@@ -94,7 +94,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     step1_copyNo = (int)fPS_data[step2_eventID][9];
     step1_time = fPS_data[step2_eventID][10];
     step1_primaryID = (int)fPS_data[step2_eventID][11];
-
+    G4cout << "gen: 1Evt: " << step1_eventID << ", 2evt: " << step2_eventID << ", copyNo: " << step1_copyNo << G4endl;
     // // DEBUG
 
     //G4cout << "step1 Evt: " << step1_eventID << ") PID: " << step1_PID << ". processID: " << step1_processID << " copyNo: " << step1_copyNo << " time: "<< step1_time << G4endl;

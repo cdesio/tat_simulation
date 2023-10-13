@@ -48,7 +48,8 @@ public:
     void set_ndiv_R (G4int);
     void set_ndiv_theta(G4int);
     void set_ndiv_Z(G4int);
-
+    G4double get_spacing() { return spacing; }
+    G4double get_start_R() { return start_R; }
 
 
     G4double chromatinVolume;

@@ -49,9 +49,6 @@ using namespace G4DNAPARSER;
 EventAction::EventAction() : G4UserEventAction()
 {
   fEdep = 0.;
-  numSecondary = 0;
-  fpathLengthTotal = 0;
-
 
 }
 
@@ -68,10 +65,31 @@ EventAction::~EventAction()
 void EventAction::BeginOfEventAction(const G4Event * event)
 {
   fEdep = 0.;
-  fpathLengthTotal = 0;
+  //new addiction to track particles entering in virtual boxes
+  while (!particlePos.empty())
+  {
+    particlePos.erase(particlePos.begin());
+  }
+
+  while (!particleDist.empty())
+  {
+    particleDist.erase(particleDist.begin());
+  }
+
+  while (!decayPos.empty())
+  {
+    decayPos.erase(decayPos.begin());
+  }
+
+  while (!tracks.empty())
+  {
+    tracks.erase(tracks.begin());
+  }
+
   while (!parentParticle.empty())
   {
     parentParticle.erase(parentParticle.begin());
+//    parentParticle.insert(std::pair<G4int, G4int>(1, 0)); // track 1 is always radium224
   }
 }
 
@@ -84,22 +102,14 @@ void EventAction::EndOfEventAction(const G4Event *)
   if ((command = parser->GetCommandIfActive("-out")) == 0)
   return;
   auto fpEventAction = (EventAction *)G4EventManager::GetEventManager()->GetUserEventAction();
-  if ((fEdep>0) && (fpathLengthTotal>0)) //only save edep>0 to reduce output file size
+  if (fEdep>0) //only save edep>0 to reduce output file size
   {
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
   analysisManager->FillNtupleDColumn(2,0, (fEdep/joule));
   analysisManager->FillNtupleDColumn(2, 1, (fEdep / MeV));
   analysisManager->FillNtupleIColumn(2,2, G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID());
-  analysisManager->FillNtupleDColumn(2, 3, fpathLengthTotal / nanometer);
-  analysisManager->FillNtupleIColumn(2, 4, fpEventAction->GetNumSecondaries());
 
   analysisManager->AddNtupleRow(2);
   }
 
-  if (fpathLengthTotal>0)
-  {
-      auto fpRunAction = (RunAction *)G4RunManager::GetRunManager()->GetUserRunAction();
-      fpRunAction->AddIntersecting();
-
-  }
 }

@@ -30,6 +30,8 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include "RunAction.hh"
+#include "G4Track.hh"
 class EventAction;
 // class G4ParticleDefinition;
 // class G4VPhysicalVolume;
@@ -40,16 +42,18 @@ class EventAction;
 class SteppingAction : public G4UserSteppingAction
 {
 public:
-    SteppingAction(/*DetectorConstruction* fpDet*/);
+    SteppingAction(DetectorConstruction* pDetector);
     ~SteppingAction() override;
 
     void UserSteppingAction(const G4Step* step) override;
     // void Initialize();
 private:
-  EventAction* fpEventAction;
-
+    EventAction* fpEventAction;
+    DetectorConstruction *fpDetector;
     std::ofstream PSfile;
-
+    void write_to_PS(const G4Track *track, const G4ThreeVector &Position, const G4ThreeVector &Momentum, G4double &particleEnergy, G4int &eventID, G4int &PID, G4int &copyNo, G4double &time, G4int &mapped_PID);
+    G4ThreeVector transformDirection(const G4ThreeVector & worldPos, const G4ThreeVector & worldMomentum);
+    G4double calculateDistanceToExitBox(const G4ThreeVector & preStepPosition, const G4ThreeVector & preStepMomentumDirection);
     std::map<G4String, G4int> particleMap{
         {"alpha", 1},
         {"gamma", 2},

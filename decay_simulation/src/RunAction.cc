@@ -124,9 +124,6 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleDColumn(2, "Edep_J");
   analysisManager->CreateNtupleDColumn(2, "Edep_MeV");
   analysisManager->CreateNtupleIColumn(2, "EventNo");
-  analysisManager->CreateNtupleDColumn(2, "PathLengthChromatin");
-  analysisManager->CreateNtupleIColumn(2, "NumSecondaries");
-
   analysisManager->FinishNtuple(2);
 
   G4cout << "\n----> Histogram file is opened in " << fileName << G4endl;
@@ -144,10 +141,9 @@ void RunAction::WriteNtuple(const G4Run *run)
   auto fpEventAction = (EventAction *)G4EventManager::GetEventManager()->GetUserEventAction();
 
   analysisManager->FillNtupleDColumn(1, 0, chromatinVolume);
-  analysisManager->FillNtupleIColumn(1, 1, fpEventAction->GetNumSecondaries());
-  analysisManager->FillNtupleIColumn(1, 2, run->GetNumberOfEvent());
-  analysisManager->FillNtupleSColumn(1, 3, kGitHash);
-  analysisManager->FillNtupleIColumn(1, 4, numIntersecting);
+  analysisManager->FillNtupleIColumn(1, 1, run->GetNumberOfEvent());
+  analysisManager->FillNtupleSColumn(1, 2, kGitHash);
+  analysisManager->FillNtupleIColumn(1, 3, numIntersecting);
 
   analysisManager->AddNtupleRow(1);
 
@@ -155,5 +151,5 @@ void RunAction::WriteNtuple(const G4Run *run)
   analysisManager->CloseFile();
   analysisManager->Clear();
   G4cout << "\n----> Histograms are saved" << G4endl;
-  G4cout << "\n----> Number of secondaries saved " << fpEventAction->GetNumSecondaries() << G4endl;
+  
 }
