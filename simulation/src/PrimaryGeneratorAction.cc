@@ -82,9 +82,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
   {
     G4int step2_eventID = anEvent->GetEventID();
 
-    G4double positionX = fPS_data[step2_eventID][0];
-    G4double positionY = fPS_data[step2_eventID][1];
-    G4double positionZ = fPS_data[step2_eventID][2];
+    G4double positionX = fPS_data[step2_eventID][0]*um;
+    G4double positionY = fPS_data[step2_eventID][1]*um;
+    G4double positionZ = fPS_data[step2_eventID][2]*um;
     G4double momentumX = fPS_data[step2_eventID][3];
     G4double momentumY = fPS_data[step2_eventID][4];
     G4double momentumZ = fPS_data[step2_eventID][5];
@@ -94,7 +94,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     step1_copyNo = (int)fPS_data[step2_eventID][9];
     step1_time = fPS_data[step2_eventID][10];
     step1_primaryID = (int)fPS_data[step2_eventID][11];
-    G4cout << "gen: 1Evt: " << step1_eventID << ", 2evt: " << step2_eventID << ", copyNo: " << step1_copyNo << G4endl;
+    //G4cout << "gen: 1Evt: " << step1_eventID << ", 2evt: " << step2_eventID << ", copyNo: " << step1_copyNo << G4endl;
     // // DEBUG
 
     //G4cout << "step1 Evt: " << step1_eventID << ") PID: " << step1_PID << ". processID: " << step1_processID << " copyNo: " << step1_copyNo << " time: "<< step1_time << G4endl;
