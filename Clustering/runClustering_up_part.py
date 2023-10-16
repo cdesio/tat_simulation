@@ -416,22 +416,19 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
     print("Direct and indirect damage calculated. Running clustering.\n")
 
     if separate_r:
-        from ranges_radii_dense import get_ranges_radii
-        ranges_radii =get_ranges_radii(ndiv_R = ndiv_R, ndiv_Z = ndiv_Z, spacing = spacing, start_R = start_R)[0]
+        #from ranges_radii_dense import get_ranges_radii
+        #ranges_radii =get_ranges_radii(ndiv_R = ndiv_R, ndiv_Z = ndiv_Z, spacing = spacing, start_R = start_R)[0]
 
         print("separating results per radius")
-        for r in ranges_radii:
+        for r in range(ndiv_R):
 
-            check_copynop = partial(
-                lambda n, range_r: n in range_r, range_r=ranges_radii[r])
+            # check_copynop = partial(
+            #     lambda n, range_r: n in range_r, range_r=ranges_radii[r])
             # select events per copyNo
 
-            events_direct = events_strand_copy_direct_df.loc[events_strand_copy_direct_df['step1_copyNo'].apply(
-                check_copynop)]
-            events_indirect = events_strand_copy_indirect_df.loc[events_strand_copy_indirect_df['step1_copyNo'].apply(
-                check_copynop)]
-            events_tot = evt_copyNo_Ke_dose_df.loc[evt_copyNo_Ke_dose_df['step1_copyNo'].apply(
-                check_copynop)]
+            events_direct = events_strand_copy_direct_df.loc[events_strand_copy_direct_df['step1_copyNo']==r]
+            events_indirect = events_strand_copy_indirect_df.loc[events_strand_copy_indirect_df['step1_copyNo']==r]
+            events_tot = evt_copyNo_Ke_dose_df.loc[evt_copyNo_Ke_dose_df['step1_copyNo']==r]
 
             # get all events (direct+indirect)
             # events_tot_ids = events_tot['step1'].to_numpy()
