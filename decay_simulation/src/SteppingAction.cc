@@ -252,7 +252,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     }
 
     // PS file
-    
+    // the step is going from the water into the shell. save all steps entering shells
     if ((volumeNamePre == "water") && (step->GetPostStepPoint()->GetPhysicalVolume()->GetName() == "shell") && (step->GetPreStepPoint()->GetKineticEnergy() > 0)) 
     {
           G4int trackID = step->GetTrack()->GetTrackID();
@@ -278,10 +278,17 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
           write_to_PS(step->GetTrack(), newPos, newMomentum, particleEnergy, eventID, particleID, copyNo, time, mapped_PID);
         
     }
+    // save particles created in the cell or nucleus. If from radioactive decay as not simulated in RBE. 
+    // Secondary particles are not saved as these are simulated in RBE, 
+    //but secondaries leaving the DNA box and entering the adjacent box are saved in the phase space file. 
+    //if prestep process is nullptr this is the first step of particle created by interaction in the cell - 
+    //only save those created by processes in cell not in other volumes
     else if ((volumeNamePre == "shell") && (step->IsFirstStepInVolume())  && (particleName != "gamma") && (step->GetPreStepPoint()->GetProcessDefinedStep() == nullptr)) //(step->GetTrack()->GetCurrentStepNumber() == 1)) // e- from interactions inside the tracking volume
     {
       if ((step->GetTrack()->GetCreatorProcess()->GetProcessName() == "RadioactiveDecay") && (((const G4Ions *)(step->GetTrack()->GetParticleDefinition()))->GetExcitationEnergy() < 1e-15))
       {
+        // only save products of radioactive decay other products are from parents which are saved on entering the cell and will be tracked in DNA simulation. Excited states are not saved as de-excitation is not simulated in RBE, 
+        //products are saved to phase space file.
         G4TouchableHandle touchable = step->GetPreStepPoint()->GetTouchableHandle();
 
         G4ThreeVector worldPos = step->GetPreStepPoint()->GetPosition();
@@ -297,8 +304,10 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         G4int stepID = step->GetTrack()->GetCurrentStepNumber();
         G4int trackID = step->GetTrack()->GetTrackID();
         G4int mapped_PID = fpEventAction->parentParticle[trackID];
+      // decay products should start in the same place in box reference frame, check if is first product 
        if (fpEventAction->decayPos.find(parentID) == fpEventAction->decayPos.end())
       {
+         // parent ID not found, is first product, pick new position and save
         G4double newX = (G4UniformRand() * .0003) - .00015;
         G4double newZ = (G4UniformRand() * .0003) - .00015;
 
@@ -316,6 +325,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       }
       else
       {
+        // parent ID found, look up new position
         G4ThreeVector newPos = fpEventAction->decayPos[parentID];
         G4ThreeVector newMomentum = transformDirection(worldPos, worldMomentum);
         write_to_PS(step->GetTrack(), newPos, newMomentum, particleEnergy, eventID, particleID, copyNo, time, mapped_PID);
@@ -323,8 +333,11 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     }
     else
     {
+      // track secondaries created in a box so they enter the adjacent box.
     G4int parentID = step->GetTrack()->GetParentID();
     G4ThreeVector worldPos = step->GetPreStepPoint()->GetPosition();
+    // random position for secondary in original box, will not be added to phase space file until adjacent box, where DNA is not continuous.
+
     G4double newX = (G4UniformRand() * .0003) - .00015;
     G4double newZ = (G4UniformRand() * .0003) - .00015;
 
@@ -334,6 +347,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     
     G4ThreeVector newPos = G4ThreeVector(newX, newY, newZ);
     G4int particleID = particleMap[particleName];
+    // save creation position and distance travelled
     fpEventAction->particlePos.erase(step->GetTrack()->GetTrackID());
     fpEventAction->particlePos.insert(std::pair<int, G4ThreeVector>(step->GetTrack()->GetTrackID(), newPos));
 
@@ -344,6 +358,9 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     }
 
     }
+    // is a step in the cell but not first and it is a track which has previously been saved i.e.
+    // not a secondary created in the box, check if crosses virtual box boundary, if it does it is saved as if
+    // entering the box from the side faces.
     else if ((volumeNamePre == "shell") && ((std::find(fpEventAction->tracks.begin(), fpEventAction->tracks.end(), step->GetTrack()->GetTrackID()) != fpEventAction->tracks.end())) && (particleName != "gamma") && (step->GetPreStepPoint()->GetKineticEnergy() > 0))
     {
     G4ThreeVector entryPosition = fpEventAction->particlePos[step->GetTrack()->GetTrackID()]; // look up position in box frame from last step
@@ -499,7 +516,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       fpEventAction->particleDist.insert(std::pair<int, G4ThreeVector>(step->GetTrack()->GetTrackID(), previousDelta + delta));
     }
   }
-  else if ((volumeNamePre == "shel") && ((std::find(fpEventAction->tracks.begin(), fpEventAction->tracks.end(), step->GetTrack()->GetTrackID()) != fpEventAction->tracks.end())) && (particleName == "gamma")) 
+  else if ((volumeNamePre == "shell") && ((std::find(fpEventAction->tracks.begin(), fpEventAction->tracks.end(), step->GetTrack()->GetTrackID()) != fpEventAction->tracks.end())) && (particleName == "gamma")) 
 {
     G4ThreeVector preStepBox = fpEventAction->particlePos[step->GetTrack()->GetTrackID()]; // look up position in box frame from last step
 
