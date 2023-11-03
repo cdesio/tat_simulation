@@ -18,14 +18,15 @@ if __name__=='__main__':
     parser.add_argument("--indirect", type=float,
                         help="Indirect damage percentage, default 0.405")
     parser.add_argument("--sugar", type=str, help="sugar geometry file")
-    parser.add_argument("--primary", type=str, help="select particle to save to output file", required=False)
-    parser.add_argument("--sepR", type=bool, help="save to separate files for R", default=None)
+    # parser.add_argument("--primary", type=str, help="select particle to save to output file", required=False)
+    parser.add_argument("--sepR", type=bool, help="save to separate files for R", default=True)
     parser.add_argument("--ndiv_R", type=int, help="no. of divisions in radius", default=80)
-    parser.add_argument("--ndiv_Z", type=int, help="no. of divisions in Z", default=40)
-    parser.add_argument("--startR", type=float,
-                        help="starting radius for boxes (um)", default=10.5)
-    parser.add_argument("--spacing", type=float,
-                        help="boxes spacing in R (um)", default=1)
+    parser.add_argument("--continuous", type=bool, help="flag for continuous geometry", default = False)
+    # parser.add_argument("--ndiv_Z", type=int, help="no. of divisions in Z", default=40)
+    # parser.add_argument("--startR", type=float,
+    #                     help="starting radius for boxes (um)", default=10.5)
+    # parser.add_argument("--spacing", type=float,
+    #                     help="boxes spacing in R (um)", default=1)
     
     args = parser.parse_args()
 
@@ -64,19 +65,9 @@ if __name__=='__main__':
     else:
         print("Missing sugar geometry file")
 
-    if args.primary:
-        primaryParticle = args.primary
-    if args.ndiv_R:
-        ndiv_R = args.ndiv_R
-    if args.ndiv_Z:
-        ndiv_Z = args.ndiv_Z
-    if args.spacing:
-        spacing = args.spacing
-    if args.startR:
-        startR = args.startR
         
     
 
     runClustering_up_part.runClustering(filename, outputFilename, fEMinDamage, fEMaxDamage,
                                 probIndirect, sugarPosFilename, filenamePhoton=filenamePhoton, separate_r=args.sepR, 
-                                ndiv_R=ndiv_R, ndiv_Z=ndiv_Z, start_R=10.5, spacing=1, primaryParticle=args.primary)
+                                ndiv_R=args.ndiv_R, continuous=args.continuous) #, ndiv_Z=ndiv_Z, start_R=10.5, spacing=1, primaryParticle=args.primary)
