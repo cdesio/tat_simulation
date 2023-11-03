@@ -50,11 +50,11 @@ else:
     mem = 20
 if slurm:
     simulation_parent = os.path.join(
-        "/", "user", "work", "yw18581", "DaRT", "TAT", "tat_dense"
+        "/", "user", "work", "yw18581", "DaRT", "TAT", "tat_shell_ps"
     )
 else:
     simulation_parent = os.path.join(
-        "/", "home", "cdesio", "TAT", "tat_dense"
+        "/", "home", "cdesio", "TAT", "tat_shell_ps"
     )
 
 histoneFile = os.path.join(
@@ -141,18 +141,9 @@ for s in spacing:
         f.write("/run/initialize\n")
         f.write("\n")
     
-        f.write("/gps/pos/type Surface\n")
-        f.write("/gps/pos/shape Cylinder\n")
-        f.write("/gps/pos/centre 0 0 0 um\n")
-        f.write(f"/gps/pos/radius {gpsRadius} um\n")
-        f.write(f"/gps/pos/halfz {gpsHalfZ} um\n")
-        f.write("\n")
-
-        f.write("/gps/ang/type cos\n")
-        f.write("/gps/particle ion\n")
-        f.write("/gps/ion 85 211\n")
-        f.write("/gps/ene/type Mono\n")
-        f.write(f"/gps/energy 0 MeV\n")
+        f.write("/gun/particle ion\n")
+        f.write("/gun/ion 85 211\n")
+        f.write(f"/gun/energy 0 MeV\n")
         f.write("\n")
         f.write(f"/run/printProgress {printProgress}\n")
         f.write(f"/run/beamOn {numIons}\n")
@@ -294,7 +285,7 @@ for s in spacing:
         else:
             f.write("conda activate clustering\n")
         f.write(
-            f"python {clustering_dir}/run_up_part.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_part.csv --sugar {sugarFile}  --sepR True --ndiv_R {n_div_R} --ndiv_Z {n_div_Z} --spacing {s_string} --startR {startR} --primary all\n"
+            f"python {clustering_dir}/run_up_part.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_part.csv --sugar {sugarFile} --ndiv_R {n_div_R} \n"
         )
     filename_runscript = os.path.join(test_dir, f"run_script_At_{n_string}_spacing_{s_string}um_{seed}.sh")
     with open(filename_runscript, "w") as f:
@@ -326,9 +317,9 @@ for s in spacing:
             f.write(f"job_DNA=$(sbatch --parsable --dependency=afterok:$job_decay {filename_DNA})\n")
             f.write(f"job_clustering=$(sbatch --dependency=afterany:$job_DNA {filename_clustering})\n")
         
-if not slurm:      
-    # print(f"tmux new-session -d -s tat_{n_string}_{seed}\n 'source {filename_runscript}' ")
-    print(f"{seed}", end=' ')
+if not slurm:     
+    # print(f"{seed}", end=' ') 
+    print(f"tmux new-session -d -s tat_{n_string}_{seed}\n 'source {filename_runscript}' ")
 else:
     # print(f"sbatch {filename_runscript}")
     print(f"{seed}", end=' ')
