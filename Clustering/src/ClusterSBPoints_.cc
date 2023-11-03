@@ -42,7 +42,7 @@ using namespace std;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ClusterSBPoints::ClusterSBPoints(std::set<SBPoint *> pSBPoints) : fpRegisteredSBPoints()
+ClusterSBPoints::ClusterSBPoints(std::set<SBPoint *> pSBPoints, bool pContinuous) : fpRegisteredSBPoints(), fContinuous(pContinuous)
 {
   std::set<SBPoint *>::iterator itPt;
   for (itPt = pSBPoints.begin(); itPt != pSBPoints.end(); ++itPt)
@@ -192,7 +192,7 @@ void ClusterSBPoints::UpdateDoubleStrand()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 bool AreOnTheSameCluster(const SBPoint *pPt1, const SBPoint *pPt2,
-                         int64_t pMinBP)
+                         int64_t pMinBP, bool fContinuous)
 {
   assert(pPt1);
   assert(pPt2);
@@ -200,21 +200,35 @@ bool AreOnTheSameCluster(const SBPoint *pPt1, const SBPoint *pPt2,
   int64_t copy1 = pPt1->GetPosition();
   int64_t copy2 = pPt2->GetPosition();
 
-  // check the BP are on the same segments of chromatin fibre, clustered damage does not wrap between segments
-  int64_t chromatinSegment1 = copy1 / 21168;
-  int64_t chromatinSegment2 = copy2 / 21168;
-
-  // check the BP are on the same nucleosome, clustered damage does not wrap between nucleosomes due to the large gap because linking bp are not included
-  int64_t nucleosome1 = copy1 / 147;
-  int64_t nucleosome2 = copy2 / 147;
-
-  if ((abs(copy1 - copy2) <= pMinBP) && (chromatinSegment1 == chromatinSegment2) && (nucleosome1 == nucleosome2))
+  if (fContinuous == false)
   {
-    return true;
+    // check the BP are on the same segments of chromatin fibre, clustered damage does not wrap between segments
+    int64_t chromatinSegment1 = copy1 / 21168;
+    int64_t chromatinSegment2 = copy2 / 21168;
+
+    // check the BP are on the same nucleosome, clustered damage does not wrap between nucleosomes due to the large gap because linking bp are not included
+    int64_t nucleosome1 = copy1 / 147;
+    int64_t nucleosome2 = copy2 / 147;
+
+    if ((abs(copy1 - copy2) <= pMinBP) && (chromatinSegment1 == chromatinSegment2) && (nucleosome1 == nucleosome2))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
   else
   {
-    return false;
+    if (abs(copy1 - copy2) <= pMinBP)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 }
 
@@ -263,7 +277,7 @@ bool ClusterSBPoints::HasIn(const SBPoint *pPtToCheck, double pMinDist)
     if ((*pPtToCheck != *(*itClusPt)))
     {
       // if close enought of an include point of the cluster
-      if (AreOnTheSameCluster(pPtToCheck, *itClusPt, pMinDist))
+      if (AreOnTheSameCluster(pPtToCheck, *itClusPt, pMinDist, fContinuous))
       {
         return true;
       }

@@ -48,7 +48,7 @@ class ClusteringAlgorithm
 public:
 
   ClusteringAlgorithm(int64_t  pEps, int64_t  pMinPts,
-      double pEMinDamage, double pEMaxDamage);
+      double pEMinDamage, double pEMaxDamage, bool pContinuous);
   ~ClusteringAlgorithm();
 
   // Get Set methods
@@ -114,6 +114,7 @@ public:
   // second int : counts
   std::map<int64_t ,int64_t > GetClusterSizeDistribution();
   std::map<int64_t ,int64_t > GetDSBClusterSizeDistribution(int64_t SBsource);
+  std::vector<int64_t> GetDSBClusterDistanceDistribution(int64_t SBsource);
 
   bool hasRegistered {false};
 
@@ -123,7 +124,7 @@ private:
   // Check if a SB point can be merged to a cluster, and do it
   bool FindCluster(SBPoint* pPt);
   // Check if two points can be merged
-  bool AreOnTheSameCluster(int64_t ,int64_t ,int64_t );
+  bool AreOnTheSameCluster(int64_t ,int64_t ,int64_t , bool);
   // Merge clusters
   void MergeClusters();
   // Add SSB to clusters
@@ -144,7 +145,7 @@ private:
   std::vector<ClusterSBPoints*> fpClustersDSB;
   // ID of the next SB point
   unsigned int fNextSBPointID;
-
+  bool fContinuous{1};
 
 };
 

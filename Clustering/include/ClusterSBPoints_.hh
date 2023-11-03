@@ -47,7 +47,7 @@
 class ClusterSBPoints
 {
 public:
-  ClusterSBPoints(std::set<SBPoint*> pPoints);
+  ClusterSBPoints(std::set<SBPoint*> pPoints, bool fContinuous);
   ~ClusterSBPoints();
 
   bool IsDSB() const
@@ -98,6 +98,7 @@ private:
   int64_t fSource{0}; // 0 unknown, 1 direct, 2 indirect, 3 hybrid, 4 mixed
 
   std::set<SBPoint* > fpRegisteredSBPoints;
+  bool fContinuous{1};
 };
 
 #endif //CLUSTER_SB_POINT_HH

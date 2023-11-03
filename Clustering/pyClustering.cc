@@ -10,15 +10,16 @@ namespace py = pybind11;
 
 using namespace std;
 
-std::vector<vector<vector<int64_t>>> clustering(std::vector <int64_t> numEvt, std::vector<int64_t> eventsListDirect, std::vector<int64_t> copyListDirect, std::vector<int64_t> strandListDirect, std::vector<int64_t> eventsListIndirect, std::vector<int64_t> copyListIndirect, std::vector<int64_t> strandListIndirect)
+std::vector<vector<vector<int64_t>>> clustering(std::vector <int64_t> numEvt, std::vector<int64_t> eventsListDirect, std::vector<int64_t> copyListDirect, std::vector<int64_t> strandListDirect, std::vector<int64_t> eventsListIndirect, std::vector<int64_t> copyListIndirect, std::vector<int64_t> strandListIndirect,  bool fContinuous)
 {
     std::vector<vector<int64_t>> SBresults;
     std::vector<vector<int64_t>> clusterFrequency; // direct, indirect, total
+    std::vector<vector<int64_t>> clusterSizes; // direct, indirect, total
 
     // start clustering object
-    ClusteringAlgorithm *fpClusteringDirect = new ClusteringAlgorithm(10, 2, 5, 37.5);   // eV
-    ClusteringAlgorithm *fpClusteringIndirect = new ClusteringAlgorithm(10, 2, 5, 37.5); // eV
-    ClusteringAlgorithm *fpClusteringTotal = new ClusteringAlgorithm(10, 2, 5, 37.5);    // eV
+    ClusteringAlgorithm *fpClusteringDirect = new ClusteringAlgorithm(10, 2, 5, 37.5, fContinuous);   // eV
+    ClusteringAlgorithm *fpClusteringIndirect = new ClusteringAlgorithm(10, 2, 5, 37.5, fContinuous); // eV
+    ClusteringAlgorithm *fpClusteringTotal = new ClusteringAlgorithm(10, 2, 5, 37.5, fContinuous);    // eV
 
     // Clustering
     for (auto e: numEvt)
@@ -133,6 +134,9 @@ std::vector<vector<vector<int64_t>>> clustering(std::vector <int64_t> numEvt, st
         c = 41;
 
         sizeDistributionDSB = fpClusteringTotal->GetDSBClusterSizeDistribution(0);
+        std::vector<int64_t> sizeDistanceDSB = fpClusteringTotal->GetDSBClusterDistanceDistribution(0);
+
+        fpClusteringTotal->GetDSBClusterDistanceDistribution(0);
 
         while ( (!sizeDistributionDSB.empty())&&(sizeDistributionDSB.begin()->first <=10 ))
         {
@@ -149,9 +153,10 @@ std::vector<vector<vector<int64_t>>> clustering(std::vector <int64_t> numEvt, st
         
         SBresults.push_back(tempResults);
         clusterFrequency.push_back(clusterFrequencyTemp);
+        clusterSizes.push_back(sizeDistanceDSB);
 
     }
-    std::vector<vector<vector<int64_t>>> results{SBresults, clusterFrequency};
+    std::vector<vector<vector<int64_t>>> results{SBresults, clusterFrequency, clusterSizes};
 
     delete fpClusteringDirect;
     delete fpClusteringIndirect;

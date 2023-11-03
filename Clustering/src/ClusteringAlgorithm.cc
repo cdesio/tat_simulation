@@ -41,13 +41,15 @@
 #include <iostream>
 #include <map>
 #include <stdlib.h>
-
+#include <iostream>
+#include <cstdlib>
+#include <algorithm>
 using namespace std;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ClusteringAlgorithm::ClusteringAlgorithm(int64_t pEps, int64_t pMinPts, double pEMinDamage, double pEMaxDamage)
-    : fEps(pEps), fMinPts(pMinPts), fEMinDamage(pEMinDamage), fEMaxDamage(pEMaxDamage)
+ClusteringAlgorithm::ClusteringAlgorithm(int64_t pEps, int64_t pMinPts, double pEMinDamage, double pEMaxDamage, bool pContinuous)
+    : fEps(pEps), fMinPts(pMinPts), fEMinDamage(pEMinDamage), fEMaxDamage(pEMaxDamage), fContinuous(pContinuous)
 {
   fNextSBPointID = 0;
 }
@@ -62,8 +64,6 @@ ClusteringAlgorithm::~ClusteringAlgorithm()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -96,7 +96,7 @@ map<int64_t, int64_t> ClusteringAlgorithm::RunClustering()
       if (!((*itObservedPt)->HasCluster() && (*itVisitorPt)->HasCluster()))
       {
         if (AreOnTheSameCluster((*itObservedPt)->GetPosition(),
-                                (*itVisitorPt)->GetPosition(), fEps))
+                                (*itVisitorPt)->GetPosition(), fEps, fContinuous))
         {
           // if none has a cluster. Create a new one
           if (!(*itObservedPt)->HasCluster() && !(*itVisitorPt)->HasCluster())
@@ -105,7 +105,7 @@ map<int64_t, int64_t> ClusteringAlgorithm::RunClustering()
             set<SBPoint *> clusterPoints;
             clusterPoints.insert((*itObservedPt));
             clusterPoints.insert((*itVisitorPt));
-            ClusterSBPoints *lCluster = new ClusterSBPoints(clusterPoints);
+            ClusterSBPoints *lCluster = new ClusterSBPoints(clusterPoints, fContinuous);
             assert(lCluster);
             fpClusters.push_back(lCluster);
             assert(lCluster);
@@ -161,7 +161,7 @@ void ClusteringAlgorithm::MergeClusters()
     {
       int64_t baryCenterClust2 = (*itCluster2)->GetBarycenter();
       // if we can merge both cluster
-      if (AreOnTheSameCluster(baryCenterClust1, baryCenterClust2, fEps))
+      if (AreOnTheSameCluster(baryCenterClust1, baryCenterClust2, fEps, fContinuous))
       {
         (*itCluster1)->MergeWith(*itCluster2);
         delete *itCluster2;
@@ -218,23 +218,37 @@ bool ClusteringAlgorithm::FindCluster(SBPoint *pPt)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 bool ClusteringAlgorithm::AreOnTheSameCluster(int64_t copy1,
-                                              int64_t copy2, int64_t pMinBP)
+                                              int64_t copy2, int64_t pMinBP, bool fContinuous)
 {
-  // check the BP are on the same segments of chromatin fibre, clustered damage does not wrap between segments
-  int64_t chromatinSegment1 = copy1 / 21168;
-  int64_t chromatinSegment2 = copy2 / 21168;
-
-  // check the BP are on the same nucleosome, clustered damage does not wrap between nucleosomes due to the large gap because linking bp are not included
-  int64_t nucleosome1 = copy1 / 147;
-  int64_t nucleosome2 = copy2 / 147;
-
-  if ((abs(copy1 - copy2) <= pMinBP) && (chromatinSegment1 == chromatinSegment2) && (nucleosome1 == nucleosome2))
+  if (fContinuous == false)
   {
-    return true;
+    // check the BP are on the same segments of chromatin fibre, clustered damage does not wrap between segments
+    int64_t chromatinSegment1 = copy1 / 21168;
+    int64_t chromatinSegment2 = copy2 / 21168;
+
+    // check the BP are on the same nucleosome, clustered damage does not wrap between nucleosomes due to the large gap because linking bp are not included
+    int64_t nucleosome1 = copy1 / 147;
+    int64_t nucleosome2 = copy2 / 147;
+
+    if ((abs(copy1 - copy2) <= pMinBP) && (chromatinSegment1 == chromatinSegment2) && (nucleosome1 == nucleosome2))
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
   else
   {
-    return false;
+    if (abs(copy1 - copy2) <= pMinBP)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 }
 
@@ -391,41 +405,85 @@ map<int64_t, int64_t> ClusteringAlgorithm::GetDSBClusterSizeDistribution(int64_t
     }
   }
 
-    std::map<int64_t, int64_t> sizeDistribution;
-    sizeDistribution[1] = 0; // DSB at least 2
-    for (itCluster = fpClustersDSB.begin();
-         itCluster != fpClustersDSB.end();
-         itCluster++)
-    {
-      // get type of DSB
-      sizeDistribution[(*itCluster)->GetSize()]++;
-    }
-
-    fpClustersDSB.clear();
-    return sizeDistribution;
-  }
-  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-  void ClusteringAlgorithm::Purge()
+  std::map<int64_t, int64_t> sizeDistribution;
+  sizeDistribution[1] = 0; // DSB at least 2
+  for (itCluster = fpClustersDSB.begin();
+       itCluster != fpClustersDSB.end();
+       itCluster++)
   {
-    fNextSBPointID = 0;
-    std::vector<ClusterSBPoints *>::iterator itCluster;
-    for (itCluster = fpClusters.begin();
-         itCluster != fpClusters.end();
-         ++itCluster)
-    {
-      delete *itCluster;
-      *itCluster = NULL;
-    }
-    fpClusters.clear();
-    fpClustersDSB.clear();
-    std::vector<SBPoint *>::iterator itPt;
-    for (itPt = fpSetOfPoints.begin();
-         itPt != fpSetOfPoints.end();
-         ++itPt)
-    {
-      delete *itPt;
-      *itPt = NULL;
-    }
-    fpSetOfPoints.clear();
+    // get type of DSB
+    sizeDistribution[(*itCluster)->GetSize()]++;
   }
+
+  fpClustersDSB.clear();
+  return sizeDistribution;
+}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+std::vector<int64_t> ClusteringAlgorithm::GetDSBClusterDistanceDistribution(int64_t SBsource)
+{
+  std::vector<ClusterSBPoints *>::const_iterator itCluster;
+  for (itCluster = fpClusters.begin();
+       itCluster != fpClusters.end();
+       ++itCluster)
+  {
+    if ((*itCluster)->IsDSB())
+    {
+      if (SBsource == 0)
+      {
+        fpClustersDSB.push_back(*itCluster);
+      }
+      else if (((*itCluster)->GetClusterSource() == SBsource))
+      {
+        fpClustersDSB.push_back(*itCluster);
+      }
+    }
+  }
+
+  std::vector<int> centres;
+  int i = 0;
+
+  for (itCluster = fpClustersDSB.begin();
+       itCluster != fpClustersDSB.end();
+       itCluster++)
+  {
+    // get type of DSB
+    centres.push_back((*itCluster)->GetBarycenter());
+    i++;
+  }
+
+  std::sort (centres.begin(), centres.end()); 
+
+  std::vector<int64_t> distances;
+  for (int j = 1; j < centres.size(); j++)
+  {
+    distances.push_back(std::abs(centres[j] - centres[j-1]));
+  }
+
+  fpClustersDSB.clear();
+  return distances;
+}
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void ClusteringAlgorithm::Purge()
+{
+  fNextSBPointID = 0;
+  std::vector<ClusterSBPoints *>::iterator itCluster;
+  for (itCluster = fpClusters.begin();
+       itCluster != fpClusters.end();
+       ++itCluster)
+  {
+    delete *itCluster;
+    *itCluster = NULL;
+  }
+  fpClusters.clear();
+  fpClustersDSB.clear();
+  std::vector<SBPoint *>::iterator itPt;
+  for (itPt = fpSetOfPoints.begin();
+       itPt != fpSetOfPoints.end();
+       ++itPt)
+  {
+    delete *itPt;
+    *itPt = NULL;
+  }
+  fpSetOfPoints.clear();
+}
