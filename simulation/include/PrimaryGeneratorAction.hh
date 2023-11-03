@@ -47,7 +47,7 @@ class PrimaryGeneratorAction
     : public G4VUserPrimaryGeneratorAction
 {
 public:
-    PrimaryGeneratorAction(std::vector<std::vector<float>> PS_data);
+    PrimaryGeneratorAction(G4String PS_data);
     ~PrimaryGeneratorAction() override;
     void GeneratePrimaries(G4Event *event) override;
     G4String primaryName;
@@ -61,5 +61,5 @@ public:
 private:
     G4GeneralParticleSource *fpParticleGun;
     G4ParticleGun *fParticleGun;
-    std::vector<std::vector<float>> fPS_data;
+    G4String fPS_data;
 };
