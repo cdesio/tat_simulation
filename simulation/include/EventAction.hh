@@ -70,6 +70,9 @@ public:
   G4bool GetStoppedInBox() { return fTrackStoppedBox; };
   void SetStoppedInBox() { fTrackStoppedBox = true; };
 
+  G4bool GetLeftBox() { return fTrackLeftBox; };
+  void SetLeftBox() { fTrackLeftBox = true; };
+
   void AddPathLength(G4double val) { fpathLengthTotal += val; }
   G4double Getdkill(){return dkill;}
 
@@ -89,6 +92,7 @@ private:
   G4bool fTrackStoppedBox;
   G4double fpathLengthTotal{0};
   G4double dkill;
+  G4bool fTrackLeftBox{0};
 
 };
 

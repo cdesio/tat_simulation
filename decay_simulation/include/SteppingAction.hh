@@ -54,23 +54,56 @@ private:
     void write_to_PS(const G4Track *track, const G4ThreeVector &Position, const G4ThreeVector &Momentum, G4double &particleEnergy, G4int &eventID, G4int &PID, G4int &copyNo, G4double &time, G4int &mapped_PID);
     G4ThreeVector transformDirection(const G4ThreeVector & worldPos, const G4ThreeVector & worldMomentum);
     G4double calculateDistanceToExitBox(const G4ThreeVector & preStepPosition, const G4ThreeVector & preStepMomentumDirection);
+  
+
     std::map<G4String, G4int> particleMap{
+        {"At211", 0},
         {"alpha", 1},
         {"gamma", 2},
         {"e-", 3},
         {"nu_e", 4},
-        {"At211", 5},
-        {"Po211", 6},
+        {"Po211", 5},
+        {"Po211*", 6},
         {"Bi207", 7},
         {"Pb207", 8},
-        {"e+", 9}};
+        {"Pb207*", 9}};
+    
+    std::map<G4String, G4int> particleOriginMap{
+      {"At211", 0},
+      {"Po211", 1},
+      {"Po211*", 2},
+      {"Bi207", 3},
+      {"Pb207", 4},
+      {"Pb207*", 5},
+      {"alphaAt211", 6},
+      {"alphaPo211", 7},
+      {"e-At211", 8},
+      {"e-Bi207", 9},
+      {"e-Pb207*", 10},
+      {"gammaAt211", 11},
+      {"gammaBi207", 12},
+      {"gammaPb207", 13},
+      {"gammaPb207*", 14},
+      {"gammaPo211", 15},
+      {"gammaPo211*", 16}};
 
-    std::map<G4String, G4int> processMap{
-        {"RadioactiveDecay", 1},
-        {"ionIoni", 2},
-        {"msc", 3},
-        {"eIoni", 4},
-        {"phot", 5},
-        {"eBrem", 6},
-        {"compt", 7}};
+  std::map<G4int, G4String> reverseParticleOriginMap{
+      {0, "At211"},
+      {1, "Po211"},
+      {2, "Po211*"},
+      {3, "Bi207"},
+      {4, "Pb207"},
+      {5, "Pb207*"},
+      {6, "alphaAt211"},
+      {7, "alphaPo211"},
+      {8, "e-At211"},
+      {9, "e-Bi207"},
+      {10, "e-Pb207*"},
+      {11, "gammaAt211"},
+      {12, "gammaBi207"},
+      {13, "gammaPb207"},
+      {14, "gammaPb207*"},
+      {15, "gammaPo211"}, 
+      {16, "gammaPo2011*"}};
+
 };

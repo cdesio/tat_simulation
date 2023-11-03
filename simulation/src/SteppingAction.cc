@@ -101,23 +101,34 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
     if ((((particleName == "alpha") || (particleName == "alpha+") || (particleName == "helium")) && (primaryName == "alpha")) || ((primaryName=="e-") && (step->GetTrack()->GetTrackID() == 1)) || (primaryName=="gamma")|| (particleName=="neutron"))
     {
-      if (false == fpEventAction->GetStartTrackFound())
+      if ((volumeName == "TrackingVol")&&(step->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="chromatinSegment")&&(fpEventAction->GetLeftBox()==true))
+      {
+        step->GetTrack()->SetTrackStatus(fStopAndKill);
+        return;
+      }
+      if (false == fpEventAction->GetStartTrackFound()&&(step->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="chromatinSegment"))
       {
         fpEventAction->SetStartTrackKE(step->GetPreStepPoint()->GetKineticEnergy());
         fpEventAction->SetStartTrackFound();
         fpEventAction->SetStartTrackPos(step->GetPreStepPoint()->GetPosition());
       }
-      if (step->GetPostStepPoint()->GetKineticEnergy() == 0)
+      if ((volumeName == "chromatinSegment")&&(step->GetPostStepPoint()->GetPhysicalVolume()->GetName()=="TrackingVol")&&(fpEventAction->GetStartTrackFound())) //needs to be after enters box because a single step can enter and leave
+      {
+        fpEventAction->SetLeftBox();
+        fpEventAction->SetEndTrackKE(step->GetPostStepPoint()->GetKineticEnergy());
+        fpEventAction->SetEndTrackPos(step->GetPostStepPoint()->GetPosition());
+      }
+      if ((step->GetPostStepPoint()->GetPhysicalVolume()->GetName()=="chromatinSegment")&&(step->GetPostStepPoint()->GetKineticEnergy() == 0))
       {
         fpEventAction->SetStoppedInBox();
+        // G4cout << "primary stopped in box" << G4endl;
+
         fpEventAction->SetEndTrackKE(step->GetPostStepPoint()->GetKineticEnergy());
         fpEventAction->SetEndTrackPos(step->GetPostStepPoint()->GetPosition());
         fpEventAction->AddPathLength(step->GetStepLength());
       }
-      if ((false == fpEventAction->GetStoppedInBox()))
+      if (volumeName=="chromatinSegment")
       {
-        fpEventAction->SetEndTrackKE(step->GetPostStepPoint()->GetKineticEnergy());
-        fpEventAction->SetEndTrackPos(step->GetPostStepPoint()->GetPosition());
         fpEventAction->AddPathLength(step->GetStepLength());
       }
     }
