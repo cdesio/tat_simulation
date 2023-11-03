@@ -117,17 +117,13 @@ def readSugarFile(sugarFname: str) -> Tuple[cKDTree, cKDTree]:
 
     """
     # Read sugar csv file
-    with open(sugarFname, "r") as f:
-        data = f.readlines()
+    with open(sugarFname, "rb") as f:
+        data = np.fromfile(f,np.float32)
 
-    data = [[float(b)*1E6 for b in a.split("\t")] for a in data]
+    data = data.reshape(int(len(data)/12),12)
 
-    sugar0 = []
-    sugar1 = []
-
-    for line in data:
-        sugar0.append(line[0:3])
-        sugar1.append(line[3:6])
+    sugar0 = data[:,0:3]
+    sugar1 = data[:,3:6]
 
     sugar0 = np.array(sugar0)
     sugar1 = np.array(sugar1)

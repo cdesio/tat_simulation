@@ -58,10 +58,10 @@ else:
     )
 
 histoneFile = os.path.join(
-    simulation_parent, "geometryFiles", "histonePositions_4x4_300nm.csv"
+    simulation_parent, "geometryFiles", "histonePositions_4x4_300nm.bin"
 )
 sugarFile = os.path.join(
-    simulation_parent, "geometryFiles", "sugarPos_4x4_300nm.csv"
+    simulation_parent, "geometryFiles", "sugarPos_4x4_300nm.bin"
 )
 
 time_decay = "0-10:00:00"
