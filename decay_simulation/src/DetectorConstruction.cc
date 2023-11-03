@@ -200,7 +200,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                          "shell");
 
   logicShell->SetUserLimits(userLimits);
-  logicWaterBox->SetUserLimits(userLimits);
+  // logicWaterBox->SetUserLimits(userLimits);
 
   logicShell->SetVisAttributes(&visRed);
   G4PVPlacement *physiCell = new G4PVPlacement(0,
