@@ -62,7 +62,7 @@ int main(int argc, char **argv)
   //  read in PS file for e- from photon simulation
   std::ifstream ps_file;
   G4String ps_file_name;
-  std::vector<std::vector<float>> PS_data;
+  G4int PS_data;
 
   if ((commandLine = parser->GetCommandIfActive("-PS")))
   {
@@ -80,16 +80,16 @@ int main(int argc, char **argv)
       return 1;
     }
 
-    float line[12];
-
-    // int i = 0;
-    while (ps_file.read((char *)&line, sizeof line))
+    
+    if ((commandLine = parser->GetCommandIfActive("-PS")))
     {
-      PS_data.push_back({line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], line[8], line[9], line[10], line[11]});
-
-      // ++i;
+      ps_file.seekg(0, ps_file.end); // change position to end 
+      PS_data = ps_file.tellg()/(12*4); //12 floats which are each 4 bytes
     }
+
   }
+  ps_file.close();
+
   std::unique_ptr<G4RunManager> pRunManager(G4RunManagerFactory::CreateRunManager());
   pRunManager->SetNumberOfThreads(1); // by default
 
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 
   PhysicsList *pPhysList = new PhysicsList;
   pRunManager->SetUserInitialization(pPhysList);
-  pRunManager->SetUserInitialization(new ActionInitialization(pDetector, PS_data));
+  pRunManager->SetUserInitialization(new ActionInitialization(pDetector, ps_file_name));
   // if (CommandLineParser::GetParser()->GetCommandIfActive("-chemOFF") == 0)
   // {
   //   G4DNAChemistryManager::Instance()->Initialize();
@@ -119,9 +119,8 @@ int main(int argc, char **argv)
   if ((commandLine = parser->GetCommandIfActive("-PS")))
   {
     pRunManager->Initialize();
-    G4cout << "number of beams = " << PS_data.size() << G4endl;
-
-    pRunManager->BeamOn(PS_data.size());
+    G4cout << "number of saved particles = " << PS_data << G4endl;
+    pRunManager->BeamOn(PS_data);
   }
   if ((commandLine = parser->GetCommandIfActive("-gui")))
   {
