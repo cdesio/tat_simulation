@@ -186,6 +186,52 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     return; // primary particle has no pre-step point
   }
 
+  G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
+
+
+  if (volumeNamePre == "shell")
+  {
+    G4double radius = (fpDetector->get_start_R() + (step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo()) * fpDetector->get_spacing()) /um;
+    //G4cout << "r: " << radius << G4endl;
+    G4double edep = step->GetTotalEnergyDeposit() / joule;
+
+    G4double OutR = (radius + .150) * 1e-6; // m
+    G4double InR = (radius - .150) * 1e-6;  // m
+    G4double vesselLength = 40* 1e-6;           // um to m
+
+    G4double volumeCylinder = (3.14159 * vesselLength * (OutR * OutR - InR * InR));
+    G4double density = 1000; // water
+    G4double massCylinder = density * volumeCylinder;
+    // G4cout << "c.no.: " << step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo() << ", dose: " << edep / massCylinder << G4endl;
+    analysisManager->FillH1(0, radius, edep / massCylinder);
+  }
+
+
+// Save per nuclei activity
+  if ((step->GetPreStepPoint()->GetKineticEnergy() == 0) && (particleName == "At211"))
+  {
+    analysisManager->FillH1(1, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
+  }
+  else if ((step->GetPreStepPoint()->GetKineticEnergy() == 0) && (volumeNamePre != "bloodVessel"))
+  {
+    if (particleName == "Po211")
+    {
+      analysisManager->FillH1(2, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
+    }
+    else if (particleName == "Bi207")
+    {
+      analysisManager->FillH1(3, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
+    }
+    else if (particleName == "Pb207") 
+    {
+      analysisManager->FillH1(4, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
+    }
+    else if (G4StrUtil::contains("Pb207", "["))
+    {
+      analysisManager->FillH1(4, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
+    }
+  }
+
 
   // PS file and output root file
 
@@ -265,8 +311,9 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
           G4double radius = std::pow(worldPos.x() * worldPos.x() + worldPos.y() * worldPos.y(), 0.5);
 
-          G4double newY = radius - fpDetector->get_start_R() + (step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo()) * fpDetector->get_spacing();
-          //G4cout << "newY: " << newY << ", cNo: " << step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo() << ", radius: " << radius << ", s*cno: " << fpDetector->get_spacing() << G4endl;
+          G4double newY = radius - (fpDetector->get_start_R() + (step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo()) * fpDetector->get_spacing());
+          //G4cout << "newX: " << newX << ", newY: " << newY << ", cNo: " << step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo() << ", radius: " << radius << ", s*cno: " << fpDetector->get_spacing() << ", startR: " <<  fpDetector->get_start_R() << G4endl;
+    
           //G4ThreeVector localPos = touchable->GetHistory()->GetTopTransform().TransformPoint(worldPos);
           G4ThreeVector newPos = G4ThreeVector(newX, newY, newZ);
           G4ThreeVector worldMomentum = step->GetPostStepPoint()->GetMomentumDirection();
@@ -313,7 +360,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
         G4double radius = std::pow(worldPos.x() * worldPos.x() + worldPos.y() * worldPos.y(), 0.5);
 
-        G4double newY = radius - fpDetector->get_start_R() + (step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo()) * fpDetector->get_spacing();
+        G4double newY = radius - (fpDetector->get_start_R() + (step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo()) * fpDetector->get_spacing());
         
         G4ThreeVector newPos = G4ThreeVector(newX, newY, newZ);
 
@@ -343,7 +390,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
     G4double radius = std::pow(worldPos.x() * worldPos.x() + worldPos.y() * worldPos.y(), 0.5);
 
-    G4double newY = radius - fpDetector->get_start_R() + (step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo()) * fpDetector->get_spacing();
+    G4double newY = radius - (fpDetector->get_start_R() + (step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo()) * fpDetector->get_spacing());
     
     G4ThreeVector newPos = G4ThreeVector(newX, newY, newZ);
     G4int particleID = particleMap[particleName];
