@@ -63,18 +63,19 @@ def doseCalculation(input_tree: TTreeType, pathLength: dict, dosePerEvent: dict,
 
     if eventType == "standalone":
         event = input_tree["EventNum"].array(library = "np")
-    elif eventType == "PS":
-        # event = input_tree["part1_EventNum"].array(library = "np")
-        event = input_tree["EventNum"].array(library = "np")
+    elif eventType == "photon":
+        event = input_tree["part1_EventNum"].array(library = "np")
+    elif eventType == "decay":
+        event = input_tree["step1_eventID"].array(library = "np")
     
     if copyCheck:
-        part1_CopyNum = input_tree["part1_CopyNum"].array(library = "np")
+        part1_CopyNum = input_tree["step1_copyNo"].array(library = "np")
         mask = part1_CopyNum==copy
     else:
         mask = np.array([True]*len(event))
 
     if part1_particleSource:
-        PrimaryParticle = input_tree["part1_particleSource"].array(library = "np")
+        PrimaryParticle = input_tree["step1_parentID"].array(library = "np")
 
         tempMask = np.zeros_like(mask)
         for i in part1_particleSource:
@@ -83,17 +84,22 @@ def doseCalculation(input_tree: TTreeType, pathLength: dict, dosePerEvent: dict,
 
 
     if ("PathLengthChromatin" in input_tree) and ("PrimaryKEEntrance" in input_tree):
-        data = np.vstack([event, input_tree["Edep_J"].array(library = "np"), input_tree["PathLengthChromatin"].array(library = "np"), input_tree["PrimaryKEEntrance"].array(library = "np"), input_tree["PrimaryKEExit"].array(library = "np")]).T
+        data = np.vstack([event, input_tree["edep_J"].array(library = "np"), input_tree["PathLengthChromatin"].array(library = "np"), input_tree["PrimaryKEEntrance"].array(library = "np"), input_tree["PrimaryKEExit"].array(library = "np")]).T
     elif ("PathLengthChromatin" in input_tree):
-        data = np.vstack([event, input_tree["Edep_J"].array(library = "np"), input_tree["PathLengthChromatin"].array(library = "np")]).T
+        data = np.vstack([event, input_tree["edep_J"].array(library = "np"), input_tree["PathLengthChromatin"].array(library = "np")]).T
     else:
-        data = np.vstack([event, input_tree["Edep_J"].array(library = "np")]).T
+        data = np.vstack([event, input_tree["edep_J"].array(library = "np")]).T
 
     data = data[mask]
     volumeFactor = 1/ (1000 * chromatinVolume)
 
+    # remove events with no dose
+    data = data[data[:,1]>0]
+    # apply mask to events
+    event = event[mask]
+
     if eventType == "standalone":
-        dosePerEvent = {e: volumeFactor * np.sum((data[data[:,0]==e])[:,1]) for e in event if np.sum((data[data[:,0]==e])[:,1])>0}
+        dosePerEvent = {e: volumeFactor * np.sum((data[data[:,0]==e])[:,1]) for e in event}
         
         pathLength = {e: (data[data[:,0]==e])[0,2] for e in event if ("PathLengthChromatin" in input_tree) and (np.sum((data[data[:,0]==e])[:,1])>0) } 
 
@@ -106,10 +112,9 @@ def doseCalculation(input_tree: TTreeType, pathLength: dict, dosePerEvent: dict,
         dosePerEvent = {e: np.sum([dosePerEventNew[e], dosePerEvent[e]]) if (e in dosePerEvent) and (e in dosePerEventNew) else dosePerEventNew[e] if (e in dosePerEventNew) else dosePerEvent[e] for e in set(list(dosePerEvent.keys())+list(dosePerEventNew.keys()))}
     
 
-    if eventType == "PS":
-        # eventMapping = {a:b for a,b in zip(input_tree["EventNum"].array(library = "np"), input_tree["part1_EventNum"].array(library = "np"))} 
+    if eventType == "decay":
+        eventMapping = {a:b for a,b in zip(input_tree["step2_eventID"].array(library = "np"), input_tree["step1_eventID"].array(library = "np"))} 
 
-        eventMapping = {a:b for a,b in zip(input_tree["EventNum"].array(library = "np"), input_tree["EventNum"].array(library = "np"))} 
 
     if meanKEperEvent and list(meanKEperEvent.values())[0]!="N/A":
         energy = sum(meanKEperEvent.values())/len(meanKEperEvent.values())
@@ -129,7 +134,7 @@ def getNumIntersecting(fInfo: TTreeType) -> float:
     """
     return fInfo["NumIntersecting"].array()[0]
 
-def AccumulateEdep(input_tree: TTreeType, cumulatedEnergyDep: dict, T0: cKDTree, T1: cKDTree, eventType: str, eventMapping: dict = False, copyCheck: bool = False, copy: int = 0, part1_particleSource: Union[bool, list]  = False)->dict:
+def AccumulateEdep(input_tree: TTreeType, cumulatedEnergyDep: dict, T0: cKDTree, T1: cKDTree, eventMapping: Union[bool,dict] = False, copyCheck: bool = False, copy: int = 0, part1_particleSource: Union[bool, list]  = False)->dict:
     """Accumulate energy deposits from all steps if near to sugar molecule
 
     Args:
@@ -137,7 +142,6 @@ def AccumulateEdep(input_tree: TTreeType, cumulatedEnergyDep: dict, T0: cKDTree,
         cumulatedEnergyDep (dict): dictionary to accumulate energy deposits in sugar volumes per event
         T0 (cKDTree): positions of strand 0
         T1 (cKDTree): positions of strand 1
-        eventType (str): event ype either standalone or PS
         eventMapping (dict, optional): if required mapping between primary simulation event number and PS simulation event number. Defaults to False.
         copyCheck (bool, optional): Whether to only accumulate energy from a specific box number. Defaults to False.
         copy (int, optional): box number to use. Defaults to 0.
@@ -147,19 +151,20 @@ def AccumulateEdep(input_tree: TTreeType, cumulatedEnergyDep: dict, T0: cKDTree,
         dict: dictionary containing all energy deposits per sugar per event
     """
 
-    if eventType == "standalone":
-        event = input_tree["EventNum"].array(library = "np")
-    elif eventType == "PS":
-        event = np.array([eventMapping[a] for a in input_tree["EventNum"].array(library = "np")])
+    if eventMapping:
+        event = np.array([eventMapping[a] for a in input_tree["step2_eventID"].array(library = "np")])
+        # event = np.array([ps_data['step1_eventID'][np.where(evt2==i)][0] for )
+    else:
+        event = input_tree["step2_eventID"].array(library = "np")
 
     if copyCheck:
-        part1_CopyNum = input_tree["part1_CopyNum"].array(library = "np")
+        part1_CopyNum = input_tree["step1_copyNo"].array(library = "np")
         mask = part1_CopyNum==copy
     else:
         mask = np.array([True]*len(event))
 
     if part1_particleSource:
-        PrimaryParticle = input_tree["part1_particleSource"].array(library = "np")
+        PrimaryParticle = input_tree["step1_parentID"].array(library = "np")
 
         tempMask = np.zeros_like(mask)
         for i in part1_particleSource:
@@ -204,13 +209,12 @@ def Direct(cumulatedEnergyDep: dict, fEMinDamage: float, fEMaxDamage: float)-> T
 
     return eventsListDirect, copyListDirect, strandListDirect
 
-def Indirect(input_tree: TTreeType, eventType: str, probIndirect: float, T0: cKDTree, T1: cKDTree, eventMapping: dict = False, copyCheck: bool = False, copy:int = 0,part1_particleSource: Union[bool, list] = False)->Tuple[list, list, list]:
+def Indirect(input_tree: TTreeType, probIndirect: float, T0: cKDTree, T1: cKDTree, eventMapping: Union[dict, bool] = False, copyCheck: bool = False, copy:int = 0,part1_particleSource: Union[bool, list] = False)->Tuple[list, list, list]:
     """ Calcula
      the number of indirect stand breaks (OH + sugar->damaged sugar) and returns lists of the events, sugar copy number and strand number for the clustering algorithm
 
     Args:
         input_tree (TTreeType): TTree from simulation containing water radical reactions with DNA per event
-        eventType (str): type of simulation, either standalone or PS
         probIndirect (float): probability that a OH + sugar reaction results in a strand break
         T0 (cKDTree):  positions of strand 0
         T1 (cKDTree):  positions of strand 1
@@ -226,22 +230,22 @@ def Indirect(input_tree: TTreeType, eventType: str, probIndirect: float, T0: cKD
     copyListIndirect=[]
     strandListIndirect=[]
 
-    if eventType == "standalone":
-        event = input_tree["EventNum"].array(library = "np")
-    elif eventType == "PS":
-        event = [eventMapping[a] for a in input_tree["EventNum"].array(library = "np")]
+    if eventMapping:
+        event = np.array([eventMapping[a] for a in input_tree["step2_eventID"].array(library = "np")])
+    else:
+        event = input_tree["step2_eventID"].array(library = "np")
 
     if len(event)==0: #RBE can be run with indirect off
         return eventsListIndirect, copyListIndirect, strandListIndirect 
 
     if copyCheck:
-        part1_CopyNum = input_tree["part1_CopyNum"].array(library = "np")
+        part1_CopyNum = input_tree["step1_copyNo"].array(library = "np")
         mask = part1_CopyNum==copy
     else:
         mask = np.array([True]*len(event))
         
     if part1_particleSource:
-        PrimaryParticle = input_tree["part1_particleSource"].array(library = "np")
+        PrimaryParticle = input_tree["step1_parentID"].array(library = "np")
 
         tempMask = np.zeros_like(mask)
         for i in part1_particleSource:
@@ -363,36 +367,24 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
     Raises:
         ValueError: Incompatible simulationType given
     """
-    particleMap = {
-       "Ra224": 0,
-      "Rn220": 1,
-      "Po216": 2,
-      "Pb212": 3,
-      "Bi212": 4,
-      "Tl208": 5,
-      "Po212": 6,
-      "Pb208": 7,
-      "alphaRa224": 8,
-      "alphaRn220": 9,
-      "alphaPo216": 10,
-      "alphaBi212": 11,
-      "alphaPo212": 12,
-      "e-Rn220": 13,
-      "e-Po216": 14,
-      "e-Pb212": 15,
-      "e-Bi212": 16,
-      "e-Tl208": 17,
-      "e-Po212": 18,
-      "e-Pb208": 19,
-      "gammaRn220": 20,
-      "gammaPo216": 21,
-      "gammaPb212": 22,
-      "gammaBi212": 23,
-      "gammaTl208": 24,
-      "gammaPo212": 25,
-      "gammaPb208": 26,
-      "e+": 27
-      }
+    particleMap = {0: "At211",
+                       1:  "Po211",
+                       2: "Po211*", 
+                       3: "Bi207",
+                       4: "Pb207",
+                       5: "Pb207*",
+                       6:"alphaAt211",
+                       7: "alphaPo211",
+                       8: "e-At211",
+                       9: "e-Bi207",
+                       10: "e-Pb207*",
+                       11: "gammaAt211",
+                       12: "gammaBi207",
+                       13: "gammaPb207",
+                       14: "gammaPb207*",
+                       15: "gammaPo211",
+                       16: "gammaPo211*",
+                       -1: "all"}
     
     if part1_particleSource:
         part1_particleSource = [particleMap[a] for a in part1_particleSource]
@@ -402,7 +394,7 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
     # Load root data to analyse
     file = uproot.open(filename)
     
-    fDirectory = file['ntuple']
+    fDirectory = file['output']
 
     tInfo = fDirectory["Info"]
     tEdep = fDirectory["EventEdep"]
@@ -423,23 +415,23 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
 
     if simulationType == "standalone":
         energy, _, dosePerEvent, meanKEperEvent, pathLength = doseCalculation(tEdep, pathLength, dosePerEvent,meanKEperEvent, "standalone", chromatinVolume) 
-        cumulatedEnergyDep = AccumulateEdep(input_tree, cumulatedEnergyDep, T0, T1, eventType = "standalone")
+        cumulatedEnergyDep = AccumulateEdep(input_tree, cumulatedEnergyDep, T0, T1)
         eventsListDirect, copyListDirect, strandListDirect = Direct(cumulatedEnergyDep,fEMinDamage, fEMaxDamage)
-        eventsListIndirect, copyListIndirect, strandListIndirect = Indirect(input_tree_indirect, "standalone", probIndirect, T0, T1)
+        eventsListIndirect, copyListIndirect, strandListIndirect = Indirect(input_tree_indirect, probIndirect, T0, T1)
 
         LET = np.mean(tInfo["MeanLET"])
 
         NumIntersecting = len(pathLength.keys())
 
     elif simulationType == "decay":
-        energy, eventMapping, dosePerEvent, meanKEperEvent, pathLength = doseCalculation(tEdep, pathLength, dosePerEvent,meanKEperEvent, "PS", chromatinVolume, copyCheck = True, copy = part1_CopyNum, part1_particleSource = part1_particleSource) 
+        energy, eventMapping, dosePerEvent, meanKEperEvent, pathLength = doseCalculation(tEdep, pathLength, dosePerEvent,meanKEperEvent, "decay", chromatinVolume, copyCheck = True, copy = part1_CopyNum, part1_particleSource = part1_particleSource) 
         
 
-        cumulatedEnergyDep = AccumulateEdep(input_tree, cumulatedEnergyDep, T0, T1, eventMapping = eventMapping, eventType = "PS", copyCheck = True, copy = part1_CopyNum, part1_particleSource = part1_particleSource)
+        cumulatedEnergyDep = AccumulateEdep(input_tree, cumulatedEnergyDep, T0, T1, copyCheck = True, copy = part1_CopyNum, part1_particleSource = part1_particleSource, eventMapping=eventMapping)
 
         eventsListDirect, copyListDirect, strandListDirect = Direct(cumulatedEnergyDep,fEMinDamage, fEMaxDamage)
 
-        eventsListIndirect, copyListIndirect, strandListIndirect = Indirect(input_tree_indirect, "PS", probIndirect, T0, T1, eventMapping = eventMapping, copyCheck = True, copy = part1_CopyNum, part1_particleSource = part1_particleSource)
+        eventsListIndirect, copyListIndirect, strandListIndirect = Indirect(input_tree_indirect, probIndirect, T0, T1, copyCheck = True, copy = part1_CopyNum, part1_particleSource = part1_particleSource, eventMapping=eventMapping)
         LET = "N/A"
 
         NumIntersecting = len(list(set(eventsListDirect+eventsListIndirect)))
@@ -455,14 +447,14 @@ def runClustering(filename: str, outputFilename: str, fEMinDamage: float, fEMaxD
         NumIntersecting = getNumIntersecting(fDirectoryPhoton["Info"])
 
         energy, eventMapping, dosePerEvent, _, _ = doseCalculation(tEdepPhoton, pathLength, dosePerEvent,meanKEperEvent, "standalone", chromatinVolume) 
-        energy, eventMapping, dosePerEvent, _, _  = doseCalculation(tEdep, pathLength, dosePerEvent,meanKEperEvent, "PS", chromatinVolume) 
+        energy, eventMapping, dosePerEvent, _, _  = doseCalculation(tEdep, pathLength, dosePerEvent,meanKEperEvent, "photon", chromatinVolume) 
 
-        cumulatedEnergyDep = AccumulateEdep(input_tree_photon, cumulatedEnergyDep, T0, T1, eventType = "standalone") #read in photon edep first
+        cumulatedEnergyDep = AccumulateEdep(input_tree_photon, cumulatedEnergyDep, T0, T1) #read in photon edep first
 
-        cumulatedEnergyDep = AccumulateEdep(input_tree, cumulatedEnergyDep, T0, T1, eventMapping = eventMapping, eventType = "PS")
+        cumulatedEnergyDep = AccumulateEdep(input_tree, cumulatedEnergyDep, T0, T1, eventMapping = eventMapping)
 
         eventsListDirect, copyListDirect, strandListDirect = Direct(cumulatedEnergyDep, fEMinDamage, fEMaxDamage)
-        eventsListIndirect, copyListIndirect, strandListIndirect = Indirect(input_tree_indirect, "PS", probIndirect, T0, T1, eventMapping = eventMapping, copyCheck = False)
+        eventsListIndirect, copyListIndirect, strandListIndirect = Indirect(input_tree_indirect, probIndirect, T0, T1, eventMapping = eventMapping, copyCheck = False)
         LET = "N/A"
         # Path length and KE are not recorded for photon simulations
         pathLength = {e: "N/A" for e in dosePerEvent.keys()}
