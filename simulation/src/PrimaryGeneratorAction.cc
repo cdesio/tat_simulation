@@ -90,10 +90,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     
     ps_file.read((char *)&line, sizeof line);
     ps_file.close();
-
-    G4double positionX = line[0];
-    G4double positionY = line[1];
-    G4double positionZ = line[2];
+    //G4cout << "um: " << um << ", posX: " << line[0] << ", posX_um: " << line[0] / um << G4endl;
+    G4double positionX = line[0]/mm;
+    G4double positionY = line[1]/mm;
+    G4double positionZ = line[2]/mm;
+    
     G4double momentumX = line[3];
     G4double momentumY = line[4];
     G4double momentumZ = line[5];
