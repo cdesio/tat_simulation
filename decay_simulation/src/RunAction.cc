@@ -114,7 +114,6 @@ void RunAction::CreateNtuple()
 
   analysisManager->CreateNtuple("Info", "Info");
   analysisManager->CreateNtupleDColumn(1, "ChromatinVolume_m3");
-  analysisManager->CreateNtupleIColumn(1, "NumSecondaries");
   analysisManager->CreateNtupleIColumn(1, "NumEvents");
   analysisManager->CreateNtupleSColumn(1, "GitHash");
   analysisManager->CreateNtupleIColumn(1, "NumIntersecting");
@@ -125,6 +124,13 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleDColumn(2, "Edep_MeV");
   analysisManager->CreateNtupleIColumn(2, "EventNo");
   analysisManager->FinishNtuple(2);
+
+  analysisManager->CreateH1("0", "dose", 100, 0, 100);
+  analysisManager->CreateH1("1", "At211Decay", 144, 0, 72);
+  analysisManager->CreateH1("2", "Po211Decay", 144, 0, 72);
+  analysisManager->CreateH1("3", "Bi207Decay", 144, 0, 72);
+  analysisManager->CreateH1("4", "Pb207", 144, 0, 72);
+  analysisManager->CreateH1("5", "Pb207*", 144, 0, 72);
 
   G4cout << "\n----> Histogram file is opened in " << fileName << G4endl;
 }
