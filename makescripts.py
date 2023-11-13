@@ -25,6 +25,7 @@ parser.add_argument("--slurm", type=bool, required=False, default = False)
 parser.add_argument("--seed", type=int, required=False)
 parser.add_argument("--nthreads", type=int, default=4)
 parser.add_argument("--mem", type=int, default=20)
+parser.add_argument("--continuous", type=bool, default=False)
 
 args = parser.parse_args()
 
@@ -56,13 +57,26 @@ else:
     simulation_parent = os.path.join(
         "/", "home", "cdesio", "TAT", "tat_shell_ps"
     )
+if args.continuous:
+    continuous = args.continuous
+else:
+    continuous = False
 
-histoneFile = os.path.join(
-    simulation_parent, "geometryFiles", "histonePositions_4x4_300nm.bin"
-)
-sugarFile = os.path.join(
-    simulation_parent, "geometryFiles", "sugarPos_4x4_300nm.bin"
-)
+if continuous:
+    histoneFile = os.path.join(
+        simulation_parent, "geometryFiles", "histonePos_output.bin"
+    )
+    sugarFile = os.path.join(
+        simulation_parent, "geometryFiles", "sugarPos_output.bin"
+    )
+
+else:
+    histoneFile = os.path.join(
+        simulation_parent, "geometryFiles", "histonePositions_4x4_300nm.bin"
+    )
+    sugarFile = os.path.join(
+        simulation_parent, "geometryFiles", "sugarPos_4x4_300nm.bin"
+    )
 
 time_decay = "0-10:00:00"
 time_DNA = "2-24:00:00"
@@ -99,9 +113,10 @@ if args.n:
 printProgress = int(numIons/10)
 
 n_string = f"{int(numIons/1000)}k" if numIons/1000 >=1 else f"{numIons}"
-
-folder = f"test_At{n_string}_dense_boxes_{startR}um_{n_div_R}R"
-
+if continuous:
+    folder = f"test_At{n_string}_shell_ps_{startR}um_{n_div_R}R_continuous"
+else:
+    folder = f"test_At{n_string}_shell_ps_{startR}um_{n_div_R}R"
 # print(f"Creating scripts in folder: {folder} with seed {seed}.")
 ####
 
@@ -285,7 +300,7 @@ for s in spacing:
         else:
             f.write("conda activate clustering\n")
         f.write(
-            f"python {clustering_dir}/run_up_part.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_part.csv --sugar {sugarFile} --ndiv_R {n_div_R} \n"
+            f"python {clustering_dir}/run_up_part.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_part.csv --sugar {sugarFile} --ndiv_R {n_div_R}  --continuous {continuous}\n"
         )
     filename_runscript = os.path.join(test_dir, f"run_script_At_{n_string}_spacing_{s_string}um_{seed}.sh")
     with open(filename_runscript, "w") as f:
