@@ -145,15 +145,16 @@ def calculateDose(eventEdep, chromatinVolume: float):
 
     # group dataframe based on step1_eventID, step1_copyNo, step1_primaryID and sum the energy deposition per particle
     ke_dose = edep_df.copy()    
-    ke_dose = ke_dose.groupby(['step1_eventID', 'step1_copyNo', 'step1_primaryID'], as_index=False)[
+    ke_dose_sum = ke_dose.groupby(['step1_eventID', 'step1_copyNo', 'step1_primaryID'], as_index=False)[
         ['edep_J', 'edep_MeV']].sum()
-
+    # ke_dose_mean = ke_dose.groupby(['step1_eventID', 'step1_copyNo', 'step1_primaryID'], as_index=False)[
+    #     ['edep_J', 'edep_MeV']].mean()
     #calculate dose from Edep_J
-    ke_dose['dose'] = ke_dose['edep_J']/(1000*chromatinVolume)
+    ke_dose_sum['dose'] = ke_dose_sum['edep_J']/(1000*chromatinVolume)
     #calculate mean energy from Edep_MeV as the mean energy per event    
     mean_energy = ke_dose.groupby('step1_eventID')['edep_MeV'].mean().mean()
     
-    return mean_energy, ke_dose
+    return mean_energy, ke_dose_sum[ke_dose_sum['dose']>0]
 
 
 def AccumulateEdep(direct, T0: cKDTree, T1: cKDTree, keys_df, out_path):
@@ -402,7 +403,7 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
 
     #calculate dose: output: df with various ID, mean energy and dose
     energy, evt_copyNo_Ke_dose_df = calculateDose(eventEdep, chromatinVolume)
-
+    
     print("calculateDose Done")
 
     # this can take long, so just checking when it's done
@@ -444,144 +445,206 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
             events_indirect = events_strand_copy_indirect_df.loc[events_strand_copy_indirect_df['step1_copyNo']==r]
             events_tot = evt_copyNo_Ke_dose_df.loc[evt_copyNo_Ke_dose_df['step1_copyNo']==r]
 
+            #print(f"r: {r} {len(events_tot)}")
             #get list of unique primary IDs in both direct and indirect events, then add -1 to save all-particles contribution
-            unique_pids = list(set(np.concatenate(
-                [np.unique(events_direct['step1_primaryID']), np.unique(events_indirect['step1_primaryID'])])))
+            # unique_pids = list(set(np.concatenate(
+            #     [np.unique(events_direct['step1_primaryID']), np.unique(events_indirect['step1_primaryID'])])))
             # if len(unique_pids):
-            unique_pids.append(-1)
-
+            unique_pids = np.unique(events_tot['step1_primaryID'])
+            unique_pids = np.append(unique_pids, -1)
+            # print(unique_pids, np.unique(events_tot['step1_primaryID']))
             #run clustering on selected events
             #create headers to handle writing to output: if file already created, skip writing header            
-            headers = set()
-
+            headers_SB = set()
+            headers_DSB = set()
+            
             # loop on unique PID (primary IDs), calculate clustering and save output to file
             for primary in unique_pids:
+                
                 primary_name = rev_primary_map[primary]
+            
                 # save all particles using -1 trick                
                 if primary_name == 'all':
                     events_direct_part = events_direct[events_direct['step1_primaryID'] != -1]
                     events_indirect_part = events_indirect[events_indirect['step1_primaryID'] != -1]
+                    events_tot_ids_part = np.unique(events_tot[events_tot['step1_primaryID']!=-1]['step1_eventID'].to_numpy())
+
+                    # print(f"pid: {primary}: {len(events_tot[events_tot['step1_primaryID']!=-1])}")
                 else:
+                
                     # save each primary with its own pid
                     events_direct_part = events_direct[events_direct['step1_primaryID'] == primary]
                     events_indirect_part = events_indirect[events_indirect['step1_primaryID'] ==primary]
+                    events_tot_ids_part = np.unique(events_tot[events_tot['step1_primaryID']==primary]['step1_eventID'].to_numpy())
 
+                    # print(f"pid: {primary}: {len(events_tot[events_tot['step1_primaryID']==primary])}")
                 # get list of unique direct and indirect events                
                 numEvts = list(set(np.concatenate(
                     [events_direct_part['step1_eventID'], events_indirect_part['step1_eventID']])))
 
-                # call c++ clustering on direct and indirect events
+                text_SB = np.zeros(shape = (len(events_tot_ids_part), 12), dtype=int)
+                text_DSB = np.zeros(shape=(len(events_tot_ids_part), 50), dtype=int)
 
-                tempResults_part = clustering(numEvts, np.array(events_direct_part['step1_eventID']), np.array(events_direct_part['copy']), np.array(events_direct_part['strand']),
-                                              np.array(events_indirect_part['step1_eventID']), np.array(events_indirect_part['copy']), np.array(events_indirect_part['strand']), continuous)
+                if len(numEvts):
+                    # call c++ clustering on direct and indirect events
+
+                    tempResults_part = clustering(numEvts, np.array(events_direct_part['step1_eventID']), np.array(events_direct_part['copy']), np.array(events_direct_part['strand']),
+                                                np.array(events_indirect_part['step1_eventID']), np.array(events_indirect_part['copy']), np.array(events_indirect_part['strand']), continuous)
+                    # strand break number results
+                    clusteringResults = np.asarray(tempResults_part[0], dtype=int)
+                    # DSB cluster size, cluster of size 1-10
+                    clusterSize = np.asarray(tempResults_part[1])
+                    
+                    #prepare text to write to file
+                
+                    if len(clusteringResults[:, 0]):
+                
+                        eventsWithClusteringResults = clusteringResults[:, 0]
+
+                        # text_SB = np.zeros(
+                        #     shape=(events_tot.shape[0], 12), dtype=int)
+                        
+                        # text_SB[] = clusteringResults[:, 1:]
+
+                        # text_DSB = np.zeros(
+                        #     shape=(eventsWithClusteringResults.shape[0], 50), dtype=int)
+                        # text_DSB[:] = clusterSize[:, 1:]
+                        _, idx1, idx2 = np.intersect1d(events_tot_ids_part, eventsWithClusteringResults, return_indices=True)
+
+                        text_SB[idx1] = clusteringResults[:, 1:][idx2]
+                        text_DSB[idx1] = clusterSize[:,1:][idx2]
                
-                # strand break number results
-                clusteringResults = np.asarray(tempResults_part[0], dtype=int)
-                # DSB cluster size, cluster of size 1-10
-                clusterSize = np.asarray(tempResults_part[1])
                 
-                #prepare text to write to file
+                else:
+                    if primary_name == "all":
+                        print(f"no clustering results for r: {r} primary: {primary_name}")
+                    continue               
                 
-                if len(clusteringResults):
-                    eventsWithClusteringResults = clusteringResults[:, 0]
+                
+                # group primary names for output files
+                if 'alpha' in primary_name:
+                    pname = 'alpha'
+                elif 'e-' in primary_name:
+                    pname = 'e-'
+                elif 'gamma' in primary_name:
+                    pname = 'gamma'
+                elif 'all' in primary_name:
+                    pname = 'all'
+                else:
+                    pname = 'ions'
+                
+                outfile_SB = out_path + \
+                    f"_{pname}"+f"_{r}.csv"
+                outfile_DSB = out_path + \
+                    f"_{pname}"+f"_DSB_{r}.csv"
 
-                    text_SB = np.zeros(
-                        shape=(eventsWithClusteringResults.shape[0], 12), dtype=int)
-                    text_SB[:] = clusteringResults[:, 1:]
-
-                    text_DSB = np.zeros(
-                        shape=(eventsWithClusteringResults.shape[0], 50), dtype=int)
-                    text_DSB[:] = clusterSize[:, 1:]
-
-                    # group primary names for output files
-                    if 'alpha' in primary_name:
-                        pname = 'alpha'
-                    elif 'e-' in primary_name:
-                        pname = 'e-'
-                    elif 'gamma' in primary_name:
-                        pname = 'gamma'
-                    elif 'all' in primary_name:
-                        pname = 'all'
-                    else:
-                        pname = 'ions'
-                    outfile_SB = out_path + \
-                        f"_{pname}"+f"_{r}.csv"
+                #write SB and DSB to file
+                if outfile_SB not in headers_SB:
+                    modeSB = 'w'
+                    headers_SB.add(outfile_SB)
+                else:
+                    modeSB = "a"
+                
+                if outfile_DSB not in headers_DSB:
+                    modeDSB = 'w'
+                    headers_DSB.add(outfile_SB)
+                else:
+                    modeDSB = "a"
+               
+                # print(f"r: {r}, primary: {primary}, evts_tot: {len(events_tot_ids_part)}, clust_evts: {len(eventsWithClusteringResults)}")
+                # print(f"textSB: {len(text_SB)}, idx1:{len(idx1)}, idx2:{len(idx2)}")
+                # write SB file
+                with open(outfile_SB, modeSB) as f:
+                    if modeSB =='w':
+                        f.write(
+                            "Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,GitHash,ClusteringGitHash\n")
+                        f.write("{},{},{},{},{},{},{},{},{}\n".format(filename_DNA, np.mean(energy), LET, len(
+                            numEvts), chromatinVolume, numBP, sugarFname, gitHash, clusteringGitHash))
+                        f.write("EventNo,DoseGy,NumEvts,ParticleID,MeanKEMeV,TotalSBdirect,SSBdirect,cSSBdirect,DSBdirect,TotalSBindirect,SSBindirect,cSSBindirect,DSBindirect,TotalSBtotal,SSBtotal,cSSBtotal,DSBtotal\n")
+                    # all particles
                     
-                    #write SB and DSB to file
-                    if outfile_SB not in headers:
-                        mode = 'w'
-                        headers.add(outfile_SB)
-                    else:
-                        mode = "a"
-                    
-                    # write SB file
-                    with open(outfile_SB, mode) as f:
-                        if mode =='w':
-                            f.write(
-                                "Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,GitHash,ClusteringGitHash\n")
-                            f.write("{},{},{},{},{},{},{},{},{}\n".format(filename_DNA, np.mean(energy), LET, len(
-                                numEvts), chromatinVolume, numBP, sugarFname, gitHash, clusteringGitHash))
-                            f.write("EventNo,DoseGy,NumEvts,ParticleID,MeanKEMeV,TotalSBdirect,SSBdirect,cSSBdirect,DSBdirect,TotalSBindirect,SSBindirect,cSSBindirect,DSBindirect,TotalSBtotal,SSBtotal,cSSBtotal,DSBtotal\n")
-                        # all particles
-                        for i, event in enumerate(sorted(eventsWithClusteringResults)):
-                            if primary == -1:
-                                # print(f"{r}, {pname}, tot: {len(events_tot)}, primary: {len(events_tot[events_tot['step1_primaryID']!=primary])}")
-                                
-                                f.write("{},{},{},{},{},{}".format(
-                                    event,
-                                    events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_primaryID'] != primary)].sum(),
-                                        len(events_tot[events_tot['step1_primaryID']!=primary]),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] != particle)].count(),
-                                    # evt_copyNo_Ke_dose_df['pid'][evt_copyNo_Ke_dose_df['step1']==event],
-                                    primary,
-                                    events_tot['edep_MeV'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_primaryID'] != primary)].sum(),
-                                    str(list(text_SB[i])).strip("[").strip("]")))
-                                f.write('\n')
-                            else:
-                                # selecting primary
-                                # print(f"{r}, {pname}, tot: {len(events_tot)}, primary: {len(events_tot[events_tot['step1_primaryID']==primary])}")
-                                
-                                f.write("{},{},{},{},{},{}".format(
-                                    event,
-                                    events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_primaryID']==primary)].sum(),
-                                        len(events_tot[events_tot['step1_primaryID']==primary]),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] == particle)].count(),
-                                    # evt_copyNo_Ke_dose_df['pid'][evt_copyNo_Ke_dose_df['step1']==event],
-                                    primary,
-                                    events_tot['edep_MeV'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_primaryID'] == primary)].sum(),
-                                    str(list(text_SB[i])).strip("[").strip("]")))
-                                f.write('\n')
+                    for i, event in enumerate(events_tot_ids_part):
+                        if primary == -1:
+                            
+                            # if event not in eventsWithClusteringResults:
+                            #     text = "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+                            # else:
+                            #     cl_index = list(eventsWithClusteringResults).index(event)
+                            text = str(list(text_SB[i])).strip("[").strip("]")
+                        # print(f"{r}, {pname}, tot: {len(events_tot)}, primary: {len(events_tot[events_tot['step1_primaryID']!=primary])}")
+                            f.write("{},{},{},{},{},{}".format(
+                                event,
+                                events_tot['dose'][(events_tot['step1_eventID'] == event) & (
+                                    events_tot['step1_primaryID'] != primary)].sum(),
+                                    len(events_tot['dose'][(events_tot['step1_eventID'] == event) & (
+                                    events_tot['step1_primaryID'] != primary)]),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] != particle)].count(),
+                                # evt_copyNo_Ke_dose_df['pid'][evt_copyNo_Ke_dose_df['step1']==event],
+                                primary,
+                                events_tot['edep_MeV'][(events_tot['step1_eventID'] == event) & (
+                                    events_tot['step1_primaryID'] != primary)].sum(), text
+                                ))
+                            f.write('\n')
+                        else:
+                                                      
+                            # selecting primary
+                            # print(f"{r}, {pname}, tot: {len(events_tot)}, primary: {len(events_tot[events_tot['step1_primaryID']==primary])}")
+                            # if event not in eventsWithClusteringResults:
+                            #     text = "0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+                            # else:
+                            #     cl_index = list(eventsWithClusteringResults).index(event)
+                            
+                            text = str(list(text_SB[i])).strip("[").strip("]")
+                        
+                            f.write("{},{},{},{},{},{}".format(
+                                event,
+                                events_tot['dose'][(events_tot['step1_eventID'] == event) & (
+                                    events_tot['step1_primaryID']==primary)].sum(),
+                                    len(events_tot['dose'][(events_tot['step1_eventID'] == event) & (
+                                    events_tot['step1_primaryID']==primary)]),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] == particle)].count(),
+                                # evt_copyNo_Ke_dose_df['pid'][evt_copyNo_Ke_dose_df['step1']==event],
+                                primary,
+                                events_tot['edep_MeV'][(events_tot['step1_eventID'] == event) & (
+                                    events_tot['step1_primaryID'] == primary)].sum(),
+                                text))
+                            f.write('\n')
 
-                    # write DSB output file
-                    outfile_DSB = out_path + \
-                        f"_{pname}"+f"_DSB_{r}.csv"
-                    with open(outfile_DSB, "a") as f:
+                # write DSB output file
+                
+                with open(outfile_DSB, modeDSB) as f:
+                    if modeDSB =='w':
                         f.write(
                             "Filename,EnergyMeV,LET,numEvtIntersectingVolume,chromatinVolume,numBP,sugarPosFilename,SimGitHash,ClusteringGitHash\n")
                         f.write("{},{},{},{},{},{},{},{},{}\n".format(filename_DNA, np.mean(energy), LET, len(
                             numEvts), chromatinVolume, numBP, sugarFname, gitHash, clusteringGitHash))
                         f.write("EventNo,DoseGy,ParticleID,Direct_1_SBperDSBcluster,Direct_2_SBperDSBcluster,Direct_3_SBperDSBcluster,Direct_4_SBperDSBcluster,Direct_5_SBperDSBcluster,Direct_6_SBperDSBcluster,Direct_7_SBperDSBcluster,Direct_8_SBperDSBcluster,Direct_9_SBperDSBcluster,Direct_10_SBperDSBcluster,Indirect_1_SBperDSBcluster,Indirect_2_SBperDSBcluster,Indirect_3_SBperDSBcluster,Indirect_4_SBperDSBcluster,Indirect_5_SBperDSBcluster,Indirect_6_SBperDSBcluster,Indirect_7_SBperDSBcluster,Indirect_8_SBperDSBcluster,Indirect_9_SBperDSBcluster,Indirect_10_SBperDSBcluster,Hybrid_1_SBperDSBcluster,Hybrid_2_SBperDSBcluster,Hybrid_3_SBperDSBcluster,Hybrid_4_SBperDSBcluster,Hybrid_5_SBperDSBcluster,Hybrid_6_SBperDSBcluster,Hybrid_7_SBperDSBcluster,Hybrid_8_SBperDSBcluster,Hybrid_9_SBperDSBcluster,Hybrid_10_SBperDSBcluster,Mixed_1_SBperDSBcluster,Mixed_2_SBperDSBcluster,Mixed_3_SBperDSBcluster,Mixed_4_SBperDSBcluster,Mixed_5_SBperDSBcluster,Mixed_6_SBperDSBcluster,Mixed_7_SBperDSBcluster,Mixed_8_SBperDSBcluster,Mixed_9_SBperDSBcluster,Mixed_10_SBperDSBcluster,Total_1_SBperDSBcluster,Total_2_SBperDSBcluster,Total_3_SBperDSBcluster,Total_4_SBperDSBcluster,Total_5_SBperDSBcluster,Total_6_SBperDSBcluster,Total_7_SBperDSBcluster,Total_8_SBperDSBcluster,Total_9_SBperDSBcluster,Total_10_SBperDSBcluster\n")
-                        for i, event in enumerate(sorted(eventsWithClusteringResults)):
-                            if primary == -1:
-                                f.write("{},{},{},{}".format(
-                                    event, events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_primaryID'] != primary)].sum(),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] != particle)].count(),
-                                    primary,
-                                    str(list(text_DSB[i])).strip("[").strip("]")))
-                                f.write('\n')
-                            else:
-                                f.write("{},{},{},{}".format(
-                                    event, events_tot['dose'][(events_tot['step1_eventID'] == event) & (
-                                        events_tot['step1_primaryID']== primary)].sum(),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] == particle)].count(),
-                                    primary,
-                                    str(list(text_DSB[i])).strip("[").strip("]")))
-                                f.write('\n')
+                    for i, event in enumerate(events_tot_ids_part):
+                        if primary == -1:
+                            # if event not in eventsWithClusteringResults:
+                            #     text = "0, "*49+"0" + ", []"
+                            # else:
+                            #     cl_index = list(eventsWithClusteringResults).index(event)
+                            text = str(list(text_DSB[i])).strip("[").strip("]")
+                            f.write("{},{},{},{}".format(
+                                event, events_tot['dose'][(events_tot['step1_eventID'] == event) & (
+                                    events_tot['step1_primaryID'] != primary)].sum(),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] != particle)].count(),
+                                primary,
+                                text))
+                            f.write('\n')
+                        else:
+                            # if event not in eventsWithClusteringResults:
+                            #     text = "0, "*49+"0" + ", []"
+                            # else:
+                            text = str(list(text_DSB[i])).strip("[").strip("]")
+                            f.write("{},{},{},{}".format(
+                                event, events_tot['dose'][(events_tot['step1_eventID'] == event) & (
+                                    events_tot['step1_primaryID']== primary)].sum(),#/events_tot['dose'][(events_tot['step1_eventID'] == event) & (events_tot['step1_primaryID'] == particle)].count(),
+                                primary,
+                                text))
+                            f.write('\n')
 
-                else:
-                    print(f"no clustering results for radius {r}")
-                    continue
+                # else:
+                #     print(f"no clustering results for radius {r}, primary: {primary_name}")
+                #     continue
 
     else:
         pass
