@@ -260,6 +260,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       analysisManager->FillNtupleIColumn(0, 9, mapped_PID);
       analysisManager->FillNtupleDColumn(0, 10, particleEnergy/MeV);
       analysisManager->FillNtupleDColumn(0, 11, steplength);
+      analysisManager->FillNtupleDColumn(0, 12, step->GetPreStepPoint()->GetGlobalTime());
       analysisManager->AddNtupleRow(0);
 
       fpEventAction->AddEdep(dE);
@@ -291,6 +292,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       analysisManager->FillNtupleIColumn(0, 9, mapped_PID);
       analysisManager->FillNtupleDColumn(0, 10, particleEnergy/MeV);
       analysisManager->FillNtupleDColumn(0, 11, steplength);
+      analysisManager->FillNtupleDColumn(0, 12, step->GetPreStepPoint()->GetGlobalTime());
       analysisManager->AddNtupleRow(0);
 
       fpEventAction->AddEdep(dE);
