@@ -116,21 +116,42 @@ def readSugarFile(sugarFname: str) -> Tuple[cKDTree, cKDTree]:
         Tuple[cKDTree, cKDTree]: KDTrees containing the positions of the sugars on stand 0 and strand 1
 
     """
-    # Read sugar csv file
-    with open(sugarFname, "rb") as f:
-        data = np.fromfile(f,np.float32)
+    if sugarFname.endswith('csv'):
+        # Read sugar csv file
+        with open(sugarFname, "r") as f:
+            data = f.readlines()
 
-    data = data.reshape(int(len(data)/12),12)
+        data = [[float(b)*1E6 for b in a.split("\t")] for a in data]
 
-    sugar0 = data[:,0:3]
-    sugar1 = data[:,3:6]
+        sugar0 = []
+        sugar1 = []
 
-    sugar0 = np.array(sugar0)
-    sugar1 = np.array(sugar1)
+        for line in data:
+            sugar0.append(line[0:3])
+            sugar1.append(line[3:6])
 
-    T0 = cKDTree(sugar0)
-    T1 = cKDTree(sugar1)
+        sugar0 = np.array(sugar0)
+        sugar1 = np.array(sugar1)
 
+        T0 = cKDTree(sugar0)
+        T1 = cKDTree(sugar1)
+    elif sugarFname.endswith('bin'):
+        with open(sugarFname, "rb") as f:
+            data = np.fromfile(f,np.float32)
+
+        data = data.reshape(int(len(data)/12),12)
+
+        sugar0 = data[:,0:3]
+        sugar1 = data[:,3:6]
+
+        sugar0 = np.array(sugar0)
+        sugar1 = np.array(sugar1)
+
+        T0 = cKDTree(sugar0)
+        T1 = cKDTree(sugar1)
+    else:
+        print("incompatible sugar file format")
+        return
     return T0, T1
 
 
@@ -138,7 +159,7 @@ def readSugarFile(sugarFname: str) -> Tuple[cKDTree, cKDTree]:
 def calculateDose(eventEdep, chromatinVolume: float):
 
     print("start calculate dose")
-    # impoer eventEdep from root file
+    # import eventEdep from root file
     edep = eventEdep.arrays(library='np')
     # create data frame from data
     edep_df = pd.DataFrame.from_dict(edep)
