@@ -8,17 +8,24 @@ import re
 from ranges_radii_dense import get_ranges_radii
 regex = re.compile(r'\d+')
 
-particle_map = {1: "alpha",
-                2: "gamma",
-                3: "e-",
-                4: "nu_e",
-                5: "At211",
-                6: "Po211",
-                7: "Bi207",
-                8: "Pb207",
-                9: "proton",
-                10: "e+" ,
-                -1: "all"}
+particle_map = {0: "At211",
+      1:  "Po211",
+      2: "Po211*", 
+      3: "Bi207",
+      4: "Pb207",
+      5: "Pb207*",
+      6:"alphaAt211",
+      7: "alphaPo211",
+      8: "e-At211",
+      9: "e-Bi207",
+      10: "e-Pb207*",
+      11: "gammaAt211",
+      12: "gammaBi207",
+      13: "gammaPb207",
+      14: "gammaPb207*",
+      15: "gammaPo211",
+      16: "gammaPo211*",
+   -1: "all"}
 
 
 class ClusteringEvents:
@@ -42,7 +49,17 @@ class ClusteringEvents:
     @property
     def numBP(self):
         return float(self.header['numBP'])
-
+    @property
+    def numEvts(self):
+        return int(self.header['numEvtIntersectingVolume'])
+    
+    def num_evts_pid(self, pid):
+        # print(self.data.loc[self.data['ParticleID']==pid])
+        num_evts = np.unique(self.data.loc[self.data['ParticleID']==pid]['NumEvts'])
+        if len(num_evts):
+            return num_evts[0]
+        else:
+            return np.nan
     def per_particle(self, pid, field_key):
         return self.data.loc[self.data["ParticleID"]==pid][field_key]
     
@@ -54,7 +71,7 @@ class ClusteringEvents:
          
 
 class ClusteringEventsRadii:
-    def __init__(self, folder, fname_prefix, spacing=None, n_div_r=40, seed=None, keyword=None, particle=None, boxes_per_R = None):
+    def __init__(self, folder, fname_prefix, spacing=None, n_div_r=40, seed=None, keyword=None, particle=None, boxes_per_R = None, start_r = 10.5):
         self.datasets = {}
         self.n_r = n_div_r
         self.radii = range(n_div_r)        
@@ -85,44 +102,61 @@ class ClusteringEventsRadii:
                 self.datasets[i] = ClusteringEvents(self.fnames_radii[i])
             
             if spacing:
-                self.distance[i] = 10.5+spacing* i
+                self.distance[i] = start_r+spacing* i
             else:
-                self.distance[i] = 10.5+2*i
+                self.distance[i] = start_r+2*i
 
     @property
     def particle_avail(self):
         return set(chain.from_iterable(dataset.particle_avail for dataset in self.datasets.values()))
+
+    @property
+    def particle_avail_id(self):
+        return set(chain.from_iterable(dataset.particle_avail_id for dataset in self.datasets.values()))
     
     def get(self, damage_key):
-        array = np.zeros(self.n_r)
-        # std = np.zeros(self.n_r)
+        array = np.full(self.n_r, np.nan)
+        
         for i, dataset in self.datasets.items():
             array[i] = np.array(dataset.get_damage(damage_key).sum())
-            # std[i] = np.array(dataset.get_damage(damage_key).std())
-        
-        return array #, std
+        return array
+    
+    # def n_events(self, damage_key):
+    #     nevents_r = np.full(self.n_r, np.nan)
+    #     for i, dataset in self.datasets.items():
+    #         _data = dataset.get_damage(damage_key)
+    #         nevents_r[i] = len(_data[~np.isnan(_data)])
+    #     return nevents_r
+
+    # def n_events_pid(self, pid, damage_key):
+    #     nevents_pid_r = np.full(self.n_r, np.nan)
+    #     for i, dataset in self.datasets.items():
+    #         _data = dataset.per_particlename(particle_map[pid], damage_key)
+    #         nevents_pid_r[i] = len(_data[~np.isnan(_data)])
+    #     return nevents_pid_r
+    
 
     # def get_err(self, damage_key)
 
     def get_bydose(self, damage_key):
-        array = np.zeros(self.n_r)
-        dose_arr = np.zeros(self.n_r)
+        array = np.full(self.n_r, np.nan)
+        dose_arr = np.full(self.n_r, np.nan)
         for i, dataset in self.datasets.items():
             array[i] = np.array(dataset.get_damage(damage_key).sum())
             dose_arr[i] = np.array(dataset.get_damage("DoseGy").sum())
-            
-        arr_bydose = np.divide(array, dose_arr, out=np.zeros_like(array), where=dose_arr != 0)
-            
-        return arr_bydose
+        if damage_key == 'DoseGy':
+            return dose_arr
+        else:
+            arr_bydose = array/dose_arr
+            #        np.divide(array, dose_arr, out=np.zeros_like(array), where=dose_arr)
+            return arr_bydose
     
     def byparticle(self, pid, damage_key):
-        array = np.zeros(self.n_r)
+        array = np.full(self.n_r, np.nan)
         for i, dataset in self.datasets.items():
-            array[i] = np.array(dataset.per_particlename(pid, damage_key).sum())
-        if damage_key=='DoseGy':
-            return array
-        else:
-            return array/self.numBP
+            array[i] = np.array(dataset.per_particlename(particle_map[pid], damage_key).sum())
+        return array
+    
 
     def byparticle_bydose(self, pid, damage_key):
         if damage_key=='DoseGy':
@@ -130,7 +164,13 @@ class ClusteringEventsRadii:
         else:
             damage = self.byparticle(pid, damage_key)
             dose = self.byparticle(pid, "DoseGy")
-            return np.divide(damage,dose, out=np.zeros_like(self.distance), where=dose!=0)
+            return(damage/dose)
+#            return np.divide(damage,dose, out=np.zeros_like(self.distance), where=dose)
+    def num_evts_pid(self, pid):
+        num_evts_pid_per_dataset = np.full(self.n_r, np.nan)
+        for i, dataset in self.datasets.items():
+            num_evts_pid_per_dataset[i] = dataset.num_evts_pid(pid)
+        return num_evts_pid_per_dataset
     
     @property
     def numBP(self):
@@ -142,6 +182,12 @@ class ClusteringEventsRadii:
     def num_bpr(self):
         return self.boxes_per_R
 
+    @property
+    def numEvtsInters(self):
+        num_evts_per_dataset = np.full(self.n_r, np.nan)
+        for i, dataset in self.datasets.items():
+            num_evts_per_dataset[i] = dataset.numEvts
+        return num_evts_per_dataset
     
     def __str__(self) -> str:
         return f"fname: {self.fname_base}"
@@ -149,69 +195,140 @@ class ClusteringEventsRadii:
     def __repr__(self) -> str:
         return str(self)
 
+
+particle_plotting_map = {
+    -1: {"name": "Total",
+       "colour": "mediumaquamarine",
+       'marker': "s"},
+    6: {"name": "alphaAt211",
+        "colour": "darkblue",
+        'marker': "*"},
+    7: {"name": "alphaPo211",
+        "colour": "mediumvioletred",
+        'marker': "s"},
+    8: {"name": "e-At211",
+        "colour": "cornflowerblue",
+        'marker': "x"},
+    9: {"name": "e-Bi207",
+        "colour": "cornflowerblue",
+        'marker': "o"},
+    10: {"name": "e-Pb207*",
+       "colour": "cornflowerblue",
+       'marker': "s"},
+    11: {"name": "gammaAt211",
+        "colour": "darkred",
+        'marker': "x"},
+    12: {"name": "gammaBi207",
+        "colour": "darkred",
+        'marker': "o"},
+    14: {"name": "gammaPb207",
+    "colour": "darkred",
+    'marker': "s"},
+    4: {"name": "Pb207",
+       "colour": "gold",
+       'marker': "s"},
+    
+    }
     
 def plot_field(datadict, damage_type='DSBtotal'):
-    colors = ['red', "k", "mediumvioletred", "cornflowerblue"]
-    
-    for i, p in enumerate(datadict.keys()):
-        distance = []
-        damage = []
-        datasets = datadict[p]
-        datasets_all = datadict['all']
-        for _, (dataset, dataset_all) in enumerate(zip(datasets, datasets_all)):
-            if len(dataset.particle_avail):
-                distance.append(dataset.distance)
-                if damage_type=="DoseGy":
-                    dam = dataset.get(damage_type)/dataset.num_bpr
-                else:
-                    dam = (np.divide(dataset.get(damage_type), dataset_all.get("DoseGy"), 
-                                     out=np.zeros_like(dataset.get(damage_type)), where=dataset_all.get("DoseGy")!=0))/(dataset.numBP*1e-9)
-                dam = np.where(dam==0., np.nan, dam)
-                damage.append(dam)
+    # colors = ['red', "k", "mediumvioletred", "cornflowerblue", 'gold']
+    damage = {}
+    distance = {}
+    for pmap in particle_plotting_map.keys():
+        damage.setdefault(pmap, [])
+        distance.setdefault(pmap, [])
+    datasets_all = datadict['all']
+    for p in datadict.keys():
+            datasets = datadict[p]
+            for seed_n, (dataset, dataset_all) in enumerate(zip(datasets, datasets_all)):
+                for pid in dataset.particle_avail_id:
+                    distance[pid].append(dataset.distance)
+            
+                    if damage_type=="DoseGy":
+                        dam = dataset.byparticle(pid, damage_type)#*(dataset.n_events(damage_type)/1000)
+                        
+                    else:
+                        # dam = dataset.get(damage_type)
+                        damage_temp = dataset.byparticle(pid, damage_type)  
+                        # damage_temp = np.where(dataset.n_events(damage_type)>2, np.nan, damage_temp)
+                        dam = (damage_temp/dataset_all.get("DoseGy"))/(dataset.numBP*1e-9)
+                            #np.divide(damage_temp, dataset_all.get("DoseGy"),#*(dataset_all.n_events('DoseGy')/1000), out=np.zeros_like(dataset.get(damage_type)), where=dataset_all.get("DoseGy")!=0))/(dataset.numBP*1e-9)
+                        dam = np.where(dam==0., np.nan, dam)
+                        
+                    damage[pid].append(dam)
+                    
+                    
+    for pid in damage.keys():
         
-        if len(distance) and len(damage):
-            plt.errorbar(np.mean(np.asarray(distance), axis=0), 
-                        np.nanmean(np.asarray(damage) ,axis=0), 
-                        yerr = np.nanstd(np.asarray(damage),axis=0), capsize=2, marker='o', 
-                        markersize=4, linewidth=0.2, elinewidth=0.2,label=f"{p}", c=colors[i])
+        std = np.nanstd(np.array(damage[pid]),axis=0)
+        std = np.where(std==0., np.nan, std)
+
+        dist = np.nanmean(np.asarray(distance[pid]), axis=0)
+        mean = np.nanmean(np.array(damage[pid]), axis=0)
+        if len(mean[~np.isnan(mean)])>1:
+            plt.errorbar(dist, mean, yerr =std,
+                    linestyle='',  alpha = 1 if pid!=-1 else 0.3,
+                    capsize=1, marker=particle_plotting_map[pid]['marker'], 
+                    markersize=3 if pid!=-1 else 8, linewidth=0.1, elinewidth=0.1,label=f"{particle_plotting_map[pid]['name']}", c=particle_plotting_map[pid]['colour'])
+                
     return
 
 
 def plot_rbe(datadict, damage_type='DSBtotal'):
-    colors = ['red', "k", "mediumvioletred", "cornflowerblue"]
     
-    for i, p in enumerate(datadict.keys()):
-        distance = []
-        damage = []
-        datasets = datadict[p]
-        datasets_all = datadict['all']
-        for _, (dataset, dataset_all) in enumerate(zip(datasets, datasets_all)):
-            if len(dataset.particle_avail):
-                distance.append(dataset.distance)
+    # colors = ['red', "k", "mediumvioletred", "cornflowerblue", 'gold']
+    damage = {}
+    distance = {}
+    for pmap in particle_plotting_map.keys():
+        damage.setdefault(pmap, [])
+        distance.setdefault(pmap, [])
+    datasets_all = datadict['all']
+    for p in datadict.keys():
+            datasets = datadict[p]
+            for seed_n, (dataset, dataset_all) in enumerate(zip(datasets, datasets_all)):
+                for pid in dataset.particle_avail_id:
+                    distance[pid].append(dataset.distance)
             
-                dam = (np.divide(dataset.get(damage_type), dataset_all.get("DoseGy"), 
-                                out=np.zeros_like(dataset.get(damage_type)), where=dataset_all.get("DoseGy")!=0))/(dataset.numBP*1e-9)/6.9
-                dam = np.where(dam==0., np.nan, dam)
-                damage.append(dam)
+                    if damage_type=="DoseGy":
+                        dam = dataset.byparticle(pid, damage_type)#*(dataset.n_events(damage_type)/1000)
+                        
+                    else:
+                        # dam = dataset.get(damage_type)
+                        damage_temp = dataset.byparticle(pid, damage_type)  
+                        # damage_temp = np.where(dataset.n_events(damage_type)>2, np.nan, damage_temp)
+                        dam = (damage_temp/dataset_all.get("DoseGy"))/(dataset.numBP*1e-9)/6.9
+                            #np.divide(damage_temp, dataset_all.get("DoseGy"),#*(dataset_all.n_events('DoseGy')/1000), out=np.zeros_like(dataset.get(damage_type)), where=dataset_all.get("DoseGy")!=0))/(dataset.numBP*1e-9)
+                        dam = np.where(dam==0., np.nan, dam)
+                        
+                    damage[pid].append(dam)
+                    
+                    
+    for pid in damage.keys():
         
-        if len(distance) and len(damage):
-            plt.errorbar(np.mean(np.asarray(distance), axis=0), 
-                        np.nanmean(np.asarray(damage) ,axis=0), 
-                        yerr = np.nanstd(np.asarray(damage),axis=0), capsize=2, marker='o', 
-                        markersize=4, linewidth=0.2, elinewidth=0.2,label=f"{p}", c=colors[i])
+        std = np.nanstd(np.array(damage[pid]),axis=0)
+        std = np.where(std==0., np.nan, std)
+
+        dist = np.nanmean(np.asarray(distance[pid]), axis=0)
+        mean = np.nanmean(np.array(damage[pid]), axis=0)
+        if len(mean[~np.isnan(mean)])>1:
+            plt.errorbar(dist, mean, yerr =std,
+                    linestyle='',  alpha = 1 if pid!=-1 else 0.3,
+                    capsize=1, marker=particle_plotting_map[pid]['marker'], 
+                    markersize=3 if pid!=-1 else 8, linewidth=0.1, elinewidth=0.1,label=f"{particle_plotting_map[pid]['name']}", c=particle_plotting_map[pid]['colour'])
+                
     return
   
 if __name__=="__main__": 
 
     datasets = []
-    folder = "/home/cdesio/TAT/tat_dense/output/combined_all"
-    #data_folder = os.path.join(folder, "clustering_out")
+    folder = "/home/cdesio/TAT/tat_shell_ps/output/test_At1k_shell_ps_10.5um_80R_continuous"
+    data_folder = os.path.join(folder, "clustering_out")
     fname_prefix="out_AtDNA_1k_spacing"
     spacing= 1
     keyword = 'part'
 
-    seeds = np.unique([int(regex.findall(fname.split(fname_prefix+f"_{spacing}um")[-1])[0]) for fname in os.listdir(folder) if keyword in fname])
-    particles = np.unique([fname.split(fname_prefix+f"_{spacing}um")[-1].split("_")[-2] for fname in os.listdir(folder) if keyword in fname and "DSB" not in fname])
+    seeds = np.unique([int(regex.findall(fname.split(fname_prefix+f"_{spacing}um")[-1])[0]) for fname in os.listdir(data_folder) if keyword in fname])
+    particles = np.unique([fname.split(fname_prefix+f"_{spacing}um")[-1].split("_")[-2] for fname in os.listdir(data_folder) if keyword in fname and "DSB" not in fname])
 
     print(seeds)
     print(particles)
@@ -219,28 +336,32 @@ if __name__=="__main__":
     datadict = {}
     for particle in np.unique(particles):
         datadict.setdefault(particle, [])
-    boxes_per_R = get_ranges_radii(ndiv_R=120)[1]
+    # boxes_per_R = get_ranges_radii(ndiv_R=100)[1]
     # print(boxes_per_R, len(boxes_per_R))
     for i, seed in enumerate(seeds):
         for particle in particles:
             
-            datadict[particle].append(ClusteringEventsRadii(folder=folder, fname_prefix=fname_prefix, 
-                                spacing=spacing, seed=int(seed), keyword=keyword, particle=particle, n_div_r=120, boxes_per_R=boxes_per_R))  
+            datadict[particle].append(ClusteringEventsRadii(folder=data_folder, fname_prefix=fname_prefix, 
+                                spacing=spacing, seed=int(seed), keyword=keyword, particle=particle, n_div_r=80, start_r = 0))  
 
     def plot_damage(damage_type, datadict):
         plt.figure(figsize=(8,5))
         plot_field(datadict, damage_type=damage_type)
-        plt.legend()
-        plt.xlabel("distance (um)")
+        plt.legend(ncol=4, loc=(0,1.01))
+        plt.xlabel("radial distance from the blood vessel (um)")
         if damage_type=="DoseGy":
             plt.ylabel(f"Dose ($Gy)$")
-            
+            plt.yscale('log')
+
         elif damage_type=="DSBtotal":
-            plt.ylabel(f"n. of {damage_type} ($Gy^-1 Gbp^-1)$")       
-        
+            plt.ylabel(f"total n. of DSB ($Gy^-1 Gbp^-1)$")      
+            plt.ylim(-1, 16)
         elif damage_type=="TotalSBtotal":
-            plt.ylim(0, 500)
-        plt.xlim(0, 120)
+            plt.ylabel(f"total n. of SB ($Gy^-1 Gbp^-1)$")  
+            plt.ylim(-1, 200)
+
+        plt.xlim(0, 80)
+        #plt.legend(loc=(1,0.4))
         plt.savefig(f"{folder}/{damage_type}_1k_dense.png")
 
         return
@@ -251,9 +372,10 @@ if __name__=="__main__":
     plt.figure(figsize=(8,5))
     plot_rbe(datadict, damage_type="DSBtotal")
     plt.legend()
-    plt.xlabel("distance (um)")
+    plt.xlabel("radial distance from blood vessel (um)")
     plt.ylabel("RBE")
-    plt.xlim(0, 120)
+    plt.xlim(0, 80)
+    plt.ylim(0, 3)
     plt.savefig(f"{folder}/RBE_1k_dense.png")
     # damage_type="DSBtotal"
 
