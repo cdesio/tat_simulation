@@ -26,6 +26,7 @@ parser.add_argument("--seed", type=int, required=False)
 parser.add_argument("--nthreads", type=int, default=4)
 parser.add_argument("--mem", type=int, default=20)
 parser.add_argument("--continuous", type=bool, default=False)
+parser.add_argument("--folder", type=str, required = False)
 
 args = parser.parse_args()
 
@@ -113,10 +114,14 @@ if args.n:
 printProgress = int(numIons/10)
 
 n_string = f"{int(numIons/1000)}k" if numIons/1000 >=1 else f"{numIons}"
-if continuous:
-    folder = f"test_At{n_string}_shell_ps_{startR}um_{n_div_R}R_continuous"
+
+if args.folder:
+    folder = args.folder
 else:
-    folder = f"test_At{n_string}_shell_ps_{startR}um_{n_div_R}R"
+    if continuous:
+        folder = f"test_At{n_string}_shell_ps_{startR}um_{n_div_R}R_continuous"
+    else:
+        folder = f"test_At{n_string}_shell_ps_{startR}um_{n_div_R}R"
 # print(f"Creating scripts in folder: {folder} with seed {seed}.")
 ####
 
