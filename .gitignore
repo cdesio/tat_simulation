@@ -2,8 +2,8 @@ simulation/build/*
 Simulation/build
 simulation/build/CMakeFiles/*
 simulation/build/CMakeFiles
-decay_simulation/build/*
-decay_simulation/GNUmakefiles
+gamma_sim/build/*
+gamma_sim/GNUmakefiles
 *.csv
 *.root
 *.log
@@ -18,3 +18,4 @@ simulation/build/CMakeFiles/*
 *png
 *cmake
 output/*png
+gamma_sim/**
