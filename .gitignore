@@ -18,4 +18,4 @@ simulation/build/CMakeFiles/*
 *png
 *cmake
 output/*png
-gamma_sim/**
+gamma_sim/build/**
