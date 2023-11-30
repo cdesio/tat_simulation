@@ -296,7 +296,7 @@ def plot_rbe(datadict, damage_type='DSBtotal'):
                         # dam = dataset.get(damage_type)
                         damage_temp = dataset.byparticle(pid, damage_type)  
                         # damage_temp = np.where(dataset.n_events(damage_type)>2, np.nan, damage_temp)
-                        dam = (damage_temp/dataset_all.get("DoseGy"))/(dataset.numBP*1e-9)/6.9
+                        dam = (damage_temp/dataset.byparticle(pid, "DoseGy"))/(dataset.numBP*1e-9)/6.9
                             #np.divide(damage_temp, dataset_all.get("DoseGy"),#*(dataset_all.n_events('DoseGy')/1000), out=np.zeros_like(dataset.get(damage_type)), where=dataset_all.get("DoseGy")!=0))/(dataset.numBP*1e-9)
                         dam = np.where(dam==0., np.nan, dam)
                         
@@ -318,10 +318,41 @@ def plot_rbe(datadict, damage_type='DSBtotal'):
                 
     return
   
+
+
+def plot_all(datadict, damage_type):
+    colors = ['red', "k", "mediumvioletred", "cornflowerblue", 'gold']
+    distance = []
+    damage = []
+    datasets_all = datadict['all']
+    for _, (dataset_all) in enumerate(datasets_all):
+        if len(dataset_all.particle_avail):
+            distance.append(dataset_all.distance)
+            damage_temp = dataset_all.get(damage_type)  
+            
+            dam = (damage_temp/(dataset_all.get("DoseGy")))/(dataset_all.numBP*1e-9)
+            dam = np.where(dam==0., np.nan, dam)
+            damage.append(dam)
+    damage = np.asarray(damage)
+    # if len(distance) and len(damage):
+    std = np.nanstd(np.asarray(damage),axis=0)
+    std = np.where(std==0., np.nan, std)
+    
+    mask = ~np.isnan(std)
+
+    filtered_field = damage[:, mask] 
+    filtered_dist = np.nanmean(np.asarray(distance)[:,mask], axis=0)
+    filtered_mean = np.nanmean(filtered_field, axis=0)
+    filtered_std = np.nanstd(filtered_field, axis=0)            
+    plt.errorbar(filtered_dist, filtered_mean, yerr =filtered_std,linestyle='',  
+                    capsize=1, marker='o', 
+                    markersize=2, linewidth=0.1, elinewidth=0.1,label=f"{damage_type}")
+    return
+
 if __name__=="__main__": 
 
     datasets = []
-    folder = "/home/cdesio/TAT/tat_shell_ps/output/test_At1k_shell_ps_10.5um_80R_continuous"
+    folder = "/home/cdesio/TAT/tat_shell_ps/output/test_At1k_shell_ps_10.5um_80R_continuous_1year"
     data_folder = os.path.join(folder, "clustering_out")
     fname_prefix="out_AtDNA_1k_spacing"
     spacing= 1
@@ -353,22 +384,45 @@ if __name__=="__main__":
             plt.ylabel(f"Dose ($Gy)$")
             plt.yscale('log')
 
-        elif damage_type=="DSBtotal":
+        elif "DSB" in damage_type:
             plt.ylabel(f"total n. of DSB ($Gy^-1 Gbp^-1)$")      
             plt.ylim(-1, 16)
-        elif damage_type=="TotalSBtotal":
+        elif "TotalSB" in damage_type:
             plt.ylabel(f"total n. of SB ($Gy^-1 Gbp^-1)$")  
             plt.ylim(-1, 200)
 
         plt.xlim(0, 80)
         #plt.legend(loc=(1,0.4))
         plt.savefig(f"{folder}/{damage_type}_1k_dense.png")
-
         return
 
     for damage in ["DSBtotal", "TotalSBtotal", "DoseGy"]:
-        plot_damage(damage, datadict)  
+        plot_damage(damage, datadict) 
+    
+    
+    def plot_comparison(damage_type, datadict):
+        plt.figure(figsize=(8,5))
+        plot_all(datadict, damage_type=damage_type+"total")
+        plot_all(datadict, damage_type=damage_type+"direct")
+        plot_all(datadict, damage_type=damage_type+"indirect")
+        plt.legend(ncol=4, loc=(0,1.01))
+        plt.xlabel("radial distance from the blood vessel (um)")
+        
+        if "DSB" in damage_type:
+            plt.ylabel(f"total n. of DSB ($Gy^-1 Gbp^-1)$")      
+            plt.ylim(-1, 16)
+        elif "TotalSB" in damage_type:
+            plt.ylabel(f"total n. of SB ($Gy^-1 Gbp^-1)$")  
+            plt.ylim(bottom = -1, top=200)
 
+        plt.xlim(0, 80)
+        #plt.legend(loc=(1,0.4))
+        plt.savefig(f"{folder}/{damage_type}_comparison_1k.png")
+        return
+        
+    plot_comparison(damage_type="DSB", datadict=datadict)
+    plot_comparison(damage_type="TotalSB", datadict=datadict)
+ 
     plt.figure(figsize=(8,5))
     plot_rbe(datadict, damage_type="DSBtotal")
     plt.legend()
