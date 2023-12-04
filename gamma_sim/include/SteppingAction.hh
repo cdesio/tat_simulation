@@ -29,6 +29,7 @@
 #include "G4String.hh"
 #include <fstream>
 #include <iostream>
+#include <map>
 class EventAction;
 // class G4ParticleDefinition;
 // class G4VPhysicalVolume;
@@ -49,5 +50,12 @@ private:
 
     std::ofstream PSfile;
 
-
+    std::map<G4String, G4int> particleMap{
+        {"At211", 0},
+        {"alpha", 1},
+        {"gamma", 2},
+        {"e-", 3},
+        {"nu_e", 4},
+        {"e+", 5},
+        {"proton", 6}};
 };

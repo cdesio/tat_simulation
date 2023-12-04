@@ -46,6 +46,7 @@ PhysicsList::PhysicsList()
 
     G4ProductionCutsTable::GetProductionCutsTable()->
     SetEnergyRange(5*eV, 1*GeV);
+    //RegisterPhysics(new G4StepLimiterPhysics());
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

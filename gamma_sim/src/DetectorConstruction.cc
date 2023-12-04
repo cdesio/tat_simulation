@@ -144,8 +144,8 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                    0,
                                                    false,
                                                    0);
-  logicWorld->SetVisAttributes(&visInvWhite);
-  logicWaterBox->SetVisAttributes(&visInvWhite);
+  logicWorld->SetVisAttributes(&visWhite);
+  logicWaterBox->SetVisAttributes(&visWhite);
 
   G4double chromatin_X = fBoxSize;
   G4double chromatin_Y = fBoxSize;
@@ -163,7 +163,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                       0,
                                                       false,
                                                       false);
-  logicTrackingVol->SetVisAttributes(&visInvWhite);
+  logicTrackingVol->SetVisAttributes(&visWhite);
 
   G4Box *solidChromatinSegment = new G4Box("chromatinSegment", chromatin_X / 2, chromatin_Y / 2, chromatin_Z / 2);
   G4LogicalVolume *logicChromatinSegment = new G4LogicalVolume(solidChromatinSegment,
@@ -182,6 +182,9 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
                                                            false);
   logicChromatinSegment->SetVisAttributes(&visPink);
   G4Region *aRegion = new G4Region("Target");
+
+  // G4UserLimits* userLimits = new G4UserLimits();
+  // userLimits->SetMaxAllowedStep(3 * nm);
 
   G4ProductionCuts *cuts = new G4ProductionCuts();
 

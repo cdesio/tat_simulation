@@ -103,6 +103,12 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleDColumn(0, "x");
   analysisManager->CreateNtupleDColumn(0, "y");
   analysisManager->CreateNtupleDColumn(0, "z");
+  analysisManager->CreateNtupleIColumn(0, "PID");
+  analysisManager->CreateNtupleSColumn(0, "particle_name");
+  analysisManager->CreateNtupleIColumn(0, "stepID");
+  analysisManager->CreateNtupleDColumn(0, "particleEnergy");
+  analysisManager->CreateNtupleDColumn(0, "stepLength");
+
   analysisManager->FinishNtuple(0);
 
 
@@ -118,7 +124,7 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtuple("EventEdep", "EventEdep");
   analysisManager->CreateNtupleDColumn(2,"Edep_J");
   analysisManager->CreateNtupleIColumn(2,"EventNum");
-analysisManager->CreateNtupleDColumn(2,"PathLengthChromatin");
+  analysisManager->CreateNtupleDColumn(2,"PathLengthChromatin");
   analysisManager->FinishNtuple(2);
 
     G4cout << "\n----> Histogram file is opened in " << fileName << G4endl;

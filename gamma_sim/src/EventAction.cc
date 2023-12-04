@@ -80,14 +80,17 @@ void EventAction::EndOfEventAction(const G4Event *)
   Command *command(0);
   if (parser->GetCommandIfActive("-out") == 0)
   return;
-
+  //G4cout << "evt: "<<  G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID() << " path length: " << fpathLengthTotal/nm << " edep: " << fEdep << G4endl;
   if ((fEdep>0) && (fpathLengthTotal>0)) //only save edep>0 to reduce output file size
   {
+    
   G4AnalysisManager *analysisManager = G4AnalysisManager::Instance();
   analysisManager->FillNtupleDColumn(2,0, (fEdep/joule));
   analysisManager->FillNtupleIColumn(2,1, G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID());
   analysisManager->FillNtupleDColumn(2, 2, fpathLengthTotal / nanometer);
   analysisManager->AddNtupleRow(2);
+  
+  
   }
 
 }
