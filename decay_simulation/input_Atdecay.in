@@ -2,28 +2,17 @@
 /control/verbose 2
 
 /det/set_ndiv_R 80
-/det/set_ndiv_theta 80
 /det/set_ndiv_Z 40
 
 /det/set_spacing 1.0 um
 /det/set_startR 10.5 um
-/det/set_vessellength 10 um
+/det/set_vessellength 10.0 um
 
-/run/initialize 
+/run/initialize
 
-/gps/pos/type Surface
-/gps/pos/shape Cylinder
-/gps/pos/centre 0 0 0 um
-/gps/pos/radius 10 um
-/gps/pos/halfz 3 um
+/gun/particle ion
+/gun/ion 85 211
+/gun/energy 0 MeV
 
-/gps/particle ion
-/gps/ion 85 211
-
-/gps/ang/type cos
-
-/gps/ene/type Mono
-/gps/energy 0 MeV
-/run/printProgress 10
-
+/run/printProgress 100
 /run/beamOn 1000
