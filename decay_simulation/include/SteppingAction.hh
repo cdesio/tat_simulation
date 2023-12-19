@@ -51,7 +51,7 @@ private:
     EventAction* fpEventAction;
     DetectorConstruction *fpDetector;
     std::ofstream PSfile;
-    void write_to_PS(const G4Track *track, const G4ThreeVector &Position, const G4ThreeVector &Momentum, G4double &particleEnergy, G4int &eventID, G4int &PID, G4int &copyNo, G4double &time, G4int &mapped_PID);
+    void write_to_PS(const G4Track *track, const G4ThreeVector &globalPosition, const G4ThreeVector &localPosition, const G4ThreeVector &Momentum, G4double &particleEnergy, G4int &eventID, G4int &PID, G4int &copyNo, G4double &time, G4int &mapped_PID);
     G4ThreeVector transformDirection(const G4ThreeVector & worldPos, const G4ThreeVector & worldMomentum);
     G4double calculateDistanceToExitBox(const G4ThreeVector & preStepPosition, const G4ThreeVector & preStepMomentumDirection);
   

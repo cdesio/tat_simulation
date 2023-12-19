@@ -84,7 +84,7 @@ int main(int argc, char **argv)
     if ((commandLine = parser->GetCommandIfActive("-PS")))
     {
       ps_file.seekg(0, ps_file.end); // change position to end 
-      PS_data = ps_file.tellg()/(12*4); //12 floats which are each 4 bytes
+      PS_data = ps_file.tellg()/(15s*4); //12 floats which are each 4 bytes
     }
 
   }

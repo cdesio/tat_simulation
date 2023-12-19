@@ -84,27 +84,31 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 
     std::ifstream ps_file (fPS_data, std::ifstream::binary);
 
-    ps_file.seekg(step2_eventID*12*4, ps_file.beg); //position of event data, 12 floats with 4 bytes precision
+    ps_file.seekg(step2_eventID*15*4, ps_file.beg); //position of event data, 12 floats with 4 bytes precision
 
-    float line[12];
+    float line[15];
     
     ps_file.read((char *)&line, sizeof line);
     ps_file.close();
     //G4cout << "um: " << um << ", posX: " << line[0] << ", posX_um: " << line[0] / um << G4endl;
-    G4double positionX = line[0]/mm;
-    G4double positionY = line[1]/mm;
-    G4double positionZ = line[2]/mm;
-    
-    G4double momentumX = line[3];
-    G4double momentumY = line[4];
-    G4double momentumZ = line[5];
-    G4double particleEnergy = line[6];
-    step1_eventID = (int)line[7];
-    step1_PID = (int)line[8];
-    step1_copyNo = (int)line[9];
-    step1_time = line[10];
-    step1_primaryID = (int)line[11];
+    G4double globalpositionX = line[0]/mm;
+    G4double globalpositionY = line[1]/mm;
+    G4double globalpositionZ = line[2]/mm;
 
+    G4double localpositionX = line[3]/mm;
+    G4double localpositionY = line[4]/mm;
+    G4double localpositionZ = line[5]/mm;
+    
+    G4double momentumX = line[6];
+    G4double momentumY = line[6];
+    G4double momentumZ = line[8];
+    G4double particleEnergy = line[9];
+    step1_eventID = (int)line[10];
+    step1_PID = (int)line[11];
+    step1_copyNo = (int)line[12];
+    step1_time = line[13];
+    step1_primaryID = (int)line[14];
+ 
     //G4cout << "gen: 1Evt: " << step1_eventID << ", 2evt: " << step2_eventID << ", copyNo: " << step1_copyNo << G4endl;
     // // DEBUG
 
@@ -114,6 +118,8 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     G4IonTable *ionTable = G4IonTable::GetIonTable();
     G4ParticleDefinition *particle = particleTable->FindParticle("geantino");
 
+    globalPositions = G4ThreeVector(globalpositionX, globalpositionY, globalpositionZ);
+    localPositions = G4ThreeVector(localpositionX, localpositionY, localpositionZ);
     if (step1_PID == 1)
     {
       particle = particleTable->FindParticle("alpha");
@@ -164,7 +170,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     primaryName = particleName;
 
     G4cout << "shooting a(n) " << particleName << G4endl;
-    fParticleGun->SetParticlePosition(G4ThreeVector(positionX, positionY, positionZ));
+    fParticleGun->SetParticlePosition(localPositions);
     fParticleGun->SetParticleEnergy(particleEnergy);
     fParticleGun->SetParticleMomentumDirection(G4ThreeVector(momentumX, momentumY, momentumZ));
     //primaryName = fpParticleGun->GetCurrentSource()->GetParticleDefinition()->GetParticleName();

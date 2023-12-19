@@ -324,7 +324,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
           G4int parentID = step->GetTrack()->GetParentID();
           G4int mapped_PID = fpEventAction->parentParticle[trackID];
           G4double time = step->GetPreStepPoint()->GetGlobalTime();
-          write_to_PS(step->GetTrack(), newPos, newMomentum, particleEnergy, eventID, particleID, copyNo, time, mapped_PID);
+          write_to_PS(step->GetTrack(), worldPos, newPos, newMomentum, particleEnergy, eventID, particleID, copyNo, time, mapped_PID);
         
     }
     // save particles created in the cell or nucleus. If from radioactive decay as not simulated in RBE. 
@@ -370,14 +370,14 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         G4int particleID = particleMap[particleName];
         G4ThreeVector worldMomentum = step->GetPostStepPoint()->GetMomentumDirection();
         G4ThreeVector newMomentum = transformDirection(worldPos, worldMomentum);
-        write_to_PS(step->GetTrack(), newPos, newMomentum, particleEnergy, eventID, particleID, copyNo, time, mapped_PID);
+        write_to_PS(step->GetTrack(), worldPos, newPos, newMomentum, particleEnergy, eventID, particleID, copyNo, time, mapped_PID);
       }
       else
       {
         // parent ID found, look up new position
         G4ThreeVector newPos = fpEventAction->decayPos[parentID];
         G4ThreeVector newMomentum = transformDirection(worldPos, worldMomentum);
-        write_to_PS(step->GetTrack(), newPos, newMomentum, particleEnergy, eventID, particleID, copyNo, time, mapped_PID);
+        write_to_PS(step->GetTrack(), worldPos, newPos, newMomentum, particleEnergy, eventID, particleID, copyNo, time, mapped_PID);
       }
     }
     else
@@ -459,7 +459,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         G4double stepDistance = step->GetStepLength();
 
         G4ThreeVector newPos = preStepBox + (distanceToExit * boxMomentumPre);
-
+        G4ThreeVector worldPos = step->GetPreStepPoint()->GetPosition();
         // check which side of the box was crossed and change sign as particle is entering adjacent box
         if ((newPos.x() > 0) && (std::abs(newPos.x() - 0.00015) < 1e-15))
           newPos.setX(-0.00015);
@@ -480,7 +480,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         G4double newTime = step->GetPreStepPoint()->GetGlobalTime() + (step->GetDeltaTime() * percentageOfStep);
         G4int mapped_PID = fpEventAction->parentParticle[trackID];
         //savePoint(step->GetTrack(), newPos, boxMomentumPre, step->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo(), newKE, newTime, fpEventAction->parentParticle[TrackID]);
-        write_to_PS(step->GetTrack(), newPos, boxMomentumPre, newKE, eventID, particleID, copyNo, newTime, mapped_PID);
+        write_to_PS(step->GetTrack(), worldPos, newPos, boxMomentumPre, newKE, eventID, particleID, copyNo, newTime, mapped_PID);
         G4double percentageAccountedFor = percentageOfStep;
 
         while (percentageAccountedFor < 1)
@@ -549,7 +549,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
             distanceToExit += distanceToExitRemainder;
 
             //savePoint(step->GetTrack(), newPos, boxMomentumPre, step->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo(), newKE, newTime, fpEventAction->parentParticle[TrackID]);
-            write_to_PS(step->GetTrack(), newPos, boxMomentumPre, newKE, eventID, particleID, copyNo, newTime, mapped_PID);
+            write_to_PS(step->GetTrack(), worldPos, newPos, boxMomentumPre, newKE, eventID, particleID, copyNo, newTime, mapped_PID);
             percentageAccountedFor += percentageOfStep;
           }
         }
@@ -602,10 +602,11 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       G4ThreeVector boxMomentumPost = transformDirection(step->GetPostStepPoint()->GetPosition(), step->GetPostStepPoint()->GetMomentumDirection()); // particle momentum in box frame for next step
       G4int mapped_PID = fpEventAction->parentParticle[trackID];
       G4int particleID = particleMap[particleName];
+      G4ThreeVector worldPos = step->GetPreStepPoint()->GetPosition();
       G4double time = step->GetPreStepPoint()->GetGlobalTime();
       // step is contained within box save end point as start of next step
       //savePoint(step->GetTrack(), preStepBox + delta, boxMomentumPost, step->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo(), step->GetPreStepPoint()->GetKineticEnergy(), step->GetPreStepPoint()->GetGlobalTime(), fpEventAction->parentParticle[TrackID]);
-      write_to_PS(step->GetTrack(), preStepBox+delta, boxMomentumPost, particleEnergy, eventID, particleID, copyNo, time, mapped_PID);
+      write_to_PS(step->GetTrack(), worldPos, preStepBox+delta, boxMomentumPost, particleEnergy, eventID, particleID, copyNo, time, mapped_PID);
     }
     else
     {
@@ -626,7 +627,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         newPos.setZ(+0.00015);
 
       G4double percentageOfStep = distanceToExit / stepDistance;
-
+      G4ThreeVector worldPos = step->GetPreStepPoint()->GetPosition();
       // calculate KE at point where crossing occurs
       G4double newKE = step->GetPreStepPoint()->GetKineticEnergy() - (step->GetPreStepPoint()->GetKineticEnergy() - step->GetPostStepPoint()->GetKineticEnergy()) * percentageOfStep;
 
@@ -635,7 +636,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
       G4int mapped_PID = fpEventAction->parentParticle[trackID];
       G4int particleID = particleMap[particleName];
       //savePoint(step->GetTrack(), newPos, boxMomentumPre, step->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo(), newKE, newTime, fpEventAction->parentParticle[TrackID]);
-      write_to_PS(step->GetTrack(), newPos, boxMomentumPre, newKE, eventID, particleID, copyNo, newTime, mapped_PID);
+      write_to_PS(step->GetTrack(), worldPos, newPos, boxMomentumPre, newKE, eventID, particleID, copyNo, newTime, mapped_PID);
       G4double percentageAccountedFor = percentageOfStep;
 
       while (percentageAccountedFor < 1)
@@ -686,7 +687,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
           newPos += (distanceToExitRemainder * boxMomentumPre);
 
           // check which side of the box was crossed and change sign as particle is entering adjacent box
-
+          G4ThreeVector worldPos = step->GetPreStepPoint()->GetPosition();
           // G4cout << newPos.x() << G4endl;
           if ((newPos.x() > 0) && (std::abs(newPos.x() - 0.00015) < 1e-15))
             newPos.setX(-0.00015);
@@ -706,7 +707,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
           distanceToExit += distanceToExitRemainder;
 
           //savePoint(step->GetTrack(), newPos, boxMomentumPre, step->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo(), newKE, newTime, fpEventAction->parentParticle[TrackID]);
-          write_to_PS(step->GetTrack(), newPos, boxMomentumPre, newKE, eventID, particleID, copyNo, newTime, mapped_PID);
+          write_to_PS(step->GetTrack(), worldPos, newPos, boxMomentumPre, newKE, eventID, particleID, copyNo, newTime, mapped_PID);
           percentageAccountedFor += percentageOfStep;
         }
       }
@@ -739,28 +740,31 @@ G4ThreeVector SteppingAction::transformDirection(const G4ThreeVector &position, 
 
 
 
-void SteppingAction::write_to_PS(const G4Track *track, const G4ThreeVector &Position, const G4ThreeVector &Momentum, G4double &particleEnergy, G4int &eventID, G4int &PID, G4int &copyNo, G4double &time, G4int &mapped_PID)
+void SteppingAction::write_to_PS(const G4Track *track, const G4ThreeVector &globalPosition, const G4ThreeVector &localPosition, const G4ThreeVector &Momentum, G4double &particleEnergy, G4int &eventID, G4int &PID, G4int &copyNo, G4double &time, G4int &mapped_PID)
 
 {
 fpEventAction->particlePos.erase(track->GetTrackID());
-fpEventAction->particlePos.insert(std::pair<int, G4ThreeVector>(track->GetTrackID(), Position));
+fpEventAction->particlePos.insert(std::pair<int, G4ThreeVector>(track->GetTrackID(), localPosition));
 
 fpEventAction->particleDist.erase(track->GetTrackID()); 
 fpEventAction->particleDist.insert(std::pair<int, G4ThreeVector>(track->GetTrackID(), G4ThreeVector()));
 
-float output[12];
-output[0] = Position.x() / mm;
-output[1] = Position.y() / mm;
-output[2] = Position.z() / mm;
-output[3] = Momentum.x();
-output[4] = Momentum.y();
-output[5] = Momentum.z();
-output[6] = particleEnergy / MeV;
-output[7] = eventID;
-output[8] = PID;
-output[9] = copyNo;
-output[10] = time;
-output[11] = mapped_PID;
+float output[15];
+output[0] = globalPosition.x() / mm;
+output[1] = globalPosition.y() / mm;
+output[2] = globalPosition.z() / mm;
+output[3] = localPosition.x() / mm;
+output[4] = localPosition.y() / mm;
+output[5] = localPosition.z() / mm;
+output[6] = Momentum.x();
+output[7] = Momentum.y();
+output[8] = Momentum.z();
+output[9] = particleEnergy / MeV;
+output[10] = eventID;
+output[11] = PID;
+output[12] = copyNo;
+output[13] = time;
+output[14] = mapped_PID;
 
 PSfile.write((char *)&output, sizeof(output));
 fpEventAction->tracks.push_back(track->GetTrackID());

@@ -172,6 +172,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     G4int step1_primaryID = generatorAction->step1_primaryID;
     G4int step1_PID = generatorAction->step1_PID;
     G4int step1_eventID = generatorAction->step1_eventID;
+
     G4int step2_eventID = G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
     //G4cout << "stepping - 1evtID: " << step1_eventID << ", 2evtID: " << step2_eventID << ", copyNo: " << step1_copyNo << G4endl;  
     G4ThreeVector prePoint = step->GetPreStepPoint()->GetPosition();
@@ -202,6 +203,9 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     analysisManager->FillNtupleIColumn(1, 9, step1_PID);
     analysisManager->FillNtupleDColumn(1, 10, step1_time + step->GetTrack()->GetGlobalTime());
     analysisManager->FillNtupleIColumn(1, 11, step1_primaryID);
+    analysisManager->FillNtupleDColumn(1, 12, generatorAction->globalPositions.x());
+    analysisManager->FillNtupleDColumn(1, 13, generatorAction->globalPositions.y());
+    analysisManager->FillNtupleDColumn(1, 14, generatorAction->globalPositions.z());     
     analysisManager->AddNtupleRow(1);
   }
 }

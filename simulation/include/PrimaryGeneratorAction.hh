@@ -56,6 +56,8 @@ public:
     G4int step1_eventID;
     G4int step1_primaryID;
     G4double step1_time;
+    G4ThreeVector globalPositions;
+    G4ThreeVector localPositions;
     
 
 private:

@@ -191,6 +191,9 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleIColumn(1, "step1_PID");
   analysisManager->CreateNtupleDColumn(1, "time");
   analysisManager->CreateNtupleIColumn(1, "step1_primaryID");
+  analysisManager->CreateNtupleDColumn(1, "globalPosX");
+  analysisManager->CreateNtupleDColumn(1, "globalPosY");
+  analysisManager->CreateNtupleDColumn(1, "globalPosZ");
   analysisManager->FinishNtuple(1);
 
   // For chemistry
@@ -208,6 +211,9 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleIColumn(2, "step1_PID");
   analysisManager->CreateNtupleIColumn(2, "step1_primaryID");
   analysisManager->CreateNtupleDColumn(2, "time");
+  analysisManager->CreateNtupleDColumn(2, "globalPosX");
+  analysisManager->CreateNtupleDColumn(2, "globalPosY");
+  analysisManager->CreateNtupleDColumn(2, "globalPosZ");
 
   analysisManager->FinishNtuple(2);
 
