@@ -50,14 +50,9 @@ if args.mem:
     mem = args.mem
 else:
     mem = 20
-if slurm:
-    simulation_parent = os.path.join(
-        "/", "user", "work", "yw18581", "DaRT", "TAT", "tat_shell_ps"
-    )
-else:
-    simulation_parent = os.path.join(
-        "/", "home", "cdesio", "TAT", "tat_shell_ps"
-    )
+
+simulation_parent = os.path.abspath(os.curdir)
+
 if args.continuous:
     continuous = args.continuous
 else:
