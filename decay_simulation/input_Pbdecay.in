@@ -11,7 +11,7 @@
 /run/initialize
 
 /gun/particle ion
-/gun/ion 85 211
+/gun/ion 82 212
 /gun/energy 0 MeV
 
 /run/printProgress 100
