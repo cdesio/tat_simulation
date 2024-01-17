@@ -208,25 +208,25 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
 
 
 // Save per nuclei activity
-  if ((step->GetPreStepPoint()->GetKineticEnergy() == 0) && (particleName == "At211"))
+  if ((step->GetPreStepPoint()->GetKineticEnergy() == 0) && (particleName == "Pb212"))
   {
     analysisManager->FillH1(1, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
   }
   else if ((step->GetPreStepPoint()->GetKineticEnergy() == 0) && (volumeNamePre != "bloodVessel"))
   {
-    if (particleName == "Po211")
+    if (particleName == "Bi212")
     {
       analysisManager->FillH1(2, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
     }
-    else if (particleName == "Bi207")
+    else if (particleName == "Tl208")
     {
       analysisManager->FillH1(3, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
     }
-    else if (particleName == "Pb207") 
+    else if (particleName == "Po212") 
     {
       analysisManager->FillH1(4, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
     }
-    else if (G4StrUtil::contains("Pb207", "["))
+    else if  (particleName == "Pb208")
     {
       analysisManager->FillH1(4, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
     }

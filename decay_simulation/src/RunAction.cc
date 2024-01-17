@@ -127,11 +127,11 @@ void RunAction::CreateNtuple()
   analysisManager->FinishNtuple(2);
 
   analysisManager->CreateH1("0", "dose", 100, 0, 100);
-  analysisManager->CreateH1("1", "At211Decay", 144, 0, 72);
-  analysisManager->CreateH1("2", "Po211Decay", 144, 0, 72);
-  analysisManager->CreateH1("3", "Bi207Decay", 144, 0, 72);
-  analysisManager->CreateH1("4", "Pb207", 144, 0, 72);
-  analysisManager->CreateH1("5", "Pb207*", 144, 0, 72);
+  analysisManager->CreateH1("1", "Pb212", 144, 0, 72);
+  analysisManager->CreateH1("2", "Bi212", 144, 0, 72);
+  analysisManager->CreateH1("3", "Tl208", 144, 0, 72);
+  analysisManager->CreateH1("4", "Po212", 144, 0, 72);
+  analysisManager->CreateH1("5", "Pb208", 144, 0, 72);
 
   G4cout << "\n----> Histogram file is opened in " << fileName << G4endl;
 }
