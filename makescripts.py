@@ -18,7 +18,9 @@ parser.add_argument("--n_div_theta", type=int,
                     help="n of divisions in R", default = 100)
 
 parser.add_argument("--startR", type=float, default = 10.5)
-parser.add_argument("--vessellength", type = float, default = 10.0)
+parser.add_argument("--vessel_halflength", type = float, default = 20.0)
+parser.add_argument("--shell_halflength", type = float, default = 1.5)
+parser.add_argument("--gun_length", type = float, default = 40.0)
 parser.add_argument("--gpsHalfZ", type = float, default = 10.0)
 parser.add_argument("--n", type=int, default = 100)
 parser.add_argument("--slurm", type=bool, required=False, default = False)
@@ -98,8 +100,12 @@ if args.spacing:
 if args.startR:
     startR = args.startR
 
-if args.vessellength:
-    vessellength = args.vessellength
+if args.vessel_halflength:
+    vessel_halflength = args.vessel_halflength
+if args.shell_halflength:
+    shell_halflength = args.shell_halflength
+if args.gun_length:
+    gun_length = args.gun_length
 
 if args.n:
     numIons = args.n
@@ -137,7 +143,7 @@ for s in spacing:
     #  write mac file
 
     filename_mac = os.path.join(
-        test_dir, f"input_Atdecay_{n_string}_spacing_{s_string}um_{seed}.in"
+        test_dir, f"input_Atdecay_{n_string}_length_{gun_length}_{seed}.in"
     )  # to be run from folder created
     with open(filename_mac, "w") as f:
         f.write("/run/verbose 2\n")
@@ -149,7 +155,9 @@ for s in spacing:
         f.write("\n")
         f.write(f"/det/set_spacing {s} um\n")
         f.write(f"/det/set_startR {startR} um\n")
-        f.write(f"/det/set_vessellength {vessellength} um\n")
+        f.write(f"/det/set_vessel_halflength {vessel_halflength} um\n")
+        f.write(f"/det/set_shell_halflength {shell_halflength} um\n")
+        f.write(f"/shell/gun/gun_length {gun_length} um\n")
         f.write("\n")
         f.write("/run/initialize\n")
         f.write("\n")
@@ -180,7 +188,7 @@ for s in spacing:
         f.write("/run/beamOn 0\n")
 
     filename_decay = os.path.join(
-    test_dir, f"run_Atdecay_{n_string}_spacing_{s_string}um_{seed}.sh")  # to be run from folder created
+    test_dir, f"run_Atdecay_{n_string}_spacing_{s_string}um_length_{gun_length}_{seed}.sh")  # to be run from folder created
 
 
     # if slurm:
@@ -215,7 +223,7 @@ for s in spacing:
         
 
         filename_DNA = os.path.join(
-        test_dir, f"run_AtDNA_{n_string}_spacing_{s_string}um_{seed}.sh"
+        test_dir, f"run_AtDNA_{n_string}_spacing_{s_string}um_length_{gun_length}_{seed}.sh"
     )  # to be run from folder created
     # if slurm:
     #     print(f"sbatch run_AtDNA_{n_string}_spacing_{s_string}um_{seed}.sh")
@@ -264,7 +272,7 @@ for s in spacing:
         # f.write("rm {}; fi\n".format(fileToDelete))
 
     filename_clustering = os.path.join(
-        test_dir, f"run_clustering_At_{n_string}_spacing_{s_string}um_{seed}.sh"
+        test_dir, f"run_clustering_At_{n_string}_spacing_{s_string}um_length_{gun_length}_{seed}.sh"
     )  # to be run from folder created
 
     with open(filename_clustering, "w") as f:
@@ -300,7 +308,7 @@ for s in spacing:
         f.write(
             f"python {clustering_dir}/run_up_part.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_part.csv --sugar {sugarFile} --ndiv_R {n_div_R}  --continuous {continuous}\n"
         )
-    filename_runscript = os.path.join(test_dir, f"run_script_At_{n_string}_spacing_{s_string}um_{seed}.sh")
+    filename_runscript = os.path.join(test_dir, f"run_script_At_{n_string}_spacing_{s_string}um_length_{gun_length}_{seed}.sh")
     with open(filename_runscript, "w") as f:
         f.write("#!/bin/bash --login\n")
 
