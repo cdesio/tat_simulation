@@ -6,13 +6,17 @@
 
 /det/set_spacing 1.0 um
 /det/set_startR 10.5 um
-/det/set_vessellength 10.0 um
+/det/set_vessel_halflength 20 um
+/det/set_shell_halflength 1.5 um
+/shell/gun/gun_length 40 um
 
 /run/initialize
 
 /gun/particle ion
 /gun/ion 85 211
+#/gun/ion 82 212 #212Pb
+#/gun/ion 89 225 #225 Ac
 /gun/energy 0 MeV
 
 /run/printProgress 100
-/run/beamOn 1000
+/run/beamOn 0
