@@ -32,7 +32,10 @@
 #include <memory>
 #include "G4ThreeVector.hh"
 #include "G4ParticleGun.hh"
-class G4GeneralParticleSource;
+
+class G4Event;
+//class G4GeneralParticleSource;
+class PrimaryGeneratorMessenger;
 
 class PrimaryGeneratorAction
     : public G4VUserPrimaryGeneratorAction
@@ -40,9 +43,12 @@ class PrimaryGeneratorAction
 public:
     PrimaryGeneratorAction();
     ~PrimaryGeneratorAction() override;
-    void GeneratePrimaries(G4Event *event) override;
-
+public:
+    virtual void GeneratePrimaries(G4Event *event) override;
+    void SetGunLength(G4double val)  {gun_length = val;}
 private:
     G4ParticleGun *fpParticleGun;
+    G4double gun_length;
+    PrimaryGeneratorMessenger* fGunMessenger;
 
 };

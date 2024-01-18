@@ -44,7 +44,15 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 DetectorMessenger::DetectorMessenger(DetectorConstruction *Det)
-    : G4UImessenger(), fDetector(Det), boxSize(0), spacing(0), start_R(0), vessel_length(0), ndiv_R(0), ndiv_theta(0), ndiv_Z(0)
+    : G4UImessenger(), fDetector(Det), 
+    boxSize(0), 
+    spacing(0), 
+    start_R(0), 
+    vessel_halflength(0), 
+    ndiv_R(0), 
+    ndiv_theta(0), 
+    ndiv_Z(0), 
+    shell_halflength(0)
 { 
   boxSize = new G4UIcmdWithADoubleAndUnit("/det/set_size",this);
   boxSize->SetGuidance("Set x,y size of the box");
@@ -72,13 +80,21 @@ DetectorMessenger::DetectorMessenger(DetectorConstruction *Det)
   start_R->AvailableForStates(G4State_PreInit,G4State_Idle);
   start_R->SetToBeBroadcasted(false);
 
-  vessel_length = new G4UIcmdWithADoubleAndUnit("/det/set_vessellength", this);
-  vessel_length->SetGuidance("Set half length of vessel cylinder");
-  vessel_length->SetParameterName("vessel_length", false);
-  vessel_length->SetDefaultValue(6.0);
-  vessel_length->SetDefaultUnit("micrometer");
-  vessel_length->AvailableForStates(G4State_PreInit, G4State_Idle);
-  vessel_length->SetToBeBroadcasted(false);
+  vessel_halflength = new G4UIcmdWithADoubleAndUnit("/det/set_vessel_halflength", this);
+  vessel_halflength->SetGuidance("Set half length of vessel cylinder");
+  vessel_halflength->SetParameterName("vessel_halflength", false);
+  vessel_halflength->SetDefaultValue(6.0);
+  vessel_halflength->SetDefaultUnit("micrometer");
+  vessel_halflength->AvailableForStates(G4State_PreInit, G4State_Idle);
+  vessel_halflength->SetToBeBroadcasted(false);
+
+  shell_halflength = new G4UIcmdWithADoubleAndUnit("/det/set_shell_halflength", this);
+  shell_halflength->SetGuidance("Set half length of shell cylinder");
+  shell_halflength->SetParameterName("shell_halflength", false);
+  shell_halflength->SetDefaultValue(1.5);
+  shell_halflength->SetDefaultUnit("micrometer");
+  shell_halflength->AvailableForStates(G4State_PreInit, G4State_Idle);
+  shell_halflength->SetToBeBroadcasted(false);
 
   ndiv_R = new G4UIcmdWithAnInteger("/det/set_ndiv_R",this);
   ndiv_R->SetGuidance("Set no. divisions in R");
@@ -114,7 +130,8 @@ DetectorMessenger::~DetectorMessenger()
   delete start_R;
   delete ndiv_theta;
   delete ndiv_Z;
-  delete vessel_length;
+  delete vessel_halflength;
+  delete shell_halflength;
 
 }
 
@@ -148,9 +165,13 @@ void DetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
   {
      fDetector->set_startR(start_R->GetNewDoubleValue(newValue));
   }
-  if (command == vessel_length)
+  if (command == vessel_halflength)
   {
-     fDetector->set_vessellength(vessel_length->GetNewDoubleValue(newValue));
+     fDetector->set_vessel_halflength(vessel_halflength->GetNewDoubleValue(newValue));
+  }
+    if (command == shell_halflength)
+  {
+     fDetector->set_shell_halflength(shell_halflength->GetNewDoubleValue(newValue));
   }
 }
 

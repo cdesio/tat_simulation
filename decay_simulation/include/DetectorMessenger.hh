@@ -61,7 +61,8 @@ class DetectorMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit* boxSize;
     G4UIcmdWithADoubleAndUnit* spacing;
     G4UIcmdWithADoubleAndUnit* start_R;
-    G4UIcmdWithADoubleAndUnit *vessel_length;
+    G4UIcmdWithADoubleAndUnit *vessel_halflength;
+    G4UIcmdWithADoubleAndUnit *shell_halflength;
     G4UIcmdWithAnInteger* ndiv_R;
     G4UIcmdWithAnInteger* ndiv_theta;
     G4UIcmdWithAnInteger* ndiv_Z;

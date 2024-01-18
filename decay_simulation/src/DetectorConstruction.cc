@@ -123,7 +123,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   solidWorld = new G4Box("world", 0.21 * mm, 0.21 * mm, 0.21 * mm);
 
   solidWaterBox = new G4Orb("water", .2 * mm);
-  solidVessel = new G4Tubs("bloodVessel", 0, 10 * um, vessel_length, 0, 360 * deg);
+  solidVessel = new G4Tubs("bloodVessel", 0, 10 * um, vessel_halflength, 0, 360 * deg);
 
   G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld,
                                                     air,
@@ -193,7 +193,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   }
   //shell_rfin = (start_R+(r)*spacing)-boxSize/2; //use this to make shells that go end of the previous line to the start of the next one
   shell_rfin = shell_rin+boxSize; //use this to make shells that are as big as the voxels
-  G4Tubs *solidShell = new G4Tubs("shell", shell_rin, shell_rfin, vessel_length, 0, 360 * degree);
+  G4Tubs *solidShell = new G4Tubs("shell", shell_rin, shell_rfin, shell_halflength, 0, 360 * degree);
   
   G4LogicalVolume *logicShell = new G4LogicalVolume(solidShell,
                                                          waterMaterial,
@@ -266,8 +266,13 @@ void DetectorConstruction::set_startR(G4double value)
   start_R = value;
   G4RunManager::GetRunManager()->ReinitializeGeometry();
 }
-void DetectorConstruction::set_vessellength(G4double value)
+void DetectorConstruction::set_vessel_halflength(G4double value)
 {
-  vessel_length = value;
+  vessel_halflength = value;
+  G4RunManager::GetRunManager()->ReinitializeGeometry();
+}
+void DetectorConstruction::set_shell_halflength(G4double value)
+{
+  shell_halflength = value;
   G4RunManager::GetRunManager()->ReinitializeGeometry();
 }

@@ -28,6 +28,7 @@
 /// \brief Implementation of the PrimaryGeneratorAction class
 
 #include "PrimaryGeneratorAction.hh"
+#include "PrimaryGeneratorMessenger.hh"
 #include "Randomize.hh"
 #include "G4Event.hh"
 #include "G4GeneralParticleSource.hh"
@@ -51,7 +52,10 @@ intersect are added as a primary vertex.
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 PrimaryGeneratorAction::PrimaryGeneratorAction()
-    : G4VUserPrimaryGeneratorAction(), fpParticleGun(nullptr)
+    : G4VUserPrimaryGeneratorAction(), 
+    fpParticleGun(0), 
+    gun_length(0), 
+    fGunMessenger(0)
 {
 
     //fpParticleGun = new G4GeneralParticleSource();
@@ -60,6 +64,9 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 
     fpParticleGun->SetParticleEnergy(0*eV);
     fpParticleGun->SetParticlePosition(G4ThreeVector(0.,0.,0.));
+    gun_length = 1.5 * um;
+    
+    fGunMessenger = new PrimaryGeneratorMessenger(this);  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -67,16 +74,15 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
 {
     delete fpParticleGun;
+    delete fGunMessenger;  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 {
-
-    G4double vessel_length = 20*um; 
     G4double vessel_radius = 10*um;
-    G4double z_part = (G4UniformRand() - 0.5) * vessel_length;
+    G4double z_part = (G4UniformRand() - 0.5) * gun_length;
     G4double angle_part = G4UniformRand() * 2 * M_PI;
     G4double x_part = (vessel_radius)*cos(angle_part);
     G4double y_part = (vessel_radius)*sin(angle_part);
