@@ -203,34 +203,34 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     G4double density = 1000; // water
     G4double massCylinder = density * volumeCylinder;
     // G4cout << "c.no.: " << step->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo() << ", dose: " << edep / massCylinder << G4endl;
-    analysisManager->FillH1(0, radius, edep / massCylinder);
+    // analysisManager->FillH1(0, radius, edep / massCylinder);
   }
 
 
 // Save per nuclei activity
-  if ((step->GetPreStepPoint()->GetKineticEnergy() == 0) && (particleName == "At211"))
-  {
-    analysisManager->FillH1(1, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
-  }
-  else if ((step->GetPreStepPoint()->GetKineticEnergy() == 0) && (volumeNamePre != "bloodVessel"))
-  {
-    if (particleName == "Po211")
-    {
-      analysisManager->FillH1(2, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
-    }
-    else if (particleName == "Bi207")
-    {
-      analysisManager->FillH1(3, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
-    }
-    else if (particleName == "Pb207") 
-    {
-      analysisManager->FillH1(4, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
-    }
-    else if (G4StrUtil::contains("Pb207", "["))
-    {
-      analysisManager->FillH1(4, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
-    }
-  }
+  // if ((step->GetPreStepPoint()->GetKineticEnergy() == 0) && (particleName == "At211"))
+  // {
+  //   analysisManager->FillH1(1, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
+  // }
+  // else if ((step->GetPreStepPoint()->GetKineticEnergy() == 0) && (volumeNamePre != "bloodVessel"))
+  // {
+  //   if (particleName == "Po211")
+  //   {
+  //     analysisManager->FillH1(2, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
+  //   }
+  //   else if (particleName == "Bi207")
+  //   {
+  //     analysisManager->FillH1(3, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
+  //   }
+  //   else if (particleName == "Pb207") 
+  //   {
+  //     analysisManager->FillH1(4, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
+  //   }
+  //   else if (G4StrUtil::contains("Pb207", "["))
+  //   {
+  //     analysisManager->FillH1(4, step->GetPostStepPoint()->GetGlobalTime() / hour, 1);
+  //   }
+  // }
 
 
   // PS file and output root file
