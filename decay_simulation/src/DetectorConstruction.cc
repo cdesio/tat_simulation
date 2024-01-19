@@ -120,9 +120,9 @@ G4VPhysicalVolume *DetectorConstruction::Construct()
   G4Orb *solidWaterBox{nullptr};
   G4Tubs *solidVessel{nullptr};
 
-  solidWorld = new G4Box("world", 0.21 * mm, 0.21 * mm, 0.21 * mm);
+  solidWorld = new G4Box("world", 1 * mm, 1 * mm, 1 * mm);
 
-  solidWaterBox = new G4Orb("water", .2 * mm);
+  solidWaterBox = new G4Orb("water", 0.9 * mm);
   solidVessel = new G4Tubs("bloodVessel", 0, 10 * um, vessel_length, 0, 360 * deg);
 
   G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld,

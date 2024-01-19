@@ -126,12 +126,12 @@ void RunAction::CreateNtuple()
   analysisManager->CreateNtupleIColumn(2, "EventNo");
   analysisManager->FinishNtuple(2);
 
-  analysisManager->CreateH1("0", "dose", 100, 0, 100);
-  analysisManager->CreateH1("1", "Pb212", 144, 0, 72);
-  analysisManager->CreateH1("2", "Bi212", 144, 0, 72);
-  analysisManager->CreateH1("3", "Tl208", 144, 0, 72);
-  analysisManager->CreateH1("4", "Po212", 144, 0, 72);
-  analysisManager->CreateH1("5", "Pb208", 144, 0, 72);
+  // analysisManager->CreateH1("0", "dose", 100, 0, 100);
+  // analysisManager->CreateH1("1", "Pb212", 144, 0, 72);
+  // analysisManager->CreateH1("2", "Bi212", 144, 0, 72);
+  // analysisManager->CreateH1("3", "Tl208", 144, 0, 72);
+  // analysisManager->CreateH1("4", "Po212", 144, 0, 72);
+  // analysisManager->CreateH1("5", "Pb208", 144, 0, 72);
 
   G4cout << "\n----> Histogram file is opened in " << fileName << G4endl;
 }

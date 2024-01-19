@@ -13,6 +13,7 @@
 /gun/particle ion
 /gun/ion 82 212
 /gun/energy 0 MeV
+/gun/position 0 0 0 um
 
 /run/printProgress 100
-/run/beamOn 1000
+/run/beamOn 0

@@ -55,7 +55,7 @@ int main(int argc,char** argv)
     {
         mySeed = strtol(commandLine->GetOption(), NULL, 10);
     }
-
+    
     G4Random::setTheSeed(mySeed);
     G4Random::showEngineStatus();
 
