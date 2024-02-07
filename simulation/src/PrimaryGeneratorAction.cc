@@ -127,28 +127,9 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
       particle = particleTable->FindParticle("e-");
     }
     else if (step1_PID == 4)
-      return;
-    //      particle = particleTable->FindParticle("geantino");
-
-    else if (step1_PID == 5)
-    {
-      // particle = particleTable->FindParticle("alpha");
-      //  particle = particleTable->FindParticle("At211");
-      particle = ionTable->GetIon(85, 211, 0);
-      // return;
-    }
-    else if (step1_PID == 6)
-    {
-      particle = ionTable->GetIon(84, 211, 0);
-    }
-    else if (step1_PID == 7)
-    {
-      particle = ionTable->GetIon(83, 207, 0);
-    }
-    else if (step1_PID == 8)
-    {
-      particle = ionTable->GetIon(82, 207, 0);
-    }
+      
+      particle = particleTable->FindParticle("e-");
+1
     else
     {
       G4cout << "DEBUG: unknown particle. Throwing geantino." << G4endl;

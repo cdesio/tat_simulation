@@ -56,45 +56,22 @@ private:
     G4double calculateDistanceToExitBox(const G4ThreeVector & preStepPosition, const G4ThreeVector & preStepMomentumDirection);
   
 
-    std::map<G4String, G4int> particleMap{
-        {"Pb212", 0},
+    std::map<G4String, G4int> particleMap{        
         {"alpha", 1},
         {"gamma", 2},
         {"e-", 3},
-        {"e+", 4},
-        {"nu_e", 5},
-        {"Bi212", 6},
-        {"Bi212*", 7},
-        {"Tl208", 8},
-        {"Po212", 9},
-        {"Pb208", 10}};
+        {"e+", 4}};
     
     std::map<G4String, G4int> particleOriginMap{
-      {"Pb212", 0},
-      {"Bi212", 1},
-      {"Tl208", 2},
-      {"Po212", 3},
-      {"Pb208", 4},
-      {"e-Pb212", 5},
-      {"alphaBi212", 6},
-      {"e-Bi212", 7},
-      {"e-Bi212*", 8},
-      {"gammaBi202*",9},
-      {"e-Tl208", 10},
-      {"alphaPo212", 11}};
+      {"alpha", 0},
+      {"gamma", 1},
+      {"e-", 2},
+      {"e+", 3}};
 
   std::map<G4int, G4String> reverseParticleOriginMap{
-    {0, "Pb212"},
-    {1, "Bi212"},
-    {2, "Tl208"},
-    {3, "Po212"},
-    {4, "Pb208"},
-    {5, "e-Pb212"},
-    {6, "alphaBi212"},
-    {7, "e-Bi212"},
-    {8, "e-Bi212*"},
-    {9, "gammaBi202*"},
-    {10, "e-Tl208"},
-    {11,"alphaPo212"}};
+    {0, "alpha"},
+    {1, "gamma"},
+    {2, "e-"},
+    {3, "e+"}};
 
 };
