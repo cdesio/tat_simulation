@@ -83,16 +83,16 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
 
     fpParticleGun->SetParticlePosition(G4ThreeVector(x_part,y_part,z_part)); 
       
- //   fpParticleGun->SetParticleMomentumDirection(G4ThreeVector(cos(angle_part),sin(angle_part),0));
+    fpParticleGun->SetParticleMomentumDirection(G4ThreeVector(cos(angle_part),sin(angle_part),0));
 
-    // if (G4UniformRand() < 0.5)
-    //     {
-    //         fpParticleGun->SetParticleEnergy(1.1732 * CLHEP::MeV);
-    //     }
-    //     else
-    //     {
-    //         fpParticleGun->SetParticleEnergy(1.3325 * CLHEP::MeV);
-    //     }
+    if (G4UniformRand() <= 0.36)
+        {
+            fpParticleGun->SetParticleEnergy(6.1 * CLHEP::MeV);
+        }
+        else
+        {
+            fpParticleGun->SetParticleEnergy(8.8 * CLHEP::MeV);
+        }
 
 
     fpParticleGun->GeneratePrimaryVertex(anEvent);
