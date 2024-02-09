@@ -348,16 +348,10 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
 
     
     """
-    particleMap = {"At211": 0,
-                   "alpha": 1,
-                   "gamma": 2,
-                   "e-": 3,
-                   "nu_e": 4,
-                   "Po211": 5,
-                   "Po211*": 6,
-                   "Bi207": 7,
-                   "Pb207": 8,
-                   "Pb207*":9,
+    particleMap = {"alpha": 0,
+                   "gamma": 1,
+                   "e-": 2,
+                   "e+": 3,
                    "all": -1
                    }
 
@@ -367,23 +361,10 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
     #                'ions:': [0, 1, 2, 3, 4, 5],
     #                'all': [-1]}
     
-    rev_primary_map = {0: "At211",
-                       1:  "Po211",
-                       2: "Po211*", 
-                       3: "Bi207",
-                       4: "Pb207",
-                       5: "Pb207*",
-                       6:"alphaAt211",
-                       7: "alphaPo211",
-                       8: "e-At211",
-                       9: "e-Bi207",
-                       10: "e-Pb207*",
-                       11: "gammaAt211",
-                       12: "gammaBi207",
-                       13: "gammaPb207",
-                       14: "gammaPb207*",
-                       15: "gammaPo211",
-                       16: "gammaPo211*",
+    rev_primary_map = {0: "alpha",
+                       1:  "gamma",
+                       2: "e-", 
+                       3: "e+",
                        -1: "all"}
     # primary_map = {v: k for k, v in rev_primary_map.items()}
 

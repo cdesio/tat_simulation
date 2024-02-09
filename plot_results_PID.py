@@ -8,23 +8,10 @@ import re
 from ranges_radii_dense import get_ranges_radii
 regex = re.compile(r'\d+')
 
-particle_map = {0: "At211",
-      1:  "Po211",
-      2: "Po211*", 
-      3: "Bi207",
-      4: "Pb207",
-      5: "Pb207*",
-      6:"alphaAt211",
-      7: "alphaPo211",
-      8: "e-At211",
-      9: "e-Bi207",
-      10: "e-Pb207*",
-      11: "gammaAt211",
-      12: "gammaBi207",
-      13: "gammaPb207",
-      14: "gammaPb207*",
-      15: "gammaPo211",
-      16: "gammaPo211*",
+particle_map = {0: "alpha", 
+                1: "gamma",
+                2:"e-",
+                3: "3e+",
    -1: "all"}
 
 
@@ -200,33 +187,10 @@ particle_plotting_map = {
     -1: {"name": "Total",
        "colour": "mediumaquamarine",
        'marker': "s"},
-    6: {"name": "alphaAt211",
+    0: {"name": "alpha",
         "colour": "darkblue",
         'marker': "*"},
-    7: {"name": "alphaPo211",
-        "colour": "mediumvioletred",
-        'marker': "s"},
-    8: {"name": "e-At211",
-        "colour": "cornflowerblue",
-        'marker': "x"},
-    9: {"name": "e-Bi207",
-        "colour": "cornflowerblue",
-        'marker': "o"},
-    10: {"name": "e-Pb207*",
-       "colour": "cornflowerblue",
-       'marker': "s"},
-    11: {"name": "gammaAt211",
-        "colour": "darkred",
-        'marker': "x"},
-    12: {"name": "gammaBi207",
-        "colour": "darkred",
-        'marker': "o"},
-    14: {"name": "gammaPb207",
-    "colour": "darkred",
-    'marker': "s"},
-    4: {"name": "Pb207",
-       "colour": "gold",
-       'marker': "s"},
+    
     
     }
     
@@ -352,9 +316,9 @@ def plot_all(datadict, damage_type):
 if __name__=="__main__": 
 
     datasets = []
-    folder = "/home/cdesio/TAT/tat_shell_ps/output/test_At1k_shell_ps_10.5um_80R_continuous_1year"
+    folder = "/home/cdesio/TAT/tat_shell_pb_alpha/output/test_At10_shell_ps_10.5um_100R_continuous"
     data_folder = os.path.join(folder, "clustering_out")
-    fname_prefix="out_AtDNA_1k_spacing"
+    fname_prefix="out_AtDNA_10_spacing"
     spacing= 1
     keyword = 'part'
 
@@ -373,7 +337,7 @@ if __name__=="__main__":
         for particle in particles:
             
             datadict[particle].append(ClusteringEventsRadii(folder=data_folder, fname_prefix=fname_prefix, 
-                                spacing=spacing, seed=int(seed), keyword=keyword, particle=particle, n_div_r=80, start_r = 0))  
+                                spacing=spacing, seed=int(seed), keyword=keyword, particle=particle, n_div_r=100, start_r = 0))  
 
     def plot_damage(damage_type, datadict):
         plt.figure(figsize=(8,5))
@@ -383,7 +347,7 @@ if __name__=="__main__":
         if damage_type=="DoseGy":
             plt.ylabel(f"Dose ($Gy)$")
             plt.yscale('log')
-
+            plt.ylim(1e-4, 1e4)
         elif "DSB" in damage_type:
             plt.ylabel(f"total n. of DSB ($Gy^-1 Gbp^-1)$")      
             plt.ylim(-1, 16)
@@ -391,7 +355,7 @@ if __name__=="__main__":
             plt.ylabel(f"total n. of SB ($Gy^-1 Gbp^-1)$")  
             plt.ylim(-1, 200)
 
-        plt.xlim(0, 80)
+        plt.xlim(0, 100)
         #plt.legend(loc=(1,0.4))
         plt.savefig(f"{folder}/{damage_type}_1k_dense.png")
         return
@@ -415,7 +379,7 @@ if __name__=="__main__":
             plt.ylabel(f"total n. of SB ($Gy^-1 Gbp^-1)$")  
             plt.ylim(bottom = -1, top=200)
 
-        plt.xlim(0, 80)
+        plt.xlim(0, 100)
         #plt.legend(loc=(1,0.4))
         plt.savefig(f"{folder}/{damage_type}_comparison_1k.png")
         return
@@ -428,7 +392,7 @@ if __name__=="__main__":
     plt.legend()
     plt.xlabel("radial distance from blood vessel (um)")
     plt.ylabel("RBE")
-    plt.xlim(0, 80)
+    plt.xlim(0, 100)
     plt.ylim(0, 3)
     plt.savefig(f"{folder}/RBE_1k_dense.png")
     # damage_type="DSBtotal"

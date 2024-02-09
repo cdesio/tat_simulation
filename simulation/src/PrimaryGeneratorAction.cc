@@ -128,8 +128,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent)
     }
     else if (step1_PID == 4)
       
-      particle = particleTable->FindParticle("e-");
-1
+      particle = particleTable->FindParticle("e+");
     else
     {
       G4cout << "DEBUG: unknown particle. Throwing geantino." << G4endl;

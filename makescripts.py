@@ -154,9 +154,7 @@ for s in spacing:
         f.write("/run/initialize\n")
         f.write("\n")
     
-        f.write("/gun/particle ion\n")
-        f.write("/gun/ion 85 211\n")
-        f.write(f"/gun/energy 0 MeV\n")
+        f.write("/gun/particle alpha\n")
         f.write("\n")
         f.write(f"/run/printProgress {printProgress}\n")
         f.write(f"/run/beamOn {numIons}\n")

@@ -127,7 +127,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
         G4String combinedName = particleName + parentName;
         G4int stepID = step->GetTrack()->GetCurrentStepNumber();
         if(stepID < 2){
-          G4cout << "DEBUG. nodecay particle: " << particleName << ", PID: " << particleID << ", trackID: "<< trackID << ", parentID: " << parentID << ", parentName: "<< parentName << ", combined name: " << combinedName <<", mapped PID: " << fpEventAction->parentParticle[trackID] << ", KE: " << particleEnergy << ", proc: " << creatprocessname <<", creatModel: " << step->GetTrack()->GetCreatorModelName() <<  G4endl;
+          // G4cout << "DEBUG. nodecay particle: " << particleName << ", PID: " << particleID << ", trackID: "<< trackID << ", parentID: " << parentID << ", parentName: "<< parentName << ", combined name: " << combinedName <<", mapped PID: " << fpEventAction->parentParticle[trackID] << ", KE: " << particleEnergy << ", proc: " << creatprocessname <<", creatModel: " << step->GetTrack()->GetCreatorModelName() <<  G4endl;
           }
       }
     }
@@ -135,7 +135,7 @@ void SteppingAction::UserSteppingAction(const G4Step *step)
     else{
       G4int particleID = particleMap[particleName];
       G4int mapped_PID = fpEventAction->parentParticle[trackID];
-      G4cout << "DEBUG. noprocess: " << particleName << ", PID: " << particleID << ", trackID: "<< trackID << ", mapped PID: " << mapped_PID << ", PID: " << particleID << ", KE: " << particleEnergy << " creatModel: " << step->GetTrack()->GetCreatorModelName() << G4endl;
+      // G4cout << "DEBUG. noprocess: " << particleName << ", PID: " << particleID << ", trackID: "<< trackID << ", mapped PID: " << mapped_PID << ", PID: " << particleID << ", KE: " << particleEnergy << " creatModel: " << step->GetTrack()->GetCreatorModelName() << G4endl;
     }
     if (step->GetPreStepPoint() == nullptr)
   {
