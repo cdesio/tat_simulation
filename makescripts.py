@@ -102,11 +102,15 @@ if args.startR:
 
 if args.vessel_halflength:
     vessel_halflength = args.vessel_halflength
+
 if args.shell_halflength:
     shell_halflength = args.shell_halflength
+
 if args.gun_length:
     gun_length = args.gun_length
-
+else:
+    gun_length = 40.0
+s_gunlength = str(int(gun_length)) if str(gun_length).endswith(".0") else str(gun_length).replace(".", "p")
 if args.n:
     numIons = args.n
 
@@ -143,7 +147,7 @@ for s in spacing:
     #  write mac file
 
     filename_mac = os.path.join(
-        test_dir, f"input_Atdecay_{n_string}_length_{gun_length}_{seed}.in"
+        test_dir, f"input_Atdecay_{n_string}_length_{s_gunlength}_{seed}.in"
     )  # to be run from folder created
     with open(filename_mac, "w") as f:
         f.write("/run/verbose 2\n")
@@ -188,7 +192,7 @@ for s in spacing:
         f.write("/run/beamOn 0\n")
 
     filename_decay = os.path.join(
-    test_dir, f"run_Atdecay_{n_string}_spacing_{s_string}um_length_{gun_length}_{seed}.sh")  # to be run from folder created
+    test_dir, f"run_Atdecay_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed}.sh")  # to be run from folder created
 
 
     # if slurm:
@@ -218,12 +222,12 @@ for s in spacing:
             f.write("source /opt/geant4-v11.1.0-install/bin/geant4.sh\n")
         # run decay simulation
         f.write(
-            f"time {makerundir(decay_sim_folder)}/decaySim -mac {filename_mac} -out {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_{seed} -seed {seed}\n"
+            f"time {makerundir(decay_sim_folder)}/decaySim -mac {filename_mac} -out {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed} -seed {seed}\n"
         )
         
 
         filename_DNA = os.path.join(
-        test_dir, f"run_AtDNA_{n_string}_spacing_{s_string}um_length_{gun_length}_{seed}.sh"
+        test_dir, f"run_AtDNA_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed}.sh"
     )  # to be run from folder created
     # if slurm:
     #     print(f"sbatch run_AtDNA_{n_string}_spacing_{s_string}um_{seed}.sh")
@@ -232,8 +236,8 @@ for s in spacing:
         if slurm:
             f.write(f"#SBATCH --account={projectcode}\n")
             f.write(f"#SBATCH --job-name=AtDNA_spacing_{s_string}um_{seed}\n")
-            f.write(f"#SBATCH --output={test_dir}/AtDNA_spacing_{s_string}um_{seed}.out.%J\n")
-            f.write(f"#SBATCH --error={test_dir}/AtDNA_spacing_{s_string}um_{seed}.err.%J\n")
+            f.write(f"#SBATCH --output={test_dir}/AtDNA_s_{s_string}um_l_{s_gunlength}_{seed}.out.%J\n")
+            f.write(f"#SBATCH --error={test_dir}/AtDNA_s_{s_string}um_l{s_gunlength}_{seed}.err.%J\n")
             # maximum job time in D-HH:MM
             f.write(f"#SBATCH --time={time_DNA}\n")
             f.write("#SBATCH --nodes=1\n")
@@ -251,7 +255,7 @@ for s in spacing:
             f.write("source /opt/geant4-v11.1.0-install/bin/geant4.sh\n")
         # run DNA simulation
         f.write(
-            f"time {makerundir(dna_sim_folder)}/tat -mac {filename_tat_mac} -PS {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_{seed}.bin -out {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root -sugar {sugarFile} -histone {histoneFile} -seed {seed} \n"
+            f"time {makerundir(dna_sim_folder)}/tat -mac {filename_tat_mac} -PS {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed}.bin -out {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed}.root -sugar {sugarFile} -histone {histoneFile} -seed {seed} \n"
         )
 
         
@@ -272,7 +276,7 @@ for s in spacing:
         # f.write("rm {}; fi\n".format(fileToDelete))
 
     filename_clustering = os.path.join(
-        test_dir, f"run_clustering_At_{n_string}_spacing_{s_string}um_length_{gun_length}_{seed}.sh"
+        test_dir, f"run_clustering_At_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed}.sh"
     )  # to be run from folder created
 
     with open(filename_clustering, "w") as f:
@@ -281,9 +285,9 @@ for s in spacing:
         if slurm:
             f.write(f"#SBATCH --job-name=clustering_At_{n_string}_spacing_{s_string}um\n")
             f.write(f"#SBATCH --account={projectcode}\n")
-            f.write(f"#SBATCH --output={test_dir}/clustering_At_{n_string}_spacing_{s_string}um.out.%J\n")
-            f.write(f"#SBATCH --error={test_dir}/clustering_At_{n_string}_spacing_{s_string}um.err.%J\n")
-            # maximum job time in D-HH:MM
+            f.write(f"#SBATCH --output={test_dir}/clustering_At_{n_string}_s_{s_string}um_l{s_gunlength}.out.%J\n")
+            f.write(f"#SBATCH --error={test_dir}/clustering_At_{n_string}_s_{s_string}um_l{s_gunlength}.err.%J\n")
+            # maximum job time in D-HH:M
             f.write(f"#SBATCH --time={time_clustering}\n")
             f.write("#SBATCH --nodes=1\n")
             # f.write("#SBATCH -p short\n")
@@ -306,17 +310,17 @@ for s in spacing:
         else:
             f.write("conda activate clustering\n")
         f.write(
-            f"python {clustering_dir}/run_up_part.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_{seed}_part.csv --sugar {sugarFile} --ndiv_R {n_div_R}  --continuous {continuous}\n"
+            f"python {clustering_dir}/run_up_part.py --filename {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed}.root --output {clustering_outdir}/out_AtDNA_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed}_part.csv --sugar {sugarFile} --ndiv_R {n_div_R}  --continuous {continuous}\n"
         )
-    filename_runscript = os.path.join(test_dir, f"run_script_At_{n_string}_spacing_{s_string}um_length_{gun_length}_{seed}.sh")
+    filename_runscript = os.path.join(test_dir, f"run_script_At_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed}.sh")
     with open(filename_runscript, "w") as f:
         f.write("#!/bin/bash --login\n")
 
         if slurm:
             f.write(f"#SBATCH --job-name=run_At{n_string}_sp_{s_string}um_{seed}\n")
             f.write(f"#SBATCH --account={projectcode}\n")
-            f.write(f"#SBATCH --output={test_dir}/run_At_{n_string}_spacing_{s_string}um_{seed}.out.%J\n")
-            f.write(f"#SBATCH --error={test_dir}/run_At_{n_string}_spacing_{s_string}um_{seed}.err.%J\n")
+            f.write(f"#SBATCH --output={test_dir}/run_At_{n_string}_s_{s_string}um_l{s_gunlength}_{seed}.out.%J\n")
+            f.write(f"#SBATCH --error={test_dir}/run_At_{n_string}_s_{s_string}um_l{s_gunlength}_{seed}.err.%J\n")
             f.write(f"#SBATCH --time=0-10:00\n")
             f.write("#SBATCH --nodes=1\n")
             # f.write("#SBATCH -p short\n")
