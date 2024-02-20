@@ -568,7 +568,7 @@ def runClustering(filename_DNA: str, outputFilename: str, fEMinDamage: float, fE
                 
                 if outfile_DSB not in headers_DSB:
                     modeDSB = 'w'
-                    headers_DSB.add(outfile_SB)
+                    headers_DSB.add(outfile_DSB)
                 else:
                     modeDSB = "a"
                
