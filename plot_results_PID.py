@@ -215,39 +215,84 @@ class ClusteringEventsRadii:
 
 
 particle_plotting_map = {
-    -1: {"name": "Total",
-       "colour": "mediumaquamarine",
-       'marker': "s"},
-    6: {"name": "alphaAt211",
-        "colour": "darkblue",
-        'marker': "*"},
-    7: {"name": "alphaPo211",
-        "colour": "mediumvioletred",
-        'marker': "s"},
-    8: {"name": "e-At211",
-        "colour": "cornflowerblue",
-        'marker': "x"},
-    9: {"name": "e-Bi207",
-        "colour": "cornflowerblue",
-        'marker': "o"},
-    10: {"name": "e-Pb207*",
-       "colour": "cornflowerblue",
-       'marker': "s"},
-    11: {"name": "gammaAt211",
-        "colour": "darkred",
-        'marker': "x"},
-    12: {"name": "gammaBi207",
-        "colour": "darkred",
-        'marker': "o"},
-    14: {"name": "gammaPb207",
-    "colour": "darkred",
-    'marker': "s"},
-    4: {"name": "Pb207",
-       "colour": "gold",
-       'marker': "s"},
-    0: {"name": "At211",
-       "colour": "gold",
-       'marker': "s"}
+    -1: {"label": "Total",
+        'c': 'mediumaquamarine',
+       "markerfacecolor": "mediumaquamarine",
+       "markeredgecolor": "mediumaquamarine",
+       'marker': "s", 
+       'markersize': 8,
+       'alpha': 0.35},
+
+    6: {"label": "alphaAt211",
+        'c': "darkblue",
+        "markerfacecolor": "darkblue",
+        'markeredgecolor' : 'darkblue',
+        'marker': "*",
+        'markersize': 4},
+
+    7: {"label": "alphaPo211",
+        'c': "mediumvioletred",
+        "markerfacecolor": "mediumvioletred",
+        "markeredgecolor": "mediumvioletred",
+        'marker': "s",
+        'markersize': 3},
+
+    8: {"label": "e-At211",
+        'c': 'cornflowerblue',
+        "markerfacecolor": "cornflowerblue",
+        "markeredgecolor": "cornflowerblue",
+        'marker': "x",
+        'markersize': 6},
+
+    9: {"label": "e-Bi207",
+        'c':'cornflowerblue',
+        "markerfacecolor": "cornflowerblue",
+        'markeredgecolor': 'cornflowerblue',
+        'marker': "o",
+        'markersize': 4,
+        },
+
+    10: {"label": "e-Pb207*",
+        'c': 'cornflowerblue',
+       "markerfacecolor": "none",
+       "markeredgecolor": "cornflowerblue",
+       'marker': "s", 
+       'markersize': 4},
+
+    11: {"label": "gammaAt211",
+         'c':'darkred',
+        "markerfacecolor": "darkred",
+        "markeredgecolor": "darkred",
+        'marker': "x",
+        'markersize': 6},
+
+    12: {"label": "gammaBi207",
+        'c':'darkred',
+        "markerfacecolor": "darkred",
+        "markeredgecolor": "darkred",
+        'marker': "o",
+        'markersize': 4},
+
+    14: {"label": "gammaPb207",
+        'c':'darkred',
+        "markerfacecolor": "none",
+        "markeredgecolor": "darkred",
+        'marker': "s",
+        'markersize': 4},
+
+    4: {"label": "Pb207",
+       'c':'gold',
+       "markerfacecolor": "gold",
+       "markeredgecolor": "gold",
+       'marker': "s",
+        'markersize': 4},
+
+    0: {"label": "At211",
+        'c':'gold',
+       "markerfacecolor": "gold",
+       "markeredgecolor": "gold",
+       'marker': "s",
+        'markersize': 4}
     
     }
     
@@ -292,14 +337,12 @@ def plot_field(datadict, damage_type='DSBtotal', complex=False, rbe = False, con
         dist = np.nanmean(np.asarray(distance[pid]), axis=0)
         mean = np.nanmean(np.array(damage[pid]), axis=0)
         if len(mean[~np.isnan(mean)])>2:
-            plt.errorbar(dist, mean, yerr =std,
-                    linestyle='',  alpha = 1 if pid!=-1 else 0.3,
-                    capsize=1, marker=particle_plotting_map[pid]['marker'], 
-                    markersize=3 if pid!=-1 else 8, linewidth=0.1, elinewidth=0.1,label=f"{particle_plotting_map[pid]['name']}", c=particle_plotting_map[pid]['colour'])
+            plt.errorbar(dist[~np.isnan(std)], mean[[~np.isnan(std)]], yerr =std[~np.isnan(std)],
+                    linestyle='',
+                    capsize=1, linewidth=0.1, elinewidth=0.1, **particle_plotting_map[pid])#,label=f"{particle_plotting_map[pid]['name']}", c=particle_plotting_map[pid]['colour'],marker=particle_plotting_map[pid]['marker'], 
+                   # markersize=particle_plotting_map[pid]['markersize'])
                 
     return
-
-
 
 def plot_all(datadict, damage_type, complex=False):
     distance = []
@@ -329,26 +372,26 @@ def plot_all(datadict, damage_type, complex=False):
     filtered_std = np.nanstd(filtered_field, axis=0)            
     plt.errorbar(filtered_dist, filtered_mean, yerr =filtered_std,linestyle='',  
                     capsize=1, marker='o', 
-                    markersize=2, linewidth=0.1, elinewidth=0.1,label=f"{damage_type}")
+                    markersize=3.5, linewidth=0.1, elinewidth=0.1,label=f"{damage_type}")
     return
 
 
 if __name__=="__main__": 
 
     datasets = []
-    folder = "/home/cdesio/TAT/tat_shell_ps/output/test_At1k_shell_ps_10.5um_80R_continuous"
+    folder = "/home/cdesio/TAT/tat_shell_ps/output/test_At10k_shell_ps_10.5um_80R_continuous"
     data_folder = os.path.join(folder, "clustering_out")
-    fname_prefix="out_AtDNA_1k_spacing"
+    fname_prefix="out_AtDNA_10k_spacing"
     spacing = 1
     fname_prefix += f"_{spacing}um"
-    extra = ''
+    extra = '_length_40' # '' if old, '_length_40'if new
     fname_prefix += extra
     keyword = 'part'
     nevents_str = folder.split('/')[-1].split('_')[1].split('At')[1]
     nevents = int(regex.findall(nevents_str)[0]) if 'k' not in nevents_str else int(regex.findall(nevents_str)[0]) * 1000
 
 
-    seeds = np.unique([int(regex.findall(fname.split(fname_prefix)[-1])[0]) for fname in os.listdir(data_folder) if keyword in fname and 'length' not in fname])
+    seeds = np.unique([int(regex.findall(fname.split(fname_prefix)[-1])[0]) for fname in os.listdir(data_folder) if keyword in fname]) # and "length" not in fname,  if old
     particles = np.unique([fname.split(fname_prefix)[-1].split("_")[-2] for fname in os.listdir(data_folder) if keyword in fname and "DSB" not in fname])
 
     print(seeds)
@@ -366,37 +409,39 @@ if __name__=="__main__":
             datadict[particle].append(ClusteringEventsRadii(folder=data_folder, fname_prefix=fname_prefix, 
                                 seed=int(seed), keyword=keyword, particle=particle, n_div_r=80, start_r = 0))  
 
-    def plot_damage(damage_type, datadict, complex=False):
+    def plot_damage(damage_type, datadict, complex=False, per_event = False):
         plt.figure(figsize=(8,5))
-        plot_field(datadict, damage_type=damage_type, complex=complex)
-        plt.legend(ncol=4, loc=(0,1.01))
-        plt.xlabel("radial distance from the blood vessel (um)")
+        plot_field(datadict, damage_type=damage_type, complex=complex, per_event = per_event)
+        plt.legend(ncol=4, loc=(-0.06,1.03), fontsize='large')
+        plt.xlabel("radial distance from the blood vessel (${\mu}m$)", fontsize='x-large')
         if damage_type=="DoseGy":
-            plt.ylabel(f"Dose ($Gy)$")
+            plt.ylabel(f"Dose ($Gy)$", fontsize='x-large')
             plt.yscale('log')
 
         elif "DSB" in damage_type:
-            plt.ylabel(f"total n. of DSB ($Gy^-1 Gbp^-1)$")      
+            plt.ylabel(f"total n. of DSB ($Gy^-1 Gbp^-1)$", fontsize='x-large')      
             plt.ylim(-1, 16)
         elif "TotalSB" in damage_type:
-            plt.ylabel(f"total n. of SB ($Gy^-1 Gbp^-1)$")  
+            plt.ylabel(f"total n. of SB ($Gy^-1 Gbp^-1)$", fontsize='x-large')  
             plt.ylim(-1, 200)
 
         plt.xlim(0, 80)
+        plt.xticks(fontsize='large')
+        plt.yticks(fontsize='large')
         #plt.legend(loc=(1,0.4))
         if complex:
-            plt.ylabel(f"n. of {damage_type} complex DSB ($Gy^-1 Gbp^-1)$")
-            plt.savefig(f"{folder}/complex_{damage_type}_{nevents_str}{extra}.png")
+            plt.ylabel(f"n. of {damage_type} complex DSB ($Gy^-1 Gbp^-1)$", fontsize='x-large')
+            plt.savefig(f"{folder}/complex_{damage_type}_{nevents_str}{extra}.png", bbox_inches='tight')
         else:
-            plt.savefig(f"{folder}/{damage_type}_{nevents_str}{extra}.png")
+            plt.savefig(f"{folder}/{damage_type}_{nevents_str}{extra}.png", bbox_inches='tight')
         return
     # plot DSB, SB, Dose, separating particles
     for damage in ["DSBtotal", "TotalSBtotal", "DoseGy"]:
         plot_damage(damage, datadict) 
+        # pass
     # plot complex DSB (total, direct, indirect), separating particles
     for damage in ["Total", "Direct", "Indirect"]:
         plot_damage(damage, datadict, complex=True) 
-    
     
     def plot_comparison(damage_type, datadict, complex=False):
         plt.figure(figsize=(8,5))
@@ -408,24 +453,26 @@ if __name__=="__main__":
             plot_all(datadict, damage_type=damage_type+"total", complex=complex)
             plot_all(datadict, damage_type=damage_type+"direct", complex=complex)
             plot_all(datadict, damage_type=damage_type+"indirect", complex=complex)
-        plt.legend(ncol=4, loc=(0,1.01))
-        plt.xlabel("radial distance from the blood vessel (um)")
+        plt.legend(ncol=4, loc=(0,1.01),fontsize='large')
+        plt.xlabel("radial distance from the blood vessel (${\mu}m$)", fontsize='x-large')
         
         if "DSB" in damage_type:
-            plt.ylabel(f"total n. of DSB ($Gy^-1 Gbp^-1)$")      
+            plt.ylabel(f"total n. of DSB ($Gy^-1 Gbp^-1)$", fontsize='x-large')      
             plt.ylim(-1, 16)
         elif "TotalSB" in damage_type:
-            plt.ylabel(f"total n. of SB ($Gy^-1 Gbp^-1)$")  
+            plt.ylabel(f"total n. of SB ($Gy^-1 Gbp^-1)$", fontsize='x-large')  
             plt.ylim(bottom = -1, top=200)
         else:
-            plt.ylabel(f"total n. of complex DSB ($Gy^-1 Gbp^-1)$")
+            plt.ylabel(f"total n. of complex DSB ($Gy^-1 Gbp^-1)$", fontsize='x-large')
         
         plt.xlim(0, 80)
+        plt.xticks(fontsize='large')
+        plt.yticks(fontsize='large')
         #plt.legend(loc=(1,0.4))
         if complex:
-            plt.savefig(f"{folder}/complex_comparison_{nevents_str}{extra}.png")
+            plt.savefig(f"{folder}/complex_comparison_{nevents_str}{extra}.png", bbox_inches='tight')
         else:
-            plt.savefig(f"{folder}/{damage_type}_comparison_{nevents_str}{extra}.png")
+            plt.savefig(f"{folder}/{damage_type}_comparison_{nevents_str}{extra}.png", bbox_inches='tight')
         return
         
     plot_comparison(damage_type="DSB", datadict=datadict)
@@ -433,16 +480,35 @@ if __name__=="__main__":
     plot_comparison(damage_type="", datadict=datadict, complex=True)
  
     # plot RBE
+    
     plt.figure(figsize=(8,5))
     if 'continuous' in folder:
         continuous = True
     else:
         continuous = False
     plot_field(datadict, damage_type="DSBtotal", rbe=True, continuous=continuous)
-    plt.legend()
-    plt.xlabel("radial distance from blood vessel (um)")
-    plt.ylabel("RBE")
-    plt.xlim(0, 80)
-    plt.ylim(0, 4)
-    plt.savefig(f"{folder}/RBE_{nevents_str}{extra}.png")
+    plt.legend(ncol=4, loc=(-0.06,1.03),fontsize='large')
+    plt.xlabel("radial distance from blood vessel (${\mu}m$)", fontsize='x-large')
+    plt.ylabel("RBE", fontsize='x-large')
+    plt.xlim(right = 80)
+    plt.xticks(fontsize='large')
+    plt.yticks(fontsize='large')
+    plt.ylim(0, 5)
+    plt.savefig(f"{folder}/RBE_{nevents_str}{extra}.png", bbox_inches='tight')
+    
+
+    plt.figure(figsize=(8,5))
+    if 'continuous' in folder:
+        continuous = True
+    else:
+        continuous = False
+    plot_field(datadict, damage_type="Total", rbe=True, continuous=continuous, complex=True)
+    plt.legend(ncol=4, loc=(-0.06,1.03),fontsize='large')
+    plt.xlabel("radial distance from blood vessel (${\mu}m$)", fontsize='x-large')
+    plt.ylabel("RBE (cDSB)", fontsize='x-large')
+    plt.xlim(right = 80)
+    plt.xticks(fontsize='large')
+    plt.yticks(fontsize='large')
+    plt.ylim(0, 5)
+    plt.savefig(f"{folder}/RBE_complex_{nevents_str}{extra}.png", bbox_inches='tight')
     
