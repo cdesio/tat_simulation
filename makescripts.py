@@ -33,6 +33,8 @@ parser.add_argument("--folder", type=str, required = False)
 args = parser.parse_args()
 
 
+project_root = os.path.abspath(os.getcwd())
+
 
 # parameters to set
 if args.nthreads:
@@ -52,7 +54,7 @@ if args.mem:
     mem = args.mem
 else:
     mem = 20
-simulation_parent = os.path.abspath(os.curdir)
+simulation_parent = project_root
 if args.continuous:
     continuous = args.continuous
 else:
@@ -214,12 +216,12 @@ for s in spacing:
             f.write("module load apps/geant/4.11.1\n")
             f.write("module load apps/root/6.26.00\n")
 		
-            f.write("source /user/home/yw18581/.bash_profile\n")
-            f.write("source activate dart\n")
+            f.write("if [ -f \"$HOME/.bash_profile\" ]; then source \"$HOME/.bash_profile\"; fi\n")
+            f.write("conda activate dart\n")
 
         else:
             f.write("conda activate rootpy\n")
-            f.write("source /opt/geant4-v11.1.0-install/bin/geant4.sh\n")
+            f.write("if [ -n \"${GEANT4_SH:-}\" ] && [ -f \"$GEANT4_SH\" ]; then source \"$GEANT4_SH\"; fi\n")
         # run decay simulation
         f.write(
             f"time {makerundir(decay_sim_folder)}/decaySim -mac {filename_mac} -out {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed} -seed {seed}\n"
@@ -247,12 +249,12 @@ for s in spacing:
             f.write("\n")
             f.write("module load apps/geant/4.11.1\n")
             f.write("module load apps/root/6.26.00\n")
-            f.write("source /user/home/yw18581/.bash_profile\n")
-            f.write("source activate dart\n")
+            f.write("if [ -f \"$HOME/.bash_profile\" ]; then source \"$HOME/.bash_profile\"; fi\n")
+            f.write("conda activate dart\n")
 
         else:
             f.write("conda activate rootpy\n")
-            f.write("source /opt/geant4-v11.1.0-install/bin/geant4.sh\n")
+            f.write("if [ -n \"${GEANT4_SH:-}\" ] && [ -f \"$GEANT4_SH\" ]; then source \"$GEANT4_SH\"; fi\n")
         # run DNA simulation
         f.write(
             f"time {makerundir(dna_sim_folder)}/tat -mac {filename_tat_mac} -PS {test_dir}/out_Atdecay_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed}.bin -out {test_dir}/out_AtDNA_{n_string}_spacing_{s_string}um_length_{s_gunlength}_{seed}.root -sugar {sugarFile} -histone {histoneFile} -seed {seed} \n"
@@ -305,8 +307,8 @@ for s in spacing:
             os.makedirs(clustering_outdir)
 
         if slurm:
-            f.write("source /user/home/yw18581/.bash_profile\n")
-            f.write("source activate clustering\n")
+            f.write("if [ -f \"$HOME/.bash_profile\" ]; then source \"$HOME/.bash_profile\"; fi\n")
+            f.write("conda activate clustering\n")
         else:
             f.write("conda activate clustering\n")
         f.write(
@@ -327,7 +329,7 @@ for s in spacing:
             f.write("#SBATCH --ntasks-per-node=1\n")
             f.write(f"#SBATCH --mem 1GB\n")
             f.write("\n")
-            f.write("source /user/home/yw18581/.bash_profile\n")
+            f.write("if [ -f \"$HOME/.bash_profile\" ]; then source \"$HOME/.bash_profile\"; fi\n")
             # f.write("module load apps/root/6.26.00\n")
 
         f.write("\n")

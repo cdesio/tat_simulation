@@ -1,192 +1,150 @@
-# RBE
+# tat_shell_ps
 
-## Simulation 
-Geant4 simulation of the DNA damage done by alpha-particles, protons, electrons, or Co-60 photons. Energy deposits and OH reactions are scored from the simulation and analysis of the number of strand breaks is performed with the Clustering script. 
+Geant4-based workflow for modeling DNA damage for Targeted Alpha therapies, in the form of a radionuclide (At-211) emitted from the surface of a cylindrical shell representing the blood vessel, and accumulating the energy deposits in concentric cylindrical shells placed around the vessel. The incident particles crossing the shells are saved in a phase space file. DNA damage is subsequently calculated using the PS-file as input. Clustering is used to work out the damage and save it to output csv files.
 
- ### Initial Setup on Blue Pebble
- * cd to RBE/simulation
- * make a build directory and cd to it
- * run the following to compile:
-```
- 
-module add tools/cmake/3.17.0.gcc-4.8.5 
-module add lang/gcc/9.1.0
- module add apps/geant/4.11.0.0
+The repository is organized as a three-stage pipeline:
 
-cmake -DCMAKE_C_COMPILER=/sw/lang/gcc-9.1.0/bin/gcc -DCMAKE_CXX_COMPILER=/sw/lang/gcc-9.1.0/bin/g++ ..
+1. `decay_simulation/`: upstream transport/decay simulation that can write phase-space particles.
+2. `simulation/`: Geant4-DNA track-structure + chemistry simulation in chromatin geometry.
+3. `Clustering/`: post-processing to convert energy deposition/reaction records into SSB/DSB metrics.
+
+## Repository Layout
+
+- `decay_simulation/`: executable `decaySim`.
+- `simulation/`: executable `tat`.
+- `Clustering/`: pybind11 module + Python analysis scripts.
+- `geometryFiles/`: geometry generation scripts and input geometry data.
+- `testSet/`: reference scripts/results for sanity checks.
+- `output/`: generated outputs (ignored by `.gitignore`).
+
+## Prerequisites
+
+- CMake (3.16+ recommended).
+- C++ toolchain compatible with your Geant4 build.
+- Geant4 with the modules needed by this codebase (including visualization if using `-gui`).
+- ROOT + Python stack for clustering (`numpy`, `scipy`, `pybind11`, `matplotlib` as needed).
+
+## Build
+
+### 1) Build `decaySim`
+
+```bash
+cd decay_simulation
+mkdir -p build
+cd build
+cmake ..
 make -j8
 ```
 
-Repeat for the photon_simulaiton directory if running Co60 simulations.
+### 2) Build `tat`
 
- ### Description of commandline options and input file
+```bash
+cd simulation
+mkdir -p build
+cd build
+cmake ..
+make -j8
+```
 
-run with ./rbe and options as required:
- - -out filename - to output a root file
- - -ref - to use the reference geometry for photon beams with 2mm build up, corresponding input file is Co60.in
- - -seed - to set the seed
- - -gui - for visualisation (quicker with -chemOFF)
- - -chemOFF - to run without chemistry
- - -sugar - specify file containing deoxyribose positions
- - -histone - specify file containing histone positions
- - -PS - phase space  file from photon simulation
+### 3) Build clustering module
 
-Geometry is determined by the -sugar and -histone files which describe the positions of the deoxyribose, bases and histones. These are created by plotChromatinFibreSection.py. The volume width can be adjusted using volumeWidth and the number of chromatin fibre segments placed with numRows and numColumns - these are spaced uniformly given the volume width. Check there are no overlaps when running the simulation.
+```bash
+cd Clustering
+mkdir -p build
+cd build
+cmake ..
+make -j8
+```
 
-The input file can be changed to change the simulation parameters
- - /det/setSize - should match that set for the geometry files
- - /run/numberOfThreads - sets number of threads
- - /gps/particle -  must be alpha, proton, e-
- - /gps/ene/mono - sets the energy of the primaries
- - /gps/pos/.. - can be used to change the distribution of the source
- - /gps/ang/maxtheta - should be set to an angle large enough to cover the whole target box e.g. see below for an example.
- - /scheduler/endTime - the time limit for the radiolysis simulation
- - /run/beamOn - the number of primaries
+Note: `Clustering/CMakeLists.txt` contains environment-specific include paths. Update them for your machine if needed.
 
-![image](maxTheta.png)
+## Typical Workflows
 
-## Clustering 
-Analyses energy depositions and OH reactions from the simulation to count strand breaks. Two files are produced:
+### A) Standalone DNA simulation (`tat`, no phase-space)
 
-    1) Number of individual strand breaks, simple single strand breaks (SSB), complex single strand breaks (cSSB) and DSB. Considering direct damage and indirect damage independently and combined (called total).
-    2) Further analysis of DSB breaks, number of strand breaks per cluster are calculated. Here direct and indirect effects both contribute to the formation of DSB. The types of DSB are direct, indirect, mixed, hybrid and total. 
+Run from `simulation/build`:
 
-Definitions of strand break types are based on Nikjoo et al Int J Radiat Biol. 1997 May;71(5):467-83.  doi: 10.1080/095530097143798.
+```bash
+./tat \
+  -mac tat.in \
+  -out run_alpha \
+  -sugar ../../geometryFiles/sugarPos_4x4_300nm.csv \
+  -histone ../../geometryFiles/histonePositions_4x4_300nm.csv \
+  -seed 1234
+```
 
- ### Initial Setup on Blue Pebble
-- on blue pebble change directory to Clustering and make a build directory. Change to the build directory and then run:
-    ```
-    module load apps/root/6.26.00
-    module load lang/python/miniconda/3.9.7
-    module add tools/cmake/3.17.0.gcc-4.8.5 
-    module load lang/gcc/7.5.0
-    conda create --name clustering python=3.6 scipy numpy pybind11 matplotlib
-    conda activate clustering
-    ```
+Common options:
 
-- if it is the first time you use conda on blue pebble run:
-    ```
-    conda init bash
-    ```
-- close the shell and reopen the shell if directed (modules above will need to be re-loaded)
-- change CMakeLists.txt pybind11_DIR and header directories to your environment location. e.g. change USERNAME in the following
-    ```
-    include_directories(/user/home/USERNAME/.conda/envs/clustering/lib/python3.6/site-packages/pybind11/include/pybind11/)
+- `-mac <file>`: Geant4 macro.
+- `-out <name>`: output stem.
+- `-seed <int>`: RNG seed.
+- `-sugar <csv>` / `-histone <csv>`: geometry files.
+- `-chemOFF`: disable chemistry stage.
+- `-gui`: visualization mode.
 
-    set(pybind11_DIR /user/home/USERNAME/.conda/envs/clustering/share/cmake/pybind11)
-    ```
+### B) Two-step phase-space workflow (`decaySim` -> `tat -PS`)
 
-- change to the build direcrory to build pyClustering.cc:
-    ```
-    cmake ..
-    make
-    ```
+1. Generate phase-space file with `decaySim`.
+2. Run DNA simulation with that phase-space:
 
-- If not using blue pebble create/activate a python environment (called clustering) with the same python version as pyroot (root-config --python-version), and install pybind11, numpy and scipy. 
- 
- ## Test Set
-There is a test set in testSet to provide examples which can be run to ensure setup is working. See the README in the testSet directory.
+```bash
+./tat \
+  -mac tat.in \
+  -PS /path/to/phase_space.bin \
+  -out run_ps \
+  -sugar ../../geometryFiles/sugarPos_4x4_300nm.csv \
+  -histone ../../geometryFiles/histonePositions_4x4_300nm.csv \
+  -seed 1234
+```
 
- ## Example of how to run an alpha simulation
+In `-PS` mode, `tat` sizes `BeamOn` from the binary file record count.
 
-First create the geometry files. This only needs to be done once for each geometry
-1) cd to geometryFiles
-2) check the number of rows, columns and volumeWidth in plotChromatinFibreSection.py. (default is 4x4, 300 nm which has a density similar to a typical cell)
-2) run:
-    ```
-    python plotChromatinFibreSection.py 
-    ```
+## Macro Controls You Will Commonly Edit
 
-To run a simulation:
-1) cd to simulation/build
-2) open writeInputsAlpha.py. This will write all the scripts and input files required to run a simulation and can be changed as required.
-    - slurm = True for blue pebble or False for laptop
-    - folder = folder name for results
-    - numThreads = max 4 laptop
-    - seeds = list of random values to use for the Geant simulation seed value, number of seeds can be changed
-    - energies = list of alpha KE for the simulation
-    - histoneFile = location of histone geoemtry file
-    - sugarFile = location of sugar geoemtry file
-    - time = only needed for blue pebble
-    - mem = only needed for blue pebble
-    - targetSize = size of the target box should match geometry files
-    - gpsRadius = radius from which alpha particle source starts, default 1 micrometer
-    - printProgress = how often geant reports progress
-    - numAlpha = number of alpha particles
+- `/det/setSize`: target/chromatin box size.
+- `/det/dkill`: radical kill distance from target region.
+- `/run/numberOfThreads`: thread count.
+- `/gps/...`: particle source definition (standalone mode).
+- `/scheduler/endTime`: chemistry end time.
+- `/run/beamOn`: number of primaries (standalone mode).
 
-3) run
-    ```
-    python writeInputsAlpha.py
-    ```
-This makes all the scripts needed to run the simulation and clustering all in one
+## Clustering / Damage Metrics
 
-4) cd results/filename
-5) On blue pebble:
+For this repository, the maintained clustering workflow is the one generated by `makescripts.py`:
 
-    - for each script you want to run e.g alpha_5MeV_1.sh
-    ```
-    sbatch alpha_5MeV_1.sh
-    ```
-    the simulation will run and then clustering
+- `Clustering/run_up_part.py`
+- `Clustering/runClustering_up_part.py`
 
-5) On laptop:
+These are the scripts used in the batch pipeline produced by `makescripts.py`.
 
-    - for each script you want to run e.g alpha_5MeV_1.sh, change the permissions to execute the script:
-    ``` 
-    chmod 755 alpha_5MeV_1.sh 
-    ```
-    - to start simulation: 
-    ```
-    ./alpha_5MeV_1.sh etc
-    ```
-    the simulation will run and then clustering
+Legacy scripts in `Clustering/` such as `run.py`, `runClustering.py`, and `runSingle.py` are not the recommended path for `tat_shell_ps`.
 
+Using the maintained `_up_part` flow, you extract:
 
- ## Example of how to run a Co60 simulation
+- total strand breaks,
+- SSB/cSSB/DSB rates,
+- DSB cluster-size distributions,
+- direct/indirect/mixed contributions.
 
-The photon simulation (Co60) splits the simulation into 2 parts. First the photon primaries are tracked in a simple geometry without the chemistry simulation and any secondary particles saved in a phase space file. Second the full geometry simulaiton with the chemistry is run with the phase space file as the input.
+## Automation Scripts
 
-To run a simulation:
-1) cd to photon_simulation/build
-2) open writeInputsPhoton.py. This will write all the scripts and input files required to run a photon simulation and can be changed as required.
-    - slurm = True for blue pebble or False for laptop
-    - folder = folder name for results
-    - numThreads = max 4 laptop
-    - seeds = list of random values to use for the Geant simulation seed value, , number of seeds can be changed
-    - histoneFile = location of histone geoemtry file
-    - sugarFile = location of sugar geoemtry file
-    - timePhoton = only needed for blue pebble, time needed for the photon simulation
-    - memPhoton = only needed for blue pebble, memory needed for the photon simulation
-    - timeSec = only needed for blue pebble, time needed for the secondary simulation
-    - memSec = only needed for blue pebble, memory needed for the secondary simulation
-    - targetSize = size of the target box should match geometry files
-    - gpsRadius = radius from which the source starts, default 3 mm for photon simulation to ensure charged particle equilibrium
-    - printProgress = how often geant reports progress
-    - numPhotons = number of photons
+- Root-level `makescripts.py`: canonical campaign generator for `tat_shell_ps`.
+  - Writes decay, DNA, and clustering job scripts under `output/<folder>/`.
+  - Chains stages in order: `decaySim -> tat -> Clustering/run_up_part.py`.
+- `simulation/writeInputsAlpha.py` and `decay_simulation/writeInputsPhoton.py`: older helpers that may still be useful, but the recommended workflow is `makescripts.py`.
 
-3) run
-    ```
-    python writePhoton.py
-    ```
-This makes all the scripts needed to run the simulation and clustering all in one
+Example:
 
-4) cd results/filename
-5) On blue pebble:
+```bash
+python makescripts.py --n 1000 --spacing 1.0 --nthreads 4 --seed 1234 --slurm False
+```
 
-    - for each script you want to run e.g runPhotonScript_1.sh
-    ```
-    sbatch runPhotonScript_1.sh
-    ```
-    the photon simulation will run, then the secondary and then clustering
+## Reproducibility / Validation
 
-5) On laptop:
+Use `testSet/` to run reference comparisons and verify that your environment reproduces expected trends.
 
-    - for each script you want to run e.g runPhotonScript_1.sh, change the permissions to execute the script:
-    ``` 
-    chmod 755 runPhotonScript_1.sh 
-    ```
-    - to start simulation: 
-    ```
-    ./runPhotonScript_1.sh etc
-    ```
-    the simulation will run, then the secondary and then clustering
+## Cleanup Policy
+
+This repo now ignores generated artifacts (build outputs, `.root`, `.csv`, `.png`, `.bin`, logs, `.DS_Store`, `__pycache__`).
+
+If you need to keep specific outputs under version control, remove or narrow the corresponding entries in `.gitignore`.

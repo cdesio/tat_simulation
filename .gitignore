@@ -1,20 +1,44 @@
-simulation/build/*
-Simulation/build
-simulation/build/CMakeFiles/*
-simulation/build/CMakeFiles
-decay_simulation/build/*
-decay_simulation/GNUmakefiles
-*.csv
-*.root
+# OS / editor
+.DS_Store
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# CMake / build artifacts
+**/build/
+**/CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# Runtime logs and batch outputs
 *.log
-Clustering/build/*
-Clustering/build/CMakeFiles/*
-Clustering/CMake*
-output/*
+*.out
+*.err
+slurm-*.out
+
+# Generated simulation outputs
+output/
+simulation/results/
+decay_simulation/results/
+generated_files/
+*.root
+*.csv
+*.png
+
+# Generated phase-space and local data artifacts
+out_At*.bin
+geometryFiles/*.bin
+sugarPos_*.bin
+input_Atdecay_*.in
+Clustering_new.zip
+
+# Legacy ignore patterns kept for compatibility
+Simulation/build
+decay_simulation/GNUmakefiles
 output/test*
-*.sh
-simulation/build/CMakeFiles/*
-*pyc
-*png
 *cmake
-output/*png
